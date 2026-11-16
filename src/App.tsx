@@ -8,6 +8,7 @@ import { ManualDiceModal, PendingRoll } from './components/combat/ManualDiceModa
 import { PartyAnalysisView } from './components/party/PartyAnalysisView';
 import { GeminiHub } from './components/gemini/GeminiHub';
 import { CharacterCreator } from './components/creator/CharacterCreator';
+import { DungeonAmbiencePlayer } from './components/audio/DungeonAmbiencePlayer';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
 import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
 import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords } from 'lucide-react';
@@ -317,8 +318,11 @@ export const App: React.FC = () => {
             </button>
           </nav>
 
-          {/* Right Action: Toggle de Modo de Dados & Descanso Longo */}
+          {/* Right Action: Som Ambiente, Toggle de Modo de Dados & Descanso Longo */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Player de Som Ambiente de Masmorra */}
+            <DungeonAmbiencePlayer />
+
             {/* Quick Toggle de Dados */}
             <div className="hidden lg:flex items-center gap-1.5 bg-[#141824] px-2.5 py-1 rounded-full border border-[#262f44]">
               <span className="text-[10px] text-stone-300 font-bold uppercase tracking-wider">🎲 Dados:</span>
