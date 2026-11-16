@@ -9,6 +9,10 @@ import { PartyAnalysisView } from './components/party/PartyAnalysisView';
 import { GeminiHub } from './components/gemini/GeminiHub';
 import { CharacterCreator } from './components/creator/CharacterCreator';
 import { DungeonAmbiencePlayer } from './components/audio/DungeonAmbiencePlayer';
+import { UserProfile } from './core/types/auth';
+import { AuthManager } from './core/auth/authManager';
+import { UserBadge } from './components/auth/UserBadge';
+import { LoginModal } from './components/auth/LoginModal';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
 import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
 import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords } from 'lucide-react';
@@ -18,6 +22,8 @@ export const App: React.FC = () => {
   const [enemies, setEnemies] = useState<Enemy[]>(() => SessionManager.getEnemies());
   const [diceMode, setDiceMode] = useState<DiceRollMode>(() => SessionManager.getDiceMode());
   const [pendingManualRoll, setPendingManualRoll] = useState<PendingRoll | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserProfile>(() => AuthManager.getCurrentUser());
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'create'>('sheet');
   const [selectedCharacterId, setSelectedCharacterId] = useState<string>(() => characters[0]?.id || '');
@@ -54,6 +60,16 @@ export const App: React.FC = () => {
   const scrollToContent = (tab: 'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'create') => {
     setActiveTab(tab);
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleUserChanged = (newUser: UserProfile) => {
+    setCurrentUser(newUser);
+    if (newUser.role === 'player' && newUser.characterIds.length > 0) {
+      if (!newUser.characterIds.includes(selectedCharacterId)) {
+        setSelectedCharacterId(newUser.characterIds[0]);
+      }
+    }
+    showNotification(`Conectado como ${newUser.displayName} (${newUser.role === 'dm' ? '⚔️ Mestre' : '🛡️ Jogador'})`);
   };
 
   const handleApplyDamage = (id: string, amount: number) => {
@@ -119,6 +135,11 @@ export const App: React.FC = () => {
 
   const handleAddCharacter = (newChar: Character) => {
     setCharacters(prev => [...prev, newChar]);
+    if (currentUser.role === 'player') {
+      AuthManager.linkCharacter(currentUser.id, newChar.id);
+      setCurrentUser(AuthManager.getCurrentUser());
+    }
+    setSelectedCharacterId(newChar.id);
     setActiveTab('sheet');
     showNotification(`Personagem '${newChar.name}' adicionado com sucesso!`);
   };
@@ -222,6 +243,8 @@ export const App: React.FC = () => {
       characters,
       enemies,
       diceMode,
+      users: AuthManager.getUsers(),
+      activeUserId: currentUser.id,
       exportedAt: new Date().toISOString()
     };
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
@@ -244,7 +267,18 @@ export const App: React.FC = () => {
           setCharacters(parsed.characters);
           if (parsed.enemies && Array.isArray(parsed.enemies)) setEnemies(parsed.enemies);
           if (parsed.diceMode) setDiceMode(parsed.diceMode);
-          showNotification('Dados da campanha importados com sucesso!');
+          if (parsed.users && Array.isArray(parsed.users)) {
+            AuthManager.saveUsers(parsed.users);
+            if (parsed.activeUserId) {
+              try {
+                const active = AuthManager.login(parsed.activeUserId);
+                setCurrentUser(active);
+              } catch {
+                setCurrentUser(AuthManager.getCurrentUser());
+              }
+            }
+          }
+          showNotification('Dados da campanha e usuários importados com sucesso!');
         } else if (Array.isArray(parsed)) {
           setCharacters(parsed);
           showNotification('Grupo importado com sucesso!');
@@ -318,8 +352,20 @@ export const App: React.FC = () => {
             </button>
           </nav>
 
-          {/* Right Action: Som Ambiente, Toggle de Modo de Dados & Descanso Longo */}
+          {/* Right Action: Perfil de Usuário, Som Ambiente, Toggle de Dados & Descanso Longo */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Widget de Perfil & Troca de Usuários */}
+            <UserBadge
+              currentUser={currentUser}
+              characters={characters}
+              onOpenLoginModal={() => setIsLoginModalOpen(true)}
+              onSelectUser={handleUserChanged}
+              onSelectCharacter={(charId) => {
+                setSelectedCharacterId(charId);
+                scrollToContent('parchment');
+              }}
+            />
+
             {/* Player de Som Ambiente de Masmorra */}
             <DungeonAmbiencePlayer />
 
@@ -372,6 +418,15 @@ export const App: React.FC = () => {
       <ManualDiceModal
         pendingRoll={pendingManualRoll}
         onClose={() => setPendingManualRoll(null)}
+      />
+
+      {/* Modal de Gestão de Usuários, Login & Perfis */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        currentUser={currentUser}
+        characters={characters}
+        onUserChanged={handleUserChanged}
       />
 
       {/* Floating Notification */}
@@ -474,7 +529,39 @@ export const App: React.FC = () => {
       </section>
 
       {/* Conteúdo Principal com Ref para Scroll */}
-      <div ref={contentRef} className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1">
+      <div ref={contentRef} className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10 flex-1 space-y-6">
+        {/* Banner do Jogador Ativo / Visão do Mestre */}
+        <div className="bg-[#101420] border border-[#232b40] rounded-xl p-3 sm:p-3.5 flex flex-wrap items-center justify-between gap-3 text-xs shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className={`w-3 h-3 rounded-full ${currentUser.role === 'dm' ? 'bg-amber-400' : 'bg-sky-400'} animate-pulse shrink-0`} />
+            <div className="flex items-center flex-wrap gap-2 text-stone-300">
+              <span>Sessão Atual:</span>
+              <strong className={`font-bold uppercase tracking-wider ${currentUser.role === 'dm' ? 'text-[#f5ba42]' : 'text-sky-300'}`}>
+                {currentUser.displayName} ({currentUser.role === 'dm' ? '⚔️ Mestre' : '🛡️ Jogador'})
+              </strong>
+              <span className="text-stone-600 hidden sm:inline">•</span>
+              <span className="text-stone-400">
+                {currentUser.role === 'dm' ? (
+                  <span className="text-amber-200/90 font-medium">Acesso Irrestrito ao Bestiário, Arena & Todos os Heróis</span>
+                ) : currentUser.characterIds.length > 0 ? (
+                  <span>
+                    Herói Controlado: <strong className="text-[#f5ba42]">{characters.filter(c => currentUser.characterIds.includes(c.id)).map(c => c.name).join(', ')}</strong>
+                  </span>
+                ) : (
+                  <span className="italic text-stone-500">Nenhum herói vinculado ainda</span>
+                )}
+              </span>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsLoginModalOpen(true)}
+            className="text-[11px] font-bold text-[#f5ba42] hover:text-amber-300 uppercase tracking-wider underline transition-colors"
+          >
+            Trocar Usuário / Novo Perfil →
+          </button>
+        </div>
+
         {/* Sub-Navegação de Abas em Telas Menores */}
         <div className="md:hidden flex flex-wrap gap-2 mb-6">
           <button
@@ -566,24 +653,28 @@ export const App: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {characters.map(char => (
-                  <CharacterCard
-                    key={char.id}
-                    character={char}
-                    onApplyDamage={handleApplyDamage}
-                    onHeal={handleHeal}
-                    onSpendSlot={handleSpendSlot}
-                    onRestoreSlot={handleRestoreSlot}
-                    onToggleCondition={handleToggleCondition}
-                    onToggleInspiration={handleToggleInspiration}
-                    onDeleteCharacter={handleDeleteCharacter}
-                    onRollCheck={handleRollCheck}
-                    onOpenParchment={(c) => {
-                      setSelectedCharacterId(c.id);
-                      scrollToContent('parchment');
-                    }}
-                  />
-                ))}
+                {characters.map(char => {
+                  const isOwned = currentUser.role === 'player' ? currentUser.characterIds.includes(char.id) : false;
+                  return (
+                    <CharacterCard
+                      key={char.id}
+                      character={char}
+                      isOwnedByUser={isOwned}
+                      onApplyDamage={handleApplyDamage}
+                      onHeal={handleHeal}
+                      onSpendSlot={handleSpendSlot}
+                      onRestoreSlot={handleRestoreSlot}
+                      onToggleCondition={handleToggleCondition}
+                      onToggleInspiration={handleToggleInspiration}
+                      onDeleteCharacter={handleDeleteCharacter}
+                      onRollCheck={handleRollCheck}
+                      onOpenParchment={(c) => {
+                        setSelectedCharacterId(c.id);
+                        scrollToContent('parchment');
+                      }}
+                    />
+                  );
+                })}
               </div>
             )}
           </div>

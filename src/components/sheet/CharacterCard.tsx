@@ -5,6 +5,7 @@ import { Shield, Heart, Zap, Sparkles, ChevronDown, ChevronUp, Dices, AlertTrian
 
 interface CharacterCardProps {
   character: Character;
+  isOwnedByUser?: boolean;
   onApplyDamage: (id: string, amount: number) => void;
   onHeal: (id: string, amount: number) => void;
   onSpendSlot: (id: string, level: number) => void;
@@ -24,6 +25,7 @@ const ALL_CONDITIONS: Condition[] = [
 
 export const CharacterCard: React.FC<CharacterCardProps> = ({
   character,
+  isOwnedByUser = false,
   onApplyDamage,
   onHeal,
   onSpendSlot,
@@ -63,12 +65,21 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
   };
 
   return (
-    <div className="bg-[#0e111a] border border-[#231b14] hover:border-[#a17036]/60 rounded-2xl shadow-xl p-5 transition-all">
+    <div className={`bg-[#0e111a] border rounded-2xl shadow-xl p-5 transition-all ${
+      isOwnedByUser
+        ? 'border-sky-500/80 shadow-sky-500/10 ring-1 ring-sky-500/30'
+        : 'border-[#231b14] hover:border-[#a17036]/60'
+    }`}>
       {/* Header */}
       <div className="flex flex-wrap items-start justify-between gap-3 border-b border-[#231b14] pb-3">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <h3 className="font-cinzel text-xl font-bold text-[#f5ba42] tracking-wide">{character.name}</h3>
+            {isOwnedByUser && (
+              <span className="inline-flex items-center gap-1 bg-sky-950/80 text-sky-300 border border-sky-600 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider shadow">
+                🛡️ Seu Herói
+              </span>
+            )}
             {character.hasInspiration && (
               <span className="inline-flex items-center gap-1 bg-[#231b14] text-[#f5ba42] border border-[#a17036] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
                 <Sparkles className="w-3 h-3 text-[#f5ba42]" /> Inspiração
