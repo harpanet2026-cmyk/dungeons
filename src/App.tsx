@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Character, Condition } from './core/types/dnd';
+import { Character, Condition, Enemy, DiceRollMode, SkillName, AbilityName } from './core/types/dnd';
 import { SessionManager } from './core/state/sessionManager';
 import { CharacterCard } from './components/sheet/CharacterCard';
 import { ParchmentCharacterSheet } from './components/sheet/ParchmentCharacterSheet';
+import { CombatArena } from './components/combat/CombatArena';
+import { ManualDiceModal, PendingRoll } from './components/combat/ManualDiceModal';
 import { PartyAnalysisView } from './components/party/PartyAnalysisView';
 import { GeminiHub } from './components/gemini/GeminiHub';
 import { CharacterCreator } from './components/creator/CharacterCreator';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
-import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, ChevronDown, Compass, Play } from 'lucide-react';
+import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
+import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>(() => SessionManager.getCharacters());
-  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'analysis' | 'gemini' | 'create'>('sheet');
+  const [enemies, setEnemies] = useState<Enemy[]>(() => SessionManager.getEnemies());
+  const [diceMode, setDiceMode] = useState<DiceRollMode>(() => SessionManager.getDiceMode());
+  const [pendingManualRoll, setPendingManualRoll] = useState<PendingRoll | null>(null);
+
+  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'create'>('sheet');
   const [selectedCharacterId, setSelectedCharacterId] = useState<string>(() => characters[0]?.id || '');
   const [eventLog, setEventLog] = useState<string | null>(null);
   const [lastDiceRoll, setLastDiceRoll] = useState<{
@@ -30,12 +37,20 @@ export const App: React.FC = () => {
     }
   }, [characters]);
 
+  useEffect(() => {
+    SessionManager.saveEnemies(enemies);
+  }, [enemies]);
+
+  useEffect(() => {
+    SessionManager.setDiceMode(diceMode);
+  }, [diceMode]);
+
   const showNotification = (msg: string) => {
     setEventLog(msg);
-    setTimeout(() => setEventLog(null), 4000);
+    setTimeout(() => setEventLog(null), 4500);
   };
 
-  const scrollToContent = (tab: 'sheet' | 'parchment' | 'analysis' | 'gemini' | 'create') => {
+  const scrollToContent = (tab: 'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'create') => {
     setActiveTab(tab);
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -50,6 +65,28 @@ export const App: React.FC = () => {
     const { updatedCharacters, log } = SessionManager.healCharacter(characters, id, amount);
     setCharacters(updatedCharacters);
     showNotification(log);
+  };
+
+  const handleApplyDamageEnemy = (enemyId: string, amount: number) => {
+    const { updatedEnemies, log } = SessionManager.applyEnemyDamage(enemies, enemyId, amount);
+    setEnemies(updatedEnemies);
+    showNotification(log);
+  };
+
+  const handleHealEnemy = (enemyId: string, amount: number) => {
+    const { updatedEnemies, log } = SessionManager.healEnemy(enemies, enemyId, amount);
+    setEnemies(updatedEnemies);
+    showNotification(log);
+  };
+
+  const handleAddEnemy = (enemy: Enemy) => {
+    setEnemies(prev => [...prev, enemy]);
+    showNotification(`Inimigo '${enemy.name}' adicionado ao combate!`);
+  };
+
+  const handleRemoveEnemy = (enemyId: string) => {
+    setEnemies(prev => prev.filter(e => e.id !== enemyId));
+    showNotification('Inimigo removido do combate.');
   };
 
   const handleSpendSlot = (id: string, level: number) => {
@@ -94,18 +131,99 @@ export const App: React.FC = () => {
   };
 
   const handleRollCheck = (char: Character, name: string, mode: 'normal' | 'vantagem' | 'desvantagem') => {
-    const result = SessionManager.rollCheck(char, name, mode);
-    setLastDiceRoll({
-      charName: char.name,
-      checkName: name.toUpperCase(),
-      breakdown: result.breakdown,
-      total: result.total
+    const checkKey = name.toLowerCase().replace(/\s+/g, '_') as SkillName;
+    let modifier = 0;
+    if (SKILL_ABILITY_MAP[checkKey]) {
+      modifier = getSkillModifier(char, checkKey);
+    } else if (['for', 'des', 'con', 'int', 'sab', 'car'].includes(checkKey)) {
+      modifier = getSavingThrowModifier(char, checkKey as AbilityName);
+    } else {
+      modifier = getAbilityModifier(char.baseAbilities.for);
+    }
+
+    if (diceMode === 'manual') {
+      setPendingManualRoll({
+        title: `${char.name} — Teste de ${name.toUpperCase()}`,
+        subtitle: `Bônus da Ficha: ${modifier >= 0 ? `+${modifier}` : modifier}`,
+        modifier,
+        onConfirm: (manualD20) => {
+          const result = SessionManager.rollCheck(char, name, mode, manualD20);
+          setLastDiceRoll({
+            charName: char.name,
+            checkName: name.toUpperCase(),
+            breakdown: result.breakdown,
+            total: result.total
+          });
+          showNotification(`🎲 [ROLAGEM FÍSICA] ${char.name} (${name}): ${result.breakdown}`);
+        },
+        onAutoRoll: () => {
+          const result = SessionManager.rollCheck(char, name, mode);
+          setLastDiceRoll({
+            charName: char.name,
+            checkName: name.toUpperCase(),
+            breakdown: result.breakdown,
+            total: result.total
+          });
+          showNotification(`🎲 [ROLAGEM AUTO] ${char.name} (${name}): ${result.breakdown}`);
+        }
+      });
+    } else {
+      const result = SessionManager.rollCheck(char, name, mode);
+      setLastDiceRoll({
+        charName: char.name,
+        checkName: name.toUpperCase(),
+        breakdown: result.breakdown,
+        total: result.total
+      });
+      showNotification(`🎲 [ROLAGEM AUTO] ${char.name} (${name}): ${result.breakdown}`);
+    }
+  };
+
+  const handleResolveAutoAttack = (params: {
+    attackerName: string;
+    targetName: string;
+    targetAc: number;
+    atkBonus: number;
+    damageFormula: string;
+    damageType: string;
+    targetHeroId?: string;
+    targetEnemyId?: string;
+  }) => {
+    const outcome = SessionManager.resolveAttack({
+      attackerName: params.attackerName,
+      targetName: params.targetName,
+      targetAc: params.targetAc,
+      atkBonus: params.atkBonus,
+      damageFormula: params.damageFormula,
+      damageType: params.damageType
     });
-    showNotification(`🎲 [ROLAGEM] ${char.name} (${name}): ${result.breakdown}`);
+
+    if (outcome.isHit && outcome.damage > 0) {
+      if (params.targetHeroId) {
+        handleApplyDamage(params.targetHeroId, outcome.damage);
+      } else if (params.targetEnemyId) {
+        handleApplyDamageEnemy(params.targetEnemyId, outcome.damage);
+      }
+    }
+
+    setLastDiceRoll({
+      charName: params.attackerName,
+      checkName: 'ATAQUE',
+      breakdown: `d20 (${outcome.d20}) + ${params.atkBonus} = ${outcome.totalAtk} vs CA ${params.targetAc}`,
+      total: outcome.totalAtk
+    });
+
+    showNotification(outcome.log);
   };
 
   const handleExportJson = () => {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(characters, null, 2));
+    const exportData = {
+      characters,
+      enemies,
+      diceMode,
+      exportedAt: new Date().toISOString()
+    };
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
     downloadAnchor.setAttribute("download", `dungeons_realms_${new Date().toISOString().slice(0, 10)}.json`);
@@ -121,7 +239,12 @@ export const App: React.FC = () => {
     reader.onload = (event) => {
       try {
         const parsed = JSON.parse(event.target?.result as string);
-        if (Array.isArray(parsed)) {
+        if (parsed.characters && Array.isArray(parsed.characters)) {
+          setCharacters(parsed.characters);
+          if (parsed.enemies && Array.isArray(parsed.enemies)) setEnemies(parsed.enemies);
+          if (parsed.diceMode) setDiceMode(parsed.diceMode);
+          showNotification('Dados da campanha importados com sucesso!');
+        } else if (Array.isArray(parsed)) {
           setCharacters(parsed);
           showNotification('Grupo importado com sucesso!');
         } else {
@@ -154,7 +277,7 @@ export const App: React.FC = () => {
           </div>
 
           {/* Navigation Links estilo template */}
-          <nav className="hidden md:flex items-center gap-6 text-[11px] font-semibold uppercase tracking-[0.2em]">
+          <nav className="hidden md:flex items-center gap-5 text-[11px] font-semibold uppercase tracking-[0.18em]">
             <button
               onClick={() => scrollToContent('sheet')}
               className={`transition-colors py-1 ${activeTab === 'sheet' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
@@ -166,6 +289,13 @@ export const App: React.FC = () => {
               className={`transition-colors py-1 ${activeTab === 'parchment' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
               📜 Ficha Pergaminho
+            </button>
+            <button
+              onClick={() => scrollToContent('combat')}
+              className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'combat' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
+            >
+              <Swords className="w-3.5 h-3.5 text-rose-500" />
+              Arena ({enemies.length})
             </button>
             <button
               onClick={() => scrollToContent('analysis')}
@@ -183,15 +313,31 @@ export const App: React.FC = () => {
               onClick={() => scrollToContent('create')}
               className={`transition-colors py-1 ${activeTab === 'create' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              Criar Herói
+              + Herói
             </button>
           </nav>
 
-          {/* Right Action Button estilo "PLAY NOW" */}
+          {/* Right Action: Toggle de Modo de Dados & Descanso Longo */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* Quick Toggle de Dados */}
+            <div className="hidden lg:flex items-center gap-1.5 bg-[#141824] px-2.5 py-1 rounded-full border border-[#262f44]">
+              <span className="text-[10px] text-stone-300 font-bold uppercase tracking-wider">🎲 Dados:</span>
+              <button
+                onClick={() => setDiceMode(diceMode === 'automatico' ? 'manual' : 'automatico')}
+                className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full transition-all ${
+                  diceMode === 'manual'
+                    ? 'bronze-btn text-[#f5ba42] shadow font-extrabold'
+                    : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
+                }`}
+                title="Clique para alternar entre rolagem manual física e automática do software"
+              >
+                {diceMode === 'manual' ? '🎲 Manual (Eu Rolo)' : '⚡ Automático'}
+              </button>
+            </div>
+
             <button
               onClick={handleLongRest}
-              className="bronze-btn rounded-md px-4 py-1.5 text-[10px] sm:text-xs tracking-[0.16em] flex items-center gap-1.5"
+              className="bronze-btn rounded-md px-3.5 py-1.5 text-[10px] sm:text-xs tracking-[0.16em] flex items-center gap-1.5"
               title="Descanso Longo para todo o grupo"
             >
               <Moon className="w-3.5 h-3.5 text-[#f5ba42]" />
@@ -201,14 +347,14 @@ export const App: React.FC = () => {
 
             <button
               onClick={handleExportJson}
-              title="Exportar Grupo JSON"
+              title="Exportar Campanha (Heróis e Inimigos) em JSON"
               className="p-1.5 bg-[#141824] hover:bg-[#1c2233] border border-[#2b334a] text-stone-300 rounded-md text-xs transition-colors"
             >
               <Download className="w-4 h-4" />
             </button>
 
             <label
-              title="Importar Grupo JSON"
+              title="Importar Campanha de arquivo JSON"
               className="p-1.5 bg-[#141824] hover:bg-[#1c2233] border border-[#2b334a] text-stone-300 rounded-md text-xs cursor-pointer transition-colors"
             >
               <Upload className="w-4 h-4" />
@@ -218,10 +364,16 @@ export const App: React.FC = () => {
         </div>
       </header>
 
+      {/* Modal de Rolagem Manual (Se ativado) */}
+      <ManualDiceModal
+        pendingRoll={pendingManualRoll}
+        onClose={() => setPendingManualRoll(null)}
+      />
+
       {/* Floating Notification */}
       {eventLog && (
-        <div className="fixed bottom-6 right-6 z-50 bg-[#16120e] border border-[#a17036] text-[#f5ba42] px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold animate-bounce">
-          <Sparkles className="w-4 h-4 text-[#f5ba42]" />
+        <div className="fixed bottom-6 right-6 z-50 bg-[#16120e] border border-[#a17036] text-[#f5ba42] px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 text-xs font-semibold animate-bounce max-w-md">
+          <Sparkles className="w-4 h-4 text-[#f5ba42] shrink-0" />
           <span>{eventLog}</span>
         </div>
       )}
@@ -268,6 +420,14 @@ export const App: React.FC = () => {
             </button>
 
             <button
+              onClick={() => scrollToContent('combat')}
+              className="glass-btn rounded-full px-8 py-3 text-xs tracking-[0.2em] font-bold shadow-xl flex items-center gap-2"
+            >
+              <Swords className="w-4 h-4 text-rose-400" />
+              ARENA DE COMBATE
+            </button>
+
+            <button
               onClick={() => scrollToContent('gemini')}
               className="glass-btn rounded-full px-8 py-3 text-xs tracking-[0.2em] font-bold shadow-xl flex items-center gap-2"
             >
@@ -277,36 +437,33 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Barra inferior de "Events" / Métricas do Grupo (idêntico ao rodapé do template) */}
+        {/* Barra inferior de "Events" / Métricas do Grupo */}
         <div className="w-full max-w-5xl mx-auto pt-12 relative z-10">
           <div className="w-full h-px bg-gradient-to-r from-transparent via-[#a17036]/50 to-transparent mb-6" />
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            {/* Bloco 1 */}
-            <div className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity" onClick={() => scrollToContent('analysis')}>
+            <div className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity" onClick={() => scrollToContent('combat')}>
               <span className="bg-[#19130d] border border-[#a17036]/70 text-[#f5ba42] text-[10px] font-bold tracking-widest uppercase px-3 py-0.5 rounded-full mb-2">
-                Limiar DMG
+                Combate Transparente
               </span>
-              <span className="text-xs uppercase tracking-wider text-stone-300 font-semibold">Orçamento Diário de XP</span>
-              <span className="text-[11px] text-[#f5ba42] font-bold mt-0.5">{thresholds.dailyBudget} XP • Cap. 3 Guia do Mestre</span>
+              <span className="text-xs uppercase tracking-wider text-stone-300 font-semibold">{enemies.length} Inimigos Declarados</span>
+              <span className="text-[11px] text-[#f5ba42] font-bold mt-0.5">Modo: {diceMode === 'manual' ? '🎲 Manual (Sem Viés)' : '⚡ Automático'}</span>
             </div>
 
-            {/* Bloco 2 */}
             <div className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity" onClick={() => scrollToContent('gemini')}>
               <span className="bg-[#19130d] border border-[#a17036]/70 text-[#f5ba42] text-[10px] font-bold tracking-widest uppercase px-3 py-0.5 rounded-full mb-2">
-                Mestre IA
+                Mestre IA Imparcial
               </span>
               <span className="text-xs uppercase tracking-wider text-stone-300 font-semibold">Gemini Pro Calibrado</span>
-              <span className="text-[11px] text-emerald-400 font-bold mt-0.5">Dossiê & System Prompt Prontos</span>
+              <span className="text-[11px] text-emerald-400 font-bold mt-0.5">Diretriz de Dados Ativa</span>
             </div>
 
-            {/* Bloco 3 */}
-            <div className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity" onClick={() => scrollToContent('sheet')}>
+            <div className="flex flex-col items-center cursor-pointer hover:opacity-90 transition-opacity" onClick={() => scrollToContent('parchment')}>
               <span className="bg-[#19130d] border border-[#a17036]/70 text-[#f5ba42] text-[10px] font-bold tracking-widest uppercase px-3 py-0.5 rounded-full mb-2">
-                Aventureiros
+                Ficha Pergaminho
               </span>
               <span className="text-xs uppercase tracking-wider text-stone-300 font-semibold">{characters.length} Heróis no Grupo</span>
-              <span className="text-[11px] text-stone-400 mt-0.5">Fichas em Tempo Real & Regras SRD</span>
+              <span className="text-[11px] text-stone-400 mt-0.5">Estilo Kelanyah Tanares 5e</span>
             </div>
           </div>
         </div>
@@ -326,7 +483,13 @@ export const App: React.FC = () => {
             onClick={() => setActiveTab('parchment')}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'parchment' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
           >
-            📜 Pergaminho
+            📜 Ficha
+          </button>
+          <button
+            onClick={() => setActiveTab('combat')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'combat' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
+          >
+            ⚔️ Arena ({enemies.length})
           </button>
           <button
             onClick={() => setActiveTab('analysis')}
@@ -348,6 +511,7 @@ export const App: React.FC = () => {
           </button>
         </div>
 
+        {/* 1. ABA: MESA DE JOGO (CARDS) */}
         {activeTab === 'sheet' && (
           <div className="space-y-6">
             <div className="flex flex-wrap justify-between items-center gap-4 border-b border-[#231b14] pb-4">
@@ -361,6 +525,12 @@ export const App: React.FC = () => {
               </div>
 
               <div className="flex items-center gap-2">
+                <button
+                  onClick={() => scrollToContent('combat')}
+                  className="glass-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
+                >
+                  <Swords className="w-3.5 h-3.5 text-rose-400" /> Ver Arena de Inimigos ({enemies.length})
+                </button>
                 <button
                   onClick={() => scrollToContent('parchment')}
                   className="glass-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
@@ -415,6 +585,7 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {/* 2. ABA: FICHA PERGAMINHO (ESTILO TANARES) */}
         {activeTab === 'parchment' && (
           characters.length > 0 ? (
             <ParchmentCharacterSheet
@@ -431,22 +602,43 @@ export const App: React.FC = () => {
               onBackToMesa={() => setActiveTab('sheet')}
             />
           ) : (
-            <div className="text-center py-12 text-stone-400">Nenhum personagem cadastrado.</div>
+            <div className="text-center py-12 text-stone-400">Nenhum herói cadastrado.</div>
           )
         )}
 
+        {/* 3. ABA: ARENA DE COMBATE & INIMIGOS (NOVO) */}
+        {activeTab === 'combat' && (
+          <CombatArena
+            characters={characters}
+            enemies={enemies}
+            diceMode={diceMode}
+            onSetDiceMode={setDiceMode}
+            onApplyDamageHero={handleApplyDamage}
+            onApplyDamageEnemy={handleApplyDamageEnemy}
+            onHealEnemy={handleHealEnemy}
+            onAddEnemy={handleAddEnemy}
+            onRemoveEnemy={handleRemoveEnemy}
+            onRequestManualRoll={(pending) => setPendingManualRoll(pending)}
+            onResolveAutoAttack={handleResolveAutoAttack}
+          />
+        )}
+
+        {/* 4. ABA: ANÁLISE TÁTICA DO GUIA DO MESTRE */}
         {activeTab === 'analysis' && (
           <PartyAnalysisView characters={characters} />
         )}
 
+        {/* 5. ABA: CENTRAL GEMINI PRO */}
         {activeTab === 'gemini' && (
           <GeminiHub
             characters={characters}
+            enemies={enemies}
             onApplyDamage={handleApplyDamage}
             onHeal={handleHeal}
           />
         )}
 
+        {/* 6. ABA: CRIADOR DE PERSONAGENS */}
         {activeTab === 'create' && (
           <CharacterCreator
             onAddCharacter={handleAddCharacter}
@@ -461,7 +653,7 @@ export const App: React.FC = () => {
           REALMS • DUNGEONS & GEMINI
         </div>
         <p className="text-[11px] text-stone-400 font-light">
-          Motor Determinístico de Regras D&D 5ª Edição & Copiloto Narrativo para Gemini Pro.
+          Motor Determinístico de Regras D&D 5ª Edição & Copiloto Narrativo Imparcial para Gemini Pro.
         </p>
       </footer>
     </div>

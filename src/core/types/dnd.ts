@@ -191,3 +191,35 @@ export interface EncounterThresholds {
   deadly: number;
   dailyBudget: number;
 }
+
+export type DiceRollMode = 'automatico' | 'manual';
+
+export interface EnemyAttack {
+  id: string;
+  name: string;
+  bonus: number; // Ex: +4 para acertar
+  damage: string; // Ex: '1d6 + 2'
+  damageType: string; // Ex: 'cortante', 'perfurante', 'fogo'
+  range?: string; // Ex: 'Corpo a corpo (1.5m)' ou 'Distância (24/96m)'
+  saveDc?: number; // Ex: CD 11
+  saveType?: AbilityName; // Ex: 'for' ou 'des'
+  description?: string;
+}
+
+export interface Enemy {
+  id: string;
+  name: string;
+  type: string; // Ex: 'Humanoide (Orc)', 'Fera', 'Morto-vivo'
+  cr: string; // ND (Nível de Desafio: '1/4', '1/2', '1', '2', '3'...)
+  xp: number;
+  ac: number;
+  maxHp: number;
+  currentHp: number;
+  speed: number;
+  initiativeMod: number;
+  attacks: EnemyAttack[];
+  savingThrows: Partial<Record<AbilityName, number>>;
+  passivePerception: number;
+  conditions: Condition[];
+  notes?: string;
+}

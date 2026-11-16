@@ -1,4 +1,4 @@
-import { Character, EncounterThresholds, PartySynergy } from '../types/dnd';
+import { Character, EncounterThresholds, PartySynergy, Enemy } from '../types/dnd';
 import { calculateArmorClass, getPassiveSense, calculateSpellcastingMetrics, formatModifier, getAbilityModifier } from '../rules/calculations';
 
 /**
@@ -16,6 +16,15 @@ export function generateCampaignDossier(
   const header = `# DIRETRIZES DA CAMPANHA D&D 5e (PARA O NARRADOR: GEMINI PRO)
 
 Você é o Dungeon Master (Mestre de Jogo) narrando uma campanha de Dungeons & Dragons 5ª Edição para o grupo de aventureiros detalhado abaixo.
+
+### 🎲 REGRA INVIOLÁVEL DE ROLAGEM DE DADOS E IMPARCIALIDADE TOTAL (SEM FAVORECIMENTO):
+1. **NUNCA RESOLVA ROLAGENS SECRETAMENTE:** Você NUNCA deve inventar, fingir ou presumir o resultado de jogadas de ataque, dano, perícias ou salvaguardas (nem dos heróis, nem dos inimigos). Não há favorecimento ou 'escudo de trama' artificial gerado por você.
+2. **FORNECIMENTO OBRIGATÓRIO DE DADOS DOS INIMIGOS EM CADA COMBATE:** Em todo turno ou encontro, você DEVE fornecer e declarar os parâmetros mecânicos completos dos inimigos para que o jogador possa rolar os dados:
+   - **Classe de Armadura (CA) e HP dos Inimigos:** Para que o jogador possa verificar se seus ataques acertaram.
+   - **Bônus de Ataque dos Monstros:** Declare exatamente o modificador (ex: *"O Orc ataca com Machado Grande: +5 para acertar contra a sua CA"*).
+   - **Fórmula e Tipo de Dano:** Indique a rolagem necessária (ex: *"Dano: 1d12 + 3 cortante"*).
+   - **CD de Habilidades & Salvaguardas:** Se o monstro usar uma habilidade com teste (ex: *"Sopro de Fogo: CD 13 Destreza"*), declare a CD. Se os heróis lançarem uma magia no monstro, declare o modificador de salvaguarda do monstro (ex: *"Salvaguarda de Destreza do Goblin: +2"*).
+3. **AGUARDE A ROLAGEM DO JOGADOR:** Espere o jogador fornecer o resultado rolado (ou o resultado gerado pelo software companheiro) antes de narrar o acerto, erro ou dano. Narre com base estrita no número final obtido.
 
 ### 🎭 Suas Diretrizes Narrativas e de Mestre:
 1. **Profundidade Psicológica:** Sempre use ativamente os **Defeitos**, **Vínculos** e **Ideais** de cada personagem para provocar dilemas dramáticos e ganchos de história.
@@ -83,12 +92,12 @@ ${spellMetrics ? `- **Conjuração:** CD de Magia: **${spellMetrics.spellSaveDc}
 }
 
 /**
- * Gera o Instantâneo Tático (Combat Snapshot) compacto para turnos de combate
+ * Gera o Instantâneo Tático (Combat Snapshot) compacto para turnos de combate, incluindo inimigos
  */
-export function generateCombatSnapshot(characters: Character[]): string {
-  if (characters.length === 0) return 'Nenhum combatente ativo.';
+export function generateCombatSnapshot(characters: Character[], enemies: Enemy[] = []): string {
+  if (characters.length === 0 && enemies.length === 0) return 'Nenhum combatente ativo.';
 
-  const lines = characters.map(c => {
+  const heroLines = characters.map(c => {
     const { ac } = calculateArmorClass(c);
     const passPerc = getPassiveSense(c, 'percepcao');
     
@@ -104,7 +113,21 @@ export function generateCombatSnapshot(characters: Character[]): string {
     return `• **${c.name}** (${c.class} ${c.level}): HP: **${c.currentHp}/${c.maxHp}**${tempHp} | CA: **${ac}** | Perc.Passiva: **${passPerc}**${slotsInfo ? ` | Slots: ${slotsInfo}` : ''}${cond}`;
   });
 
-  return `[INSTANTÂNEO DE COMBATE - D&D 5e]\n${lines.join('\n')}`;
+  const enemyLines = enemies.map(e => {
+    const attacksStr = e.attacks.map(a => `${a.name} (+${a.bonus} p/ acertar, ${a.damage} ${a.damageType})`).join(', ');
+    const salvsStr = Object.entries(e.savingThrows).map(([ab, b]) => `${ab.toUpperCase()} +${b}`).join(', ') || 'Nenhuma';
+    const cond = e.conditions.length > 0 ? ` | [COND: ${e.conditions.join(', ')}]` : '';
+
+    return `• **${e.name}** (ND ${e.cr}): HP: **${e.currentHp}/${e.maxHp}** | CA: **${e.ac}** | Ataques: ${attacksStr} | Salvaguardas: ${salvsStr}${cond}`;
+  });
+
+  let output = `[INSTANTÂNEO DE COMBATE - D&D 5e]\n\n### 🛡️ HERÓIS:\n${heroLines.join('\n')}`;
+
+  if (enemies.length > 0) {
+    output += `\n\n### ⚔️ INIMIGOS (PARÂMETROS MECÂNICOS PARA ROLAGEM DE DADOS):\n${enemyLines.join('\n')}\n\n> 🎲 *DIRETRIZ:* O jogador rola os dados de todas as ações (heróis e inimigos). Use e declare os bônus e CAs listados acima!`;
+  }
+
+  return output;
 }
 
 /**

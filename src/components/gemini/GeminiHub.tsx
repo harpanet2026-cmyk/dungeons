@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Character } from '../../core/types/dnd';
+import { Character, Enemy } from '../../core/types/dnd';
 import { generateCampaignDossier, generateCombatSnapshot } from '../../core/gemini/promptGenerator';
 import { GEMINI_TOOLS_DECLARATION } from '../../core/gemini/toolSchemas';
 import { calculatePartyEncounterThresholds, analyzePartySynergy } from '../../core/analysis/encounterAnalysis';
@@ -7,12 +7,14 @@ import { Copy, Check, Sparkles, Terminal, FileText, Swords, Key, Send, Bot, User
 
 interface GeminiHubProps {
   characters: Character[];
+  enemies?: Enemy[];
   onApplyDamage: (id: string, amount: number) => void;
   onHeal: (id: string, amount: number) => void;
 }
 
 export const GeminiHub: React.FC<GeminiHubProps> = ({
   characters,
+  enemies = [],
   onApplyDamage,
   onHeal
 }) => {
@@ -34,7 +36,7 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
   const synergy = analyzePartySynergy(characters);
 
   const dossierText = generateCampaignDossier(characters, synergy, thresholds);
-  const combatSnapshotText = generateCombatSnapshot(characters);
+  const combatSnapshotText = generateCombatSnapshot(characters, enemies);
   const toolsJsonText = JSON.stringify(GEMINI_TOOLS_DECLARATION, null, 2);
 
   const handleCopy = (text: string, type: string) => {
