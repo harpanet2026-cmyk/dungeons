@@ -13,6 +13,7 @@ interface CharacterCardProps {
   onToggleInspiration: (id: string) => void;
   onDeleteCharacter: (id: string) => void;
   onRollCheck: (char: Character, name: string, mode: 'normal' | 'vantagem' | 'desvantagem') => void;
+  onOpenParchment?: (char: Character) => void;
 }
 
 const ALL_CONDITIONS: Condition[] = [
@@ -30,7 +31,8 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
   onToggleCondition,
   onToggleInspiration,
   onDeleteCharacter,
-  onRollCheck
+  onRollCheck,
+  onOpenParchment
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [customHpVal, setCustomHpVal] = useState<string>('');
@@ -100,6 +102,16 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
               <Zap className="w-3.5 h-3.5 text-purple-400" />
               <span className="text-purple-300">CD {spellMetrics.spellSaveDc}</span>
             </div>
+          )}
+
+          {onOpenParchment && (
+            <button
+              onClick={() => onOpenParchment(character)}
+              className="bronze-btn px-2.5 py-1 rounded-lg text-[10px] flex items-center gap-1 shadow"
+              title="Abrir Ficha Estilo Pergaminho Tanares 5e"
+            >
+              📜 Ficha Completa
+            </button>
           )}
         </div>
       </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Character, Condition } from './core/types/dnd';
 import { SessionManager } from './core/state/sessionManager';
 import { CharacterCard } from './components/sheet/CharacterCard';
+import { ParchmentCharacterSheet } from './components/sheet/ParchmentCharacterSheet';
 import { PartyAnalysisView } from './components/party/PartyAnalysisView';
 import { GeminiHub } from './components/gemini/GeminiHub';
 import { CharacterCreator } from './components/creator/CharacterCreator';
@@ -10,7 +11,8 @@ import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, C
 
 export const App: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>(() => SessionManager.getCharacters());
-  const [activeTab, setActiveTab] = useState<'sheet' | 'analysis' | 'gemini' | 'create'>('sheet');
+  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'analysis' | 'gemini' | 'create'>('sheet');
+  const [selectedCharacterId, setSelectedCharacterId] = useState<string>(() => characters[0]?.id || '');
   const [eventLog, setEventLog] = useState<string | null>(null);
   const [lastDiceRoll, setLastDiceRoll] = useState<{
     charName: string;
@@ -23,6 +25,9 @@ export const App: React.FC = () => {
 
   useEffect(() => {
     SessionManager.saveCharacters(characters);
+    if (!selectedCharacterId && characters.length > 0) {
+      setSelectedCharacterId(characters[0].id);
+    }
   }, [characters]);
 
   const showNotification = (msg: string) => {
@@ -30,7 +35,7 @@ export const App: React.FC = () => {
     setTimeout(() => setEventLog(null), 4000);
   };
 
-  const scrollToContent = (tab: 'sheet' | 'analysis' | 'gemini' | 'create') => {
+  const scrollToContent = (tab: 'sheet' | 'parchment' | 'analysis' | 'gemini' | 'create') => {
     setActiveTab(tab);
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -155,6 +160,12 @@ export const App: React.FC = () => {
               className={`transition-colors py-1 ${activeTab === 'sheet' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
               Mesa de Jogo
+            </button>
+            <button
+              onClick={() => scrollToContent('parchment')}
+              className={`transition-colors py-1 ${activeTab === 'parchment' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
+            >
+              📜 Ficha Pergaminho
             </button>
             <button
               onClick={() => scrollToContent('analysis')}
@@ -312,6 +323,12 @@ export const App: React.FC = () => {
             Mesa
           </button>
           <button
+            onClick={() => setActiveTab('parchment')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'parchment' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
+          >
+            📜 Pergaminho
+          </button>
+          <button
             onClick={() => setActiveTab('analysis')}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'analysis' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
           >
@@ -343,12 +360,20 @@ export const App: React.FC = () => {
                 </p>
               </div>
 
-              <button
-                onClick={() => setActiveTab('create')}
-                className="bronze-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
-              >
-                <UserPlus className="w-3.5 h-3.5 text-[#f5ba42]" /> Novo Herói
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => scrollToContent('parchment')}
+                  className="glass-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
+                >
+                  📜 Ficha Estilo Kelanyah
+                </button>
+                <button
+                  onClick={() => setActiveTab('create')}
+                  className="bronze-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
+                >
+                  <UserPlus className="w-3.5 h-3.5 text-[#f5ba42]" /> Novo Herói
+                </button>
+              </div>
             </div>
 
             {characters.length === 0 ? (
@@ -379,11 +404,35 @@ export const App: React.FC = () => {
                     onToggleInspiration={handleToggleInspiration}
                     onDeleteCharacter={handleDeleteCharacter}
                     onRollCheck={handleRollCheck}
+                    onOpenParchment={(c) => {
+                      setSelectedCharacterId(c.id);
+                      scrollToContent('parchment');
+                    }}
                   />
                 ))}
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'parchment' && (
+          characters.length > 0 ? (
+            <ParchmentCharacterSheet
+              character={characters.find(c => c.id === selectedCharacterId) || characters[0]}
+              charactersList={characters}
+              onSelectCharacter={(c) => setSelectedCharacterId(c.id)}
+              onApplyDamage={handleApplyDamage}
+              onHeal={handleHeal}
+              onSpendSlot={handleSpendSlot}
+              onRestoreSlot={handleRestoreSlot}
+              onToggleCondition={handleToggleCondition}
+              onToggleInspiration={handleToggleInspiration}
+              onRollCheck={handleRollCheck}
+              onBackToMesa={() => setActiveTab('sheet')}
+            />
+          ) : (
+            <div className="text-center py-12 text-stone-400">Nenhum personagem cadastrado.</div>
+          )
         )}
 
         {activeTab === 'analysis' && (
