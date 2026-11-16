@@ -90,7 +90,16 @@ export interface Spell {
   components: string;
   duration: string;
   description: string;
+  damage?: string;
   prepared?: boolean;
+}
+
+export interface Coins {
+  pc: number; // Peças de cobre
+  pp: number; // Peças de prata
+  pe: number; // Peças de electrum
+  po: number; // Peças de ouro
+  pl: number; // Peças de platina
 }
 
 export interface SpellSlots {
@@ -156,13 +165,7 @@ export interface Character {
 
   // Itens e Dinheiro
   inventory: Item[];
-  coins: {
-    pc: number; // Peças de cobre
-    pp: number; // Peças de prata
-    pe: number; // Peças de electrum
-    po: number; // Peças de ouro
-    pl: number; // Peças de platina
-  };
+  coins: Coins;
 
   // Traços de Personalidade & Roleplay
   personality: Personality;

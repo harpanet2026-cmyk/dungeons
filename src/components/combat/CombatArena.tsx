@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Character, Enemy, DiceRollMode } from '../../core/types/dnd';
+import { Character, Enemy, DiceRollMode, Coins } from '../../core/types/dnd';
 import { BESTIARY_SRD, createEnemyInstance, MonsterRegistry } from '../../core/rules/monsterData';
-import { calculateArmorClass } from '../../core/rules/calculations';
-import { Swords, Shield, Heart, Skull, Plus, Trash2, Dices, AlertOctagon, Target, Check, Sparkles, BookOpen } from 'lucide-react';
+import { calculateArmorClass, getAbilityModifier } from '../../core/rules/calculations';
+import { Swords, Shield, Heart, Skull, Plus, Trash2, Dices, AlertOctagon, Target, Check, Sparkles, BookOpen, Play, RotateCcw, ChevronRight, ChevronLeft, Coins as CoinsIcon, Users } from 'lucide-react';
 import { PendingRoll } from './ManualDiceModal';
 import { CustomMonsterModal } from './CustomMonsterModal';
+import { TreasureModal } from './TreasureModal';
 
 interface CombatArenaProps {
   characters: Character[];
@@ -17,6 +18,7 @@ interface CombatArenaProps {
   onAddEnemy: (enemy: Enemy) => void;
   onRemoveEnemy: (enemyId: string) => void;
   onRequestManualRoll: (pending: PendingRoll) => void;
+  onDistributeCoins?: (coins: Coins) => void;
   onResolveAutoAttack: (params: {
     attackerName: string;
     targetName: string;
@@ -40,12 +42,94 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
   onAddEnemy,
   onRemoveEnemy,
   onRequestManualRoll,
+  onDistributeCoins,
   onResolveAutoAttack
 }) => {
   const [selectedMonsterKey, setSelectedMonsterKey] = useState<string>('Orc');
   const [customEnemyDamage, setCustomEnemyDamage] = useState<{ [id: string]: string }>({});
   const [activeAttacker, setActiveAttacker] = useState<{ enemy: Enemy; attackIndex: number } | null>(null);
   const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+  const [isTreasureModalOpen, setIsTreasureModalOpen] = useState(false);
+
+  // Turn Tracker State
+  const [isCombatActive, setIsCombatActive] = useState<boolean>(false);
+  const [round, setRound] = useState<number>(1);
+  const [activeTurnIdx, setActiveTurnIdx] = useState<number>(0);
+  const [turnOrder, setTurnOrder] = useState<{
+    id: string;
+    name: string;
+    type: 'hero' | 'enemy';
+    initiative: number;
+    ac: number;
+    hp: number;
+    maxHp: number;
+  }[]>([]);
+
+  const handleStartCombatRollInitiatives = () => {
+    const list: typeof turnOrder = [];
+
+    // Heróis
+    characters.forEach(hero => {
+      const dexMod = getAbilityModifier(hero.baseAbilities.des);
+      const initRoll = Math.floor(Math.random() * 20) + 1 + dexMod;
+      const { ac } = calculateArmorClass(hero);
+      list.push({
+        id: hero.id,
+        name: hero.name,
+        type: 'hero',
+        initiative: initRoll,
+        ac,
+        hp: hero.currentHp,
+        maxHp: hero.maxHp
+      });
+    });
+
+    // Inimigos
+    enemies.forEach(enemy => {
+      const initMod = Math.max(-2, Math.min(4, Math.floor(enemy.ac / 3) - 3));
+      const initRoll = Math.floor(Math.random() * 20) + 1 + initMod;
+      list.push({
+        id: enemy.id,
+        name: enemy.name,
+        type: 'enemy',
+        initiative: initRoll,
+        ac: enemy.ac,
+        hp: enemy.currentHp,
+        maxHp: enemy.maxHp
+      });
+    });
+
+    list.sort((a, b) => b.initiative - a.initiative);
+
+    setTurnOrder(list);
+    setIsCombatActive(true);
+    setRound(1);
+    setActiveTurnIdx(0);
+  };
+
+  const handleNextTurn = () => {
+    if (turnOrder.length === 0) return;
+    if (activeTurnIdx >= turnOrder.length - 1) {
+      setActiveTurnIdx(0);
+      setRound(prev => prev + 1);
+    } else {
+      setActiveTurnIdx(prev => prev + 1);
+    }
+  };
+
+  const handlePrevTurn = () => {
+    if (turnOrder.length === 0) return;
+    if (activeTurnIdx > 0) {
+      setActiveTurnIdx(prev => prev - 1);
+    }
+  };
+
+  const handleEndCombat = () => {
+    setIsCombatActive(false);
+    setTurnOrder([]);
+    setRound(1);
+    setActiveTurnIdx(0);
+  };
 
   const availableMonsters = MonsterRegistry.getAllAvailableMonsters();
 
@@ -116,33 +200,145 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
           </p>
         </div>
 
-        {/* Toggle de Modo de Rolagem */}
-        <div className="flex items-center gap-2 bg-[#141824] p-1.5 rounded-xl border border-[#262f44]">
-          <span className="text-[11px] font-bold text-stone-300 uppercase tracking-wider pl-2 flex items-center gap-1.5">
-            <Dices className="w-4 h-4 text-[#f5ba42]" /> Modo de Dados:
-          </span>
+        {/* Ações Rápidas: Iniciativa & Tesouro */}
+        <div className="flex flex-wrap items-center gap-2">
           <button
-            onClick={() => onSetDiceMode('automatico')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-              diceMode === 'automatico'
-                ? 'bg-[#f5ba42] text-stone-950 shadow font-extrabold'
-                : 'text-stone-400 hover:text-stone-200'
-            }`}
+            onClick={() => setIsTreasureModalOpen(true)}
+            className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-[#221a10] hover:bg-[#2b2115] text-[#f5ba42] border border-[#a17036] flex items-center gap-1.5 shadow"
+            title="Gerar Saque do Encontro com base no ND dos monstros"
           >
-            ⚡ Automático
+            <CoinsIcon className="w-3.5 h-3.5 text-[#f5ba42]" />
+            <span>Saque / Tesouro</span>
           </button>
-          <button
-            onClick={() => onSetDiceMode('manual')}
-            className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
-              diceMode === 'manual'
-                ? 'bronze-btn text-[#f5ba42] shadow font-extrabold'
-                : 'text-stone-400 hover:text-stone-200'
-            }`}
-          >
-            🎲 Manual (Eu Rolo)
-          </button>
+
+          {!isCombatActive ? (
+            <button
+              onClick={handleStartCombatRollInitiatives}
+              disabled={characters.length === 0}
+              className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-[#f5ba42] flex items-center gap-1.5 shadow disabled:opacity-50"
+              title="Rolar iniciativa para todos os heróis e inimigos"
+            >
+              <Swords className="w-3.5 h-3.5 text-[#f5ba42]" />
+              <span>Rolar Iniciativas & Iniciar</span>
+            </button>
+          ) : (
+            <button
+              onClick={handleEndCombat}
+              className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-[#241316] hover:bg-[#331b20] text-rose-300 border border-rose-800 flex items-center gap-1.5 shadow"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
+              <span>Encerrar Combate</span>
+            </button>
+          )}
+
+          {/* Toggle de Modo de Rolagem */}
+          <div className="flex items-center gap-1 bg-[#141824] p-1 rounded-xl border border-[#262f44]">
+            <button
+              onClick={() => onSetDiceMode('automatico')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                diceMode === 'automatico'
+                  ? 'bg-[#f5ba42] text-stone-950 shadow font-extrabold'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              ⚡ Auto
+            </button>
+            <button
+              onClick={() => onSetDiceMode('manual')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
+                diceMode === 'manual'
+                  ? 'bronze-btn text-[#f5ba42] shadow font-extrabold'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              🎲 Manual
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* PAINEL DE INICIATIVA E RASTREADOR DE TURNOS (Se ativo) */}
+      {isCombatActive && turnOrder.length > 0 && (
+        <div className="bg-[#121522] border-2 border-[#a17036] rounded-2xl p-4 shadow-2xl space-y-3 animate-in fade-in">
+          {/* Barra Superior do Turno */}
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#232b40] pb-3">
+            <div className="flex items-center gap-3">
+              <span className="font-cinzel text-xs font-black uppercase tracking-widest bg-amber-500 text-stone-950 px-2.5 py-1 rounded-md shadow">
+                RODADA {round}
+              </span>
+
+              {turnOrder[activeTurnIdx] && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-stone-400">Vez de:</span>
+                  <span className={`font-cinzel text-sm sm:text-base font-extrabold ${
+                    turnOrder[activeTurnIdx].type === 'hero' ? 'text-sky-300' : 'text-rose-400'
+                  }`}>
+                    {turnOrder[activeTurnIdx].name}
+                  </span>
+                  <span className="text-[10px] bg-[#1a2133] border border-[#2d3a5a] text-stone-300 px-2 py-0.5 rounded-full font-mono">
+                    CA {turnOrder[activeTurnIdx].ac}
+                  </span>
+                  <span className="text-[10px] bg-[#1a2133] border border-[#2d3a5a] text-stone-300 px-2 py-0.5 rounded-full font-mono">
+                    HP: {turnOrder[activeTurnIdx].hp}/{turnOrder[activeTurnIdx].maxHp}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Controles de Próximo / Anterior Turno */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrevTurn}
+                disabled={activeTurnIdx === 0}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider bg-[#1a2133] hover:bg-[#242e47] text-stone-300 disabled:opacity-40 border border-[#2d3a5a] flex items-center gap-1 transition-colors"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" /> Anterior
+              </button>
+              <button
+                onClick={handleNextTurn}
+                className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider text-[#f5ba42] flex items-center gap-1.5 shadow"
+              >
+                <span>Próximo Turno</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Fila Horizontal de Combatentes em Ordem de Iniciativa */}
+          <div className="flex items-center gap-2 overflow-x-auto py-1">
+            {turnOrder.map((c, idx) => {
+              const isActive = idx === activeTurnIdx;
+              const isHero = c.type === 'hero';
+              return (
+                <div
+                  key={c.id + idx}
+                  onClick={() => setActiveTurnIdx(idx)}
+                  className={`flex items-center gap-2 p-2 rounded-xl border transition-all cursor-pointer shrink-0 ${
+                    isActive
+                      ? 'bg-[#1e273d] border-[#f5ba42] ring-2 ring-amber-500/40 shadow-lg scale-105'
+                      : 'bg-[#10131d] border-[#222a3d] hover:border-stone-500 opacity-80 hover:opacity-100'
+                  }`}
+                >
+                  <span className="w-6 h-6 rounded-full bg-[#1e1710] border border-[#a17036] text-[#f5ba42] font-black text-xs flex items-center justify-center font-cinzel">
+                    {c.initiative}
+                  </span>
+
+                  <div className="flex flex-col text-left">
+                    <span className={`text-xs font-bold truncate max-w-[110px] ${
+                      isHero ? 'text-sky-200' : 'text-rose-200'
+                    }`}>
+                      {c.name.split(' ')[0]}
+                    </span>
+                    <span className="text-[9px] text-stone-400 uppercase font-semibold">
+                      {isHero ? 'Herói' : 'Inimigo'}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Spawner de Inimigos do Bestiário SRD & Criador */}
       <div className="bg-[#121622] border border-[#231b14] rounded-2xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-3">
@@ -393,6 +589,26 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
           })}
         </div>
       )}
+
+      {/* Modal de Criação de Monstro Customizado do Livro */}
+      <CustomMonsterModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        onAddEnemyToCombat={(newEnemy) => {
+          onAddEnemy(newEnemy);
+        }}
+      />
+
+      {/* Modal de Saques e Tesouros DMG */}
+      <TreasureModal
+        isOpen={isTreasureModalOpen}
+        onClose={() => setIsTreasureModalOpen(false)}
+        characters={characters}
+        suggestedCr={Math.max(1, Math.round(enemies.reduce((acc, e) => acc + (typeof e.cr === 'number' ? e.cr : 1), 0)))}
+        onDistributeCoins={(coins) => {
+          onDistributeCoins?.(coins);
+        }}
+      />
     </div>
   );
 };

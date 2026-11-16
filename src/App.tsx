@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Character, Condition, Enemy, DiceRollMode, SkillName, AbilityName } from './core/types/dnd';
+import { Character, Condition, Enemy, DiceRollMode, SkillName, AbilityName, Coins, Spell } from './core/types/dnd';
 import { SessionManager } from './core/state/sessionManager';
 import { CharacterCard } from './components/sheet/CharacterCard';
 import { ParchmentCharacterSheet } from './components/sheet/ParchmentCharacterSheet';
@@ -13,9 +13,13 @@ import { UserProfile } from './core/types/auth';
 import { AuthManager } from './core/auth/authManager';
 import { UserBadge } from './components/auth/UserBadge';
 import { LoginModal } from './components/auth/LoginModal';
+import { QuickDiceTray } from './components/dice/QuickDiceTray';
+import { GeminiLiveChat } from './components/gemini/GeminiLiveChat';
+import { CampaignJournal } from './components/campaign/CampaignJournal';
+import { SpellCompendiumModal } from './components/compendium/SpellCompendiumModal';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
 import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
-import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords } from 'lucide-react';
+import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords, BookOpen, Compass } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>(() => SessionManager.getCharacters());
@@ -24,8 +28,9 @@ export const App: React.FC = () => {
   const [pendingManualRoll, setPendingManualRoll] = useState<PendingRoll | null>(null);
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => AuthManager.getCurrentUser());
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [isSpellCompendiumOpen, setIsSpellCompendiumOpen] = useState<boolean>(false);
 
-  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'create'>('sheet');
+  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create'>('sheet');
   const [selectedCharacterId, setSelectedCharacterId] = useState<string>(() => characters[0]?.id || '');
   const [eventLog, setEventLog] = useState<string | null>(null);
   const [lastDiceRoll, setLastDiceRoll] = useState<{
@@ -57,9 +62,39 @@ export const App: React.FC = () => {
     setTimeout(() => setEventLog(null), 4500);
   };
 
-  const scrollToContent = (tab: 'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'create') => {
+  const scrollToContent = (tab: 'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create') => {
     setActiveTab(tab);
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleDistributeCoins = (coinsPerHero: Coins) => {
+    setCharacters(prev => prev.map(c => ({
+      ...c,
+      coins: {
+        pc: (c.coins?.pc || 0) + coinsPerHero.pc,
+        pp: (c.coins?.pp || 0) + coinsPerHero.pp,
+        pe: (c.coins?.pe || 0) + coinsPerHero.pe,
+        po: (c.coins?.po || 0) + coinsPerHero.po,
+        pl: (c.coins?.pl || 0) + coinsPerHero.pl,
+      }
+    })));
+    showNotification(`💰 Tesouro distribuído: +${coinsPerHero.po} PO e +${coinsPerHero.pp} PP para cada herói!`);
+  };
+
+  const handleAddSpellToCharacter = (charId: string, spell: Spell) => {
+    setCharacters(prev => prev.map(c => {
+      if (c.id === charId) {
+        const existing = c.spells || [];
+        if (existing.some(s => s.id === spell.id)) return c;
+        return {
+          ...c,
+          spells: [...existing, spell]
+        };
+      }
+      return c;
+    }));
+    const heroName = characters.find(c => c.id === charId)?.name || 'Herói';
+    showNotification(`✨ Magia '${spell.name}' adicionada ao grimório de ${heroName}!`);
   };
 
   const handleUserChanged = (newUser: UserProfile) => {
@@ -345,6 +380,21 @@ export const App: React.FC = () => {
               Central Gemini
             </button>
             <button
+              onClick={() => scrollToContent('journal')}
+              className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'journal' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
+            >
+              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
+              Diário & Quests
+            </button>
+            <button
+              onClick={() => setIsSpellCompendiumOpen(true)}
+              className="transition-colors py-1 text-stone-400 hover:text-purple-300 flex items-center gap-1"
+              title="Abrir Grimório Oficial do SRD 5e"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              Grimório
+            </button>
+            <button
               onClick={() => scrollToContent('create')}
               className={`transition-colors py-1 ${activeTab === 'create' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
@@ -595,6 +645,18 @@ export const App: React.FC = () => {
             Gemini Pro
           </button>
           <button
+            onClick={() => setActiveTab('journal')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'journal' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
+          >
+            📜 Diário
+          </button>
+          <button
+            onClick={() => setIsSpellCompendiumOpen(true)}
+            className="px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider bg-[#141824] text-purple-300 border border-purple-800"
+          >
+            ✨ Grimório
+          </button>
+          <button
             onClick={() => setActiveTab('create')}
             className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'create' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
           >
@@ -714,6 +776,7 @@ export const App: React.FC = () => {
             onAddEnemy={handleAddEnemy}
             onRemoveEnemy={handleRemoveEnemy}
             onRequestManualRoll={(pending) => setPendingManualRoll(pending)}
+            onDistributeCoins={handleDistributeCoins}
             onResolveAutoAttack={handleResolveAutoAttack}
           />
         )}
@@ -723,17 +786,28 @@ export const App: React.FC = () => {
           <PartyAnalysisView characters={characters} />
         )}
 
-        {/* 5. ABA: CENTRAL GEMINI PRO */}
+        {/* 5. ABA: CENTRAL GEMINI PRO (CHAT AO VIVO + PROMPTS E TOOLS) */}
         {activeTab === 'gemini' && (
-          <GeminiHub
-            characters={characters}
-            enemies={enemies}
-            onApplyDamage={handleApplyDamage}
-            onHeal={handleHeal}
-          />
+          <div className="space-y-8">
+            {/* Chat com Mestre IA ao Vivo via API do Google AI Studio */}
+            <GeminiLiveChat characters={characters} enemies={enemies} />
+
+            {/* Hub de Prompts e Schemas de Tool Calling */}
+            <GeminiHub
+              characters={characters}
+              enemies={enemies}
+              onApplyDamage={handleApplyDamage}
+              onHeal={handleHeal}
+            />
+          </div>
         )}
 
-        {/* 6. ABA: CRIADOR DE PERSONAGENS */}
+        {/* 6. ABA: DIÁRIO DE CAMPANHA & QUEST LOG */}
+        {activeTab === 'journal' && (
+          <CampaignJournal />
+        )}
+
+        {/* 7. ABA: CRIADOR DE PERSONAGENS */}
         {activeTab === 'create' && (
           <CharacterCreator
             onAddCharacter={handleAddCharacter}
@@ -741,6 +815,17 @@ export const App: React.FC = () => {
           />
         )}
       </div>
+
+      {/* Bandeja Rápida de Rolagem de Dados Poliédricos (Fixa no Canto Inferior) */}
+      <QuickDiceTray />
+
+      {/* Modal do Grimório Oficial SRD 5e */}
+      <SpellCompendiumModal
+        isOpen={isSpellCompendiumOpen}
+        onClose={() => setIsSpellCompendiumOpen(false)}
+        characters={characters}
+        onAddSpellToCharacter={handleAddSpellToCharacter}
+      />
 
       {/* Footer estilo REALMS */}
       <footer className="border-t border-[#231b14] bg-[#06070a] py-8 text-center text-xs text-stone-400 space-y-2">
