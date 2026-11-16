@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Character, Enemy, DiceRollMode } from '../../core/types/dnd';
-import { BESTIARY_SRD, createEnemyInstance } from '../../core/rules/monsterData';
+import { BESTIARY_SRD, createEnemyInstance, MonsterRegistry } from '../../core/rules/monsterData';
 import { calculateArmorClass } from '../../core/rules/calculations';
-import { Swords, Shield, Heart, Skull, Plus, Trash2, Dices, AlertOctagon, Target, Check, Sparkles } from 'lucide-react';
+import { Swords, Shield, Heart, Skull, Plus, Trash2, Dices, AlertOctagon, Target, Check, Sparkles, BookOpen } from 'lucide-react';
 import { PendingRoll } from './ManualDiceModal';
+import { CustomMonsterModal } from './CustomMonsterModal';
 
 interface CombatArenaProps {
   characters: Character[];
@@ -44,6 +45,9 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
   const [selectedMonsterKey, setSelectedMonsterKey] = useState<string>('Orc');
   const [customEnemyDamage, setCustomEnemyDamage] = useState<{ [id: string]: string }>({});
   const [activeAttacker, setActiveAttacker] = useState<{ enemy: Enemy; attackIndex: number } | null>(null);
+  const [isCustomModalOpen, setIsCustomModalOpen] = useState(false);
+
+  const availableMonsters = MonsterRegistry.getAllAvailableMonsters();
 
   const handleSpawnMonster = () => {
     const newEnemy = createEnemyInstance(selectedMonsterKey);
@@ -140,19 +144,19 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
         </div>
       </div>
 
-      {/* Spawner de Inimigos do Bestiário SRD */}
+      {/* Spawner de Inimigos do Bestiário SRD & Criador */}
       <div className="bg-[#121622] border border-[#231b14] rounded-2xl p-4 shadow-lg flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs font-bold text-stone-300 uppercase tracking-wider flex items-center gap-1.5">
-            <Plus className="w-4 h-4 text-[#f5ba42]" /> Adicionar Monstro ao Encontro:
+            <Plus className="w-4 h-4 text-[#f5ba42]" /> Rápido:
           </span>
           <select
             value={selectedMonsterKey}
             onChange={(e) => setSelectedMonsterKey(e.target.value)}
-            className="bg-[#0b0e14] border border-[#a17036]/60 rounded-lg px-3 py-1.5 text-xs text-stone-100 focus:outline-none focus:border-[#f5ba42]"
+            className="bg-[#0b0e14] border border-[#a17036]/60 rounded-lg px-3 py-1.5 text-xs text-stone-100 focus:outline-none focus:border-[#f5ba42] max-w-[280px]"
           >
-            {Object.keys(BESTIARY_SRD).map(k => {
-              const m = BESTIARY_SRD[k];
+            {Object.keys(availableMonsters).map(k => {
+              const m = availableMonsters[k];
               return (
                 <option key={k} value={k}>
                   {m.name} (ND {m.cr} • {m.xp} XP • CA {m.ac})
@@ -162,9 +166,18 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
           </select>
           <button
             onClick={handleSpawnMonster}
-            className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow"
+            className="bronze-btn px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 shadow"
           >
-            <Plus className="w-3.5 h-3.5" /> Adicionar Monstro
+            <Plus className="w-3.5 h-3.5" /> Inserir
+          </button>
+
+          {/* Botão de Livro de Monstros Completo & Criador */}
+          <button
+            onClick={() => setIsCustomModalOpen(true)}
+            className="glass-btn px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 border-[#a17036] text-[#f5ba42] shadow"
+          >
+            <BookOpen className="w-4 h-4 text-[#f5ba42]" />
+            Livro de Monstros Completo & Criar Criatura
           </button>
         </div>
 
@@ -172,6 +185,13 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
           Inimigos Ativos: <strong className="text-[#f5ba42]">{enemies.length}</strong>
         </div>
       </div>
+
+      {/* Modal de Monstros Customizados e Bestiário */}
+      <CustomMonsterModal
+        isOpen={isCustomModalOpen}
+        onClose={() => setIsCustomModalOpen(false)}
+        onAddEnemyToCombat={onAddEnemy}
+      />
 
       {/* Grade de Inimigos Ativos */}
       {enemies.length === 0 ? (
