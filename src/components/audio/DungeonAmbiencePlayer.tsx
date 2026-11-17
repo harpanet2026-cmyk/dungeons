@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { DungeonAudioEngine, AmbiencePreset } from '../../core/audio/dungeonAudioEngine';
+import { DungeonAudioEngine, AmbiencePreset, AMBIENCE_TRACKS } from '../../core/audio/dungeonAudioEngine';
 import { Volume2, VolumeX, Play, Pause, Sliders, Music, Sparkles, Upload } from 'lucide-react';
 
 export const DungeonAmbiencePlayer: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [preset, setPreset] = useState<AmbiencePreset>('dungeon');
-  const [volume, setVolume] = useState<number>(50);
+  const [preset, setPreset] = useState<AmbiencePreset>('moria');
+  const [volume, setVolume] = useState<number>(60);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
@@ -38,18 +38,20 @@ export const DungeonAmbiencePlayer: React.FC = () => {
     }
   };
 
+  const currentTrack = AMBIENCE_TRACKS[preset];
+
   return (
     <div className="relative">
       {/* Botão Principal do Tocador de Som Ambiente */}
       <div className="flex items-center gap-1.5 bg-[#141824] border border-[#262f44] hover:border-[#a17036] rounded-full px-2.5 py-1 transition-all shadow">
         <button
           onClick={togglePlay}
-          className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full transition-all ${
+          className={`flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full transition-all ${
             isPlaying
               ? 'bg-[#231b14] text-[#f5ba42] border border-[#a17036] shadow-sm shadow-amber-500/20'
               : 'text-stone-400 hover:text-stone-200'
           }`}
-          title={isPlaying ? "Pausar Som Ambiente" : "Iniciar Som Ambiente de Masmorra"}
+          title={isPlaying ? "Pausar Trilha de Fantasia" : "Iniciar Trilha Sonora Épica"}
         >
           {isPlaying ? (
             <>
@@ -60,7 +62,7 @@ export const DungeonAmbiencePlayer: React.FC = () => {
                 <span className="w-0.5 h-2 bg-[#f5ba42] rounded-full animate-bounce delay-75" />
                 <span className="w-0.5 h-2.5 bg-[#f5ba42] rounded-full animate-bounce delay-150" />
               </div>
-              <span className="text-[10px] hidden sm:inline">Masmorra</span>
+              <span className="text-[10px] hidden sm:inline">{currentTrack.id === 'moria' ? 'Moria' : currentTrack.id === 'silence' ? 'Silêncio' : 'Thorin'}</span>
             </>
           ) : (
             <>
@@ -76,74 +78,54 @@ export const DungeonAmbiencePlayer: React.FC = () => {
           className={`p-1 rounded-full text-stone-400 hover:text-[#f5ba42] transition-colors ${
             isMenuOpen ? 'text-[#f5ba42]' : ''
           }`}
-          title="Configurações de Áudio da Masmorra"
+          title="Configurações e Seleção de Faixas MP3"
         >
           <Sliders className="w-3.5 h-3.5" />
         </button>
       </div>
 
-      {/* Menu Popover Flutuante com Presets e Volume */}
+      {/* Menu Popover Flutuante com Presets MP3 e Volume */}
       {isMenuOpen && (
-        <div className="absolute right-0 top-11 z-50 w-72 bg-[#10121a] border-2 border-[#a17036] rounded-2xl p-4 shadow-2xl space-y-4 text-stone-200 animate-in fade-in">
+        <div className="absolute right-0 top-11 z-50 w-80 bg-[#10121a] border-2 border-[#a17036] rounded-2xl p-4 shadow-2xl space-y-4 text-stone-200 animate-in fade-in">
           <div className="flex items-center justify-between border-b border-[#231b14] pb-2">
             <span className="font-cinzel text-xs font-bold text-[#f5ba42] flex items-center gap-1.5 uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-[#f5ba42]" /> Som da Masmorra
+              <Sparkles className="w-3.5 h-3.5 text-[#f5ba42]" /> Trilhas dos Reinos & LOTR
             </span>
             <span className="text-[10px] text-stone-400 font-semibold">
-              {isPlaying ? '● Ativo' : '○ Pausado'}
+              {isPlaying ? '● Reproduzindo' : '○ Pausado'}
             </span>
           </div>
 
-          {/* Presets Atmosféricos */}
-          <div className="space-y-1.5 text-xs">
+          {/* Lista de Faixas MP3 Oficiais */}
+          <div className="space-y-2 text-xs">
             <label className="text-[10px] uppercase font-bold text-stone-400 block">
-              Ambientes Imersivos:
+              Trilhas Ambientais da Masmorra:
             </label>
 
-            <button
-              onClick={() => handleSelectPreset('dungeon')}
-              className={`w-full text-left p-2 rounded-lg border transition-all flex items-center justify-between ${
-                preset === 'dungeon'
-                  ? 'bg-[#231b14] border-[#f5ba42] text-[#f5ba42] font-bold'
-                  : 'bg-[#141824] border-[#262f44] text-stone-300 hover:border-[#a17036]'
-              }`}
-            >
-              <div>
-                <span className="block font-semibold">🏰 Masmorra Ancestral</span>
-                <span className="text-[10px] text-stone-400 font-normal">Drone sombrio, vento e gotas d'água</span>
-              </div>
-              {preset === 'dungeon' && <span className="text-xs">✓</span>}
-            </button>
-
-            <button
-              onClick={() => handleSelectPreset('crypt')}
-              className={`w-full text-left p-2 rounded-lg border transition-all flex items-center justify-between ${
-                preset === 'crypt'
-                  ? 'bg-[#231b14] border-[#f5ba42] text-[#f5ba42] font-bold'
-                  : 'bg-[#141824] border-[#262f44] text-stone-300 hover:border-[#a17036]'
-              }`}
-            >
-              <div>
-                <span className="block font-semibold">🕯️ Cripta Sombria</span>
-                <span className="text-[10px] text-stone-400 font-normal">Graves profundos e eco de estalactites</span>
-              </div>
-              {preset === 'crypt' && <span className="text-xs">✓</span>}
-            </button>
-
-            <button
-              onClick={() => handleSelectPreset('ruins')}
-              className={`w-full text-left p-2 rounded-lg border transition-all flex items-center justify-between ${
-                preset === 'ruins'
-                  ? 'bg-[#231b14] border-[#f5ba42] text-[#f5ba42] font-bold'
-                  : 'bg-[#141824] border-[#262f44] text-stone-300 hover:border-[#a17036]'
-              }`}
-            >
-              <div>
-                <span className="block font-semibold">🌬️ Vento nas Ruínas</span>
-                <span className="text-[10px] text-stone-400 font-normal">Lufadas misteriosas entre fendas de pedra</span>
-              </div>
-              {preset === 'ruins' && <span className="text-xs">✓</span>}
-            </button>
+            {Object.values(AMBIENCE_TRACKS).map((track) => {
+              const isSelected = preset === track.id;
+              return (
+                <button
+                  key={track.id}
+                  onClick={() => handleSelectPreset(track.id)}
+                  className={`w-full text-left p-2.5 rounded-xl border transition-all flex items-center justify-between group ${
+                    isSelected
+                      ? 'bg-[#231b14] border-[#f5ba42] text-[#f5ba42] font-bold shadow-md shadow-amber-500/10'
+                      : 'bg-[#141824] border-[#262f44] text-stone-300 hover:border-[#a17036] hover:bg-[#181e2e]'
+                  }`}
+                >
+                  <div className="min-w-0 pr-2">
+                    <span className="block font-semibold text-xs truncate group-hover:text-[#f5ba42]">
+                      {track.title}
+                    </span>
+                    <span className="text-[10px] text-stone-400 font-normal block truncate mt-0.5">
+                      {track.subtitle}
+                    </span>
+                  </div>
+                  {isSelected && <span className="text-xs text-[#f5ba42] font-black shrink-0">✓</span>}
+                </button>
+              );
+            })}
           </div>
 
           {/* Controle de Volume */}
@@ -165,7 +147,7 @@ export const DungeonAmbiencePlayer: React.FC = () => {
           {/* Upload de Trilha Própria (Opcional) */}
           <div className="pt-2 border-t border-[#231b14]">
             <label className="w-full bronze-btn py-1.5 rounded-lg text-[10px] font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow">
-              <Upload className="w-3 h-3 text-[#f5ba42]" /> Carregar Trilha MP3 Própria
+              <Upload className="w-3 h-3 text-[#f5ba42]" /> Carregar Outro MP3 Local
               <input
                 type="file"
                 accept="audio/*"
