@@ -450,9 +450,11 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                 onChange={e => setModel(e.target.value)}
                 className="w-full bg-[#090b10] border border-[#262f44] focus:border-[#f5ba42] rounded-lg px-3 py-2 text-stone-200 text-xs outline-none"
               >
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Mais Narrativo)</option>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultrarrápido)</option>
-                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recomendado - Rápido)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Narrativa Épica)</option>
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
               </select>
             </div>
           </div>

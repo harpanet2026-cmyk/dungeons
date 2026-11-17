@@ -21,7 +21,11 @@ export class GeminiApiService {
   }
 
   static getModel(): string {
-    return localStorage.getItem(STORAGE_MODEL_KEY) || 'gemini-1.5-pro';
+    const saved = localStorage.getItem(STORAGE_MODEL_KEY);
+    if (!saved || saved === 'gemini-1.5-flash') {
+      return 'gemini-2.5-flash';
+    }
+    return saved;
   }
 
   static setModel(model: string): void {
@@ -114,19 +118,67 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
       }
     };
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(requestBody)
-    });
+    const data = await this.executeWithFallback(apiKey, model, requestBody);
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  }
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || `Erro HTTP ${response.status}`);
+  private static async executeWithFallback(
+    apiKey: string,
+    initialModel: string,
+    requestBody: any
+  ): Promise<any> {
+    const candidates = [
+      initialModel,
+      'gemini-2.5-flash',
+      'gemini-2.0-flash',
+      'gemini-2.5-pro',
+      'gemini-1.5-flash-latest',
+      'gemini-1.5-pro'
+    ];
+    const modelsToTry = Array.from(new Set(candidates));
+
+    let lastError: Error | null = null;
+    for (const m of modelsToTry) {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`;
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) {
+          if (m !== initialModel) {
+            console.warn(`[Gemini] Modelo ${initialModel} indisponível; alternado com sucesso para ${m}`);
+            this.setModel(m);
+          }
+          return await response.json();
+        }
+
+        const errorData = await response.json().catch(() => ({}));
+        const message = errorData?.error?.message || `Erro HTTP ${response.status}: ${response.statusText}`;
+
+        if (response.status === 400 && message.includes('API_KEY_INVALID')) {
+          throw new Error('Chave de API inválida. Verifique sua chave no Google AI Studio (aistudio.google.com).');
+        }
+
+        // Se o erro for 404 de modelo não encontrado ou não suportado para esta versão da API, tenta o próximo modelo
+        if (response.status === 404 || message.includes('not found') || message.includes('not supported')) {
+          lastError = new Error(`Falha na comunicação com o Gemini: ${message}`);
+          continue;
+        }
+
+        throw new Error(`Falha na comunicação com o Gemini: ${message}`);
+      } catch (err: any) {
+        if (err.message && (err.message.includes('not found') || err.message.includes('not supported'))) {
+          lastError = err;
+          continue;
+        }
+        throw err;
+      }
     }
 
-    const data = await response.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    throw lastError || new Error('Nenhum modelo do Gemini disponível para esta chave de API.');
   }
 
   static async sendMessage(
@@ -142,8 +194,6 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     }
 
     const model = this.getModel();
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
     const systemInstructionText = this.generateSystemInstruction(characters, enemies, customDossier);
 
     // Formata o histórico no padrão da Gemini API
@@ -170,24 +220,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
       }
     };
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const message = errorData?.error?.message || `Erro HTTP ${response.status}: ${response.statusText}`;
-      if (response.status === 400 && message.includes('API_KEY_INVALID')) {
-        throw new Error('Chave de API inválida. Verifique sua chave no Google AI Studio (aistudio.google.com).');
-      }
-      throw new Error(`Falha na comunicação com o Gemini: ${message}`);
-    }
-
-    const data = await response.json();
+    const data = await this.executeWithFallback(apiKey, model, requestBody);
     const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!candidateText) {

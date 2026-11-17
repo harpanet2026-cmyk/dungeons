@@ -70,8 +70,9 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
 
     setIsAiLoading(true);
     try {
-      // Chama a API do Gemini Pro com system instruction
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${apiKey}`, {
+      // Chama a API do Gemini com o modelo configurado
+      const targetModel = (localStorage.getItem('dungeons_gemini_model') || 'gemini-2.5-flash').replace('gemini-1.5-flash', 'gemini-2.5-flash');
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
