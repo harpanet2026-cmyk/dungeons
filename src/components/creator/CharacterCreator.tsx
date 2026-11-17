@@ -137,20 +137,24 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
   };
 
   return (
-    <div className="bg-[#151924] border border-slate-800 rounded-xl p-6 shadow-xl max-w-4xl mx-auto space-y-6">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-        <div>
-          <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
-            <UserPlus className="w-5 h-5 text-amber-400" />
-            Criador de Personagem 5e (SRD)
-          </h2>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Criação de heróis com validação matemática e campos de perfil otimizados para narração pelo Gemini Pro.
-          </p>
+    <div className="bg-gradient-to-b from-[#131622] via-[#0d0f17] to-[#090b10] border-2 border-[#a17036] rounded-3xl p-6 sm:p-8 shadow-2xl max-w-4xl mx-auto space-y-6 text-stone-200">
+      <div className="flex items-center justify-between border-b border-[#231b14] pb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#a17036] to-[#4a3419] flex items-center justify-center shadow border border-[#f5ba42]/30">
+            <UserPlus className="w-5 h-5 text-[#ffd470]" />
+          </div>
+          <div>
+            <h2 className="font-cinzel text-xl sm:text-2xl font-black gold-gradient-text uppercase tracking-wider">
+              Criador de Personagem 5e (SRD)
+            </h2>
+            <p className="text-xs text-stone-400 mt-0.5">
+              Criação de heróis com validação matemática e campos de perfil otimizados para narração pelo Gemini Pro.
+            </p>
+          </div>
         </div>
         <button
           onClick={onCancel}
-          className="text-xs text-slate-400 hover:text-slate-200"
+          className="text-xs text-stone-400 hover:text-[#f5ba42] transition-colors font-semibold uppercase tracking-wider px-3 py-1.5 rounded-lg border border-transparent hover:border-[#231b14]"
         >
           Cancelar
         </button>
@@ -160,37 +164,43 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
         {/* Passo 1: Informações Básicas */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Nome do Personagem:</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Nome do Personagem:
+            </label>
             <input
               type="text"
               required
               placeholder="Ex: Alden Ventofrio"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Jogador(a):</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Jogador(a):
+            </label>
             <input
               type="text"
               placeholder="Ex: Guilherme"
               value={player}
               onChange={(e) => setPlayer(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Nível (1-20):</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Nível (1-20):
+            </label>
             <input
               type="number"
               min="1"
               max="20"
               value={level}
               onChange={(e) => setLevel(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
             />
           </div>
         </div>
@@ -198,56 +208,62 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
         {/* Passo 2: Raça, Classe e Antecedente */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Raça:</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Raça:
+            </label>
             <select
               value={selectedRace}
               onChange={(e) => setSelectedRace(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
             >
               {Object.keys(RACES_5E).map(r => (
                 <option key={r} value={r}>{r}</option>
               ))}
             </select>
-            <p className="text-[10px] text-amber-300 mt-1">{raceDef.description}</p>
+            <p className="text-[11px] text-[#f5ba42]/90 mt-1 font-medium">{raceDef.description}</p>
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Classe:</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Classe:
+            </label>
             <select
               value={selectedClass}
               onChange={(e) => setSelectedClass(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
             >
               {Object.keys(CLASSES_5E).map(c => (
                 <option key={c} value={c}>{c} ({CLASSES_5E[c].hitDie})</option>
               ))}
             </select>
-            <p className="text-[10px] text-slate-400 mt-1">{classDef.description}</p>
+            <p className="text-[11px] text-stone-400 mt-1">{classDef.description}</p>
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Antecedente (Background):</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Antecedente (Background):
+            </label>
             <select
               value={background}
               onChange={(e) => setBackground(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
             >
               {Object.keys(BACKGROUNDS_5E).map(b => (
                 <option key={b} value={b}>{b}</option>
               ))}
             </select>
-            <p className="text-[10px] text-slate-400 mt-1">{bgDef.feature}</p>
+            <p className="text-[11px] text-stone-400 mt-1">{bgDef.feature}</p>
           </div>
         </div>
 
         {/* Passo 3: Atributos com Bônus Racial */}
-        <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-          <div className="flex justify-between items-center mb-3">
-            <span className="font-bold text-slate-200 flex items-center gap-1.5">
-              <Dices className="w-4 h-4 text-amber-400" />
+        <div className="bg-[#0b0e15] p-5 rounded-2xl border border-[#231b14] space-y-4">
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <span className="font-cinzel font-bold text-[#f5ba42] text-xs uppercase tracking-wider flex items-center gap-2">
+              <Dices className="w-4 h-4 text-[#f5ba42]" />
               Atributos Base (Standard Array ou Rolagem):
             </span>
-            <span className="text-[10px] text-slate-400">Bônus raciais somados automaticamente</span>
+            <span className="text-[11px] text-stone-400">Bônus raciais somados automaticamente</span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
@@ -257,58 +273,59 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
               const mod = getAbilityModifier(finalVal);
 
               return (
-                <div key={ab} className="bg-slate-900 border border-slate-700/80 p-2.5 rounded-lg text-center">
-                  <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">{ab}</label>
+                <div key={ab} className="bg-[#141824] border border-[#262f44] hover:border-[#a17036] p-3 rounded-xl text-center transition-all shadow-sm">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-400 mb-1.5">
+                    {ab.toUpperCase()}
+                  </label>
                   <input
                     type="number"
                     min="3"
                     max="20"
                     value={abilities[ab]}
                     onChange={(e) => setAbilities({ ...abilities, [ab]: parseInt(e.target.value) || 10 })}
-                    className="w-14 text-center bg-slate-950 border border-slate-600 rounded py-0.5 text-sm font-bold text-slate-100 focus:outline-none focus:border-amber-500"
+                    className="w-14 text-center bg-[#0d101a] border border-[#37415e] focus:border-[#f5ba42] rounded-lg py-1 text-sm font-bold text-stone-100 outline-none"
                   />
-                  <div className="text-[10px] text-slate-400 mt-1">
-                    {racialBonus > 0 && <span className="text-emerald-400">+{racialBonus} racial = </span>}
-                    <strong className="text-amber-300 font-bold">{finalVal}</strong> ({formatModifier(mod)})
+                  <div className="text-[11px] text-stone-400 mt-1.5">
+                    {racialBonus > 0 && <span className="text-emerald-400">+{racialBonus} race = </span>}
+                    <strong className="text-[#f5ba42] font-cinzel font-bold">{finalVal}</strong> ({formatModifier(mod)})
                   </div>
                 </div>
               );
             })}
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-xs text-slate-300 bg-slate-950 p-2.5 rounded border border-slate-800">
-            <span className="flex items-center gap-1.5">
-              <Heart className="w-3.5 h-3.5 text-rose-500" />
+          <div className="flex items-center justify-between text-xs text-stone-300 bg-[#141824] p-3 rounded-xl border border-[#262f44]">
+            <span className="flex items-center gap-2 font-medium">
+              <Heart className="w-4 h-4 text-rose-500" />
               Pontos de Vida Estimados (Nível {level}):
             </span>
-            <strong className="text-rose-400 text-sm font-bold">{calculatedHp} HP</strong>
+            <strong className="text-rose-400 font-cinzel text-base font-bold">{calculatedHp} HP</strong>
           </div>
         </div>
 
         {/* Passo 4: Perícias Treinadas */}
-        <div>
-          <label className="block text-slate-300 font-semibold mb-2">
+        <div className="space-y-2">
+          <label className="block text-stone-300 font-semibold mb-2 uppercase tracking-wider text-[11px]">
             Perícias Treinadas ({selectedSkills.length} selecionadas):
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
             {(Object.keys(SKILL_ABILITY_MAP) as SkillName[]).map(sk => {
               const skDef = SKILL_ABILITY_MAP[sk];
               const isSelected = selectedSkills.includes(sk);
-              const isBgSkill = bgDef.skillProficiencies.includes(sk);
 
               return (
                 <button
                   type="button"
                   key={sk}
                   onClick={() => toggleSkill(sk)}
-                  className={`px-2.5 py-1.5 rounded text-left border flex items-center justify-between transition-all ${
+                  className={`px-3 py-2 rounded-xl text-left border flex items-center justify-between transition-all text-xs ${
                     isSelected
-                      ? 'bg-amber-500/20 border-amber-500/60 text-amber-200'
-                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
+                      ? 'bg-[#231b14] border-[#a17036] text-[#f5ba42] font-semibold shadow-inner'
+                      : 'bg-[#141824] border-[#262f44] text-stone-400 hover:text-stone-200 hover:border-[#37415e]'
                   }`}
                 >
                   <span>{skDef.name} ({skDef.ability.toUpperCase()})</span>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-amber-400" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-[#f5ba42]" />}
                 </button>
               );
             })}
@@ -318,11 +335,13 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
         {/* Passo 5: Armas e Armaduras */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Armadura Equipada:</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Armadura Equipada:
+            </label>
             <select
               value={selectedArmorId}
               onChange={(e) => setSelectedArmorId(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
             >
               <option value="nenhuma">Nenhuma Armadura (CA 10 + Des)</option>
               {COMMON_ARMORS.filter(a => a.armorType !== 'escudo').map(a => (
@@ -337,19 +356,21 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
               id="shieldCheck"
               checked={hasShield}
               onChange={(e) => setHasShield(e.target.checked)}
-              className="rounded bg-slate-900 border-slate-700 text-amber-500 focus:ring-0"
+              className="w-4 h-4 rounded bg-[#141824] border-[#2b334a] text-[#f5ba42] focus:ring-0 cursor-pointer accent-[#a17036]"
             />
-            <label htmlFor="shieldCheck" className="text-slate-300 font-semibold cursor-pointer">
+            <label htmlFor="shieldCheck" className="text-stone-300 font-semibold cursor-pointer text-xs">
               Equipar Escudo (+2 na CA)
             </label>
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Arma Inicial:</label>
+            <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
+              Arma Inicial:
+            </label>
             <select
               value={selectedWeaponId}
               onChange={(e) => setSelectedWeaponId(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
             >
               {COMMON_WEAPONS.map(w => (
                 <option key={w.id} value={w.id}>{w.name} ({w.damage})</option>
@@ -359,73 +380,73 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
         </div>
 
         {/* Passo 6: Ganchos Narrativos para o Gemini Pro */}
-        <div className="bg-slate-900/30 p-4 rounded-xl border border-slate-800 space-y-3">
-          <div className="font-bold text-amber-300 flex items-center gap-1.5">
-            <BookOpen className="w-4 h-4 text-amber-400" />
+        <div className="bg-[#0b0e15] p-5 rounded-2xl border border-[#231b14] space-y-3">
+          <div className="font-cinzel font-bold text-[#f5ba42] text-xs uppercase tracking-wider flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-[#f5ba42]" />
             Perfil Dramático (Injeção no Gemini Pro)
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Ideais:</label>
+              <label className="block text-stone-300 font-medium mb-1 text-[11px]">Ideais:</label>
               <input
                 type="text"
                 placeholder="Ex: Liberdade acima de tudo"
                 value={ideals}
                 onChange={(e) => setIdeals(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+                className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Vínculos:</label>
+              <label className="block text-stone-300 font-medium mb-1 text-[11px]">Vínculos:</label>
               <input
                 type="text"
                 placeholder="Ex: Proteger minha irmã mais nova"
                 value={bonds}
                 onChange={(e) => setBonds(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+                className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Defeitos:</label>
+              <label className="block text-stone-300 font-medium mb-1 text-[11px]">Defeitos:</label>
               <input
                 type="text"
                 placeholder="Ex: Nunca recua de uma briga"
                 value={flaws}
                 onChange={(e) => setFlaws(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+                className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Segredo ou Gancho da Campanha:</label>
+              <label className="block text-stone-300 font-medium mb-1 text-[11px]">Segredo ou Gancho da Campanha:</label>
               <input
                 type="text"
                 placeholder="Ex: É procurado por um culto fanático"
                 value={secretsOrHooks}
                 onChange={(e) => setSecretsOrHooks(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-slate-100 focus:outline-none focus:border-amber-500"
+                className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
               />
             </div>
           </div>
         </div>
 
         {/* Botão de Submissão */}
-        <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+        <div className="flex justify-end items-center gap-3 pt-4 border-t border-[#231b14]">
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg font-semibold"
+            className="px-5 py-2.5 bg-[#141824] hover:bg-[#1a2030] text-stone-300 border border-[#2b334a] hover:border-[#a17036] rounded-xl font-cinzel text-xs font-bold uppercase tracking-wider transition-all"
           >
             Cancelar
           </button>
           <button
             type="submit"
-            className="px-5 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 rounded-lg font-bold flex items-center gap-1.5 shadow"
+            className="px-6 py-2.5 bronze-btn text-xs font-cinzel font-bold uppercase tracking-wider flex items-center gap-2 shadow-lg shadow-amber-900/30 hover:brightness-110 active:scale-95 transition-all"
           >
-            <UserPlus className="w-4 h-4" /> Criar e Adicionar ao Grupo
+            <UserPlus className="w-4 h-4 text-[#f5ba42]" /> Criar e Adicionar ao Grupo
           </button>
         </div>
       </form>
