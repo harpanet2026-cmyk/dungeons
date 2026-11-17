@@ -25,7 +25,7 @@ export class OllamaApiService {
   }
 
   static getModel(): string {
-    return localStorage.getItem(STORAGE_OLLAMA_MODEL_KEY) || 'qwen2.5:7b';
+    return localStorage.getItem(STORAGE_OLLAMA_MODEL_KEY) || 'qwen2.5:3b';
   }
 
   static setModel(model: string): void {
@@ -42,12 +42,25 @@ export class OllamaApiService {
 
   private static getBaseUrls(): string[] {
     const custom = this.getEndpoint().replace(/\/+$/, '');
-    return [
-      '/api/ollama',         // Proxy transparente do Vite (sem CORS)
-      custom,                // Endpoint direto configurado
-      'http://127.0.0.1:11434',
-      'http://localhost:11434'
-    ];
+    const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+
+    const urls: string[] = [];
+
+    // Se o usuário configurou um endpoint personalizado (ex: link HTTPS do Cloudflare Tunnel)
+    if (custom && custom !== 'http://127.0.0.1:11434' && custom !== 'http://localhost:11434') {
+      urls.push(custom);
+    }
+
+    // Proxy do Vite (/api/ollama) - funciona localmente e via Cloudflare Tunnel conectado ao Vite
+    urls.push('/api/ollama');
+
+    // Em conexões HTTP (localhost), podemos tentar o acesso direto local
+    if (!isHttps) {
+      urls.push('http://127.0.0.1:11434');
+      urls.push('http://localhost:11434');
+    }
+
+    return urls;
   }
 
   /**
@@ -57,10 +70,13 @@ export class OllamaApiService {
     const urls = this.getBaseUrls();
     for (const base of urls) {
       try {
-        const res = await fetch(`${base}/api/version`, { method: 'GET', signal: AbortSignal.timeout(2500) });
-        if (res.ok) {
+        const res = await fetch(`${base}/api/version`, { method: 'GET', signal: AbortSignal.timeout(3000) });
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
           const data = await res.json();
-          return { online: true, version: data.version, endpoint: base };
+          if (data && data.version) {
+            return { online: true, version: data.version, endpoint: base };
+          }
         }
       } catch {}
     }
@@ -74,11 +90,14 @@ export class OllamaApiService {
     const urls = this.getBaseUrls();
     for (const base of urls) {
       try {
-        const res = await fetch(`${base}/api/tags`, { method: 'GET', signal: AbortSignal.timeout(3000) });
-        if (res.ok) {
+        const res = await fetch(`${base}/api/tags`, { method: 'GET', signal: AbortSignal.timeout(3500) });
+        const contentType = res.headers.get('content-type') || '';
+        if (res.ok && contentType.includes('application/json')) {
           const data = await res.json();
           const models: OllamaModelTag[] = data.models || [];
-          return models.map(m => m.name);
+          if (models.length > 0) {
+            return models.map(m => m.name);
+          }
         }
       } catch {}
     }

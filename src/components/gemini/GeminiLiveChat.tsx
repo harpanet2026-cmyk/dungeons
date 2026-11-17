@@ -560,15 +560,26 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#090e17] border border-[#1b273b] space-y-1.5 text-[11px]">
+              <div className="p-3 rounded-xl bg-[#090e17] border border-[#1b273b] space-y-2 text-[11px]">
                 <div className="font-bold text-emerald-300 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" /> Dica de Modelos Offline:
+                  <Globe className="w-3.5 h-3.5" /> Acessando via Cloudflare ou Celular?
                 </div>
-                <p className="text-stone-300 leading-relaxed">
-                  Para baixar mais modelos, abra o PowerShell e digite:
-                  <code className="ml-1 px-1.5 py-0.5 rounded bg-black/60 text-amber-300 font-mono">ollama pull qwen2.5:3b</code> ou <code className="ml-1 px-1.5 py-0.5 rounded bg-black/60 text-amber-300 font-mono">ollama pull llama3.2:3b</code>.
-                  O Qwen 2.5 é amplamente considerado o melhor modelo para RPG e narrativa fluida em Português.
-                </p>
+                <div className="text-stone-300 leading-relaxed space-y-1">
+                  <p>
+                    • <b>Via Túnel Completo (Recomendado):</b> Abra o terminal na pasta e execute:
+                    <br />
+                    <code className="ml-2 px-1.5 py-0.5 rounded bg-black/60 text-amber-300 font-mono">.\cloudflared.exe tunnel --url http://localhost:5173</code>
+                    <br />
+                    O link gerado (<code>https://...trycloudflare.com</code>) terá acesso direto ao Ollama através do proxy seguro!
+                  </p>
+                  <p>
+                    • <b>Via Cloudflare Pages (*.pages.dev):</b> O navegador bloqueia chamadas diretas para <code>127.0.0.1</code> em páginas HTTPS públicas (Mixed Content). Para usar no Pages, execute:
+                    <br />
+                    <code className="ml-2 px-1.5 py-0.5 rounded bg-black/60 text-amber-300 font-mono">.\cloudflared.exe tunnel --url http://127.0.0.1:11434</code>
+                    <br />
+                    E cole o link HTTPS gerado no campo <b>Endpoint do Ollama</b> acima.
+                  </p>
+                </div>
               </div>
 
               <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#231b14]">
