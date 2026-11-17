@@ -122,60 +122,121 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 
+  static async listModels(apiKey: string): Promise<{ version: 'v1beta' | 'v1'; models: string[] }> {
+    const cleanKey = apiKey.trim();
+    for (const ver of ['v1beta', 'v1'] as const) {
+      try {
+        const res = await fetch(`https://generativelanguage.googleapis.com/${ver}/models?key=${cleanKey}`);
+        if (res.ok) {
+          const data = await res.json();
+          const models: string[] = (data.models || [])
+            .filter((m: any) => m.supportedGenerationMethods?.includes('generateContent'))
+            .map((m: any) => m.name.replace('models/', ''));
+          if (models.length > 0) {
+            return { version: ver, models };
+          }
+        }
+      } catch (e) {}
+    }
+    return { version: 'v1beta', models: [] };
+  }
+
   private static async executeWithFallback(
     apiKey: string,
     initialModel: string,
     requestBody: any
   ): Promise<any> {
+    const cleanApiKey = apiKey.trim();
+
+    // 1. Tentar detectar modelos habilitados na conta da API Key
+    let detectedModels: string[] = [];
+    let preferredVersion: 'v1beta' | 'v1' = 'v1beta';
+    try {
+      const info = await this.listModels(cleanApiKey);
+      if (info.models.length > 0) {
+        detectedModels = info.models;
+        preferredVersion = info.version;
+      }
+    } catch {}
+
     const candidates = [
+      ...detectedModels,
       initialModel,
       'gemini-2.5-flash',
       'gemini-2.0-flash',
       'gemini-2.5-pro',
       'gemini-1.5-flash-latest',
-      'gemini-1.5-pro'
+      'gemini-1.5-flash',
+      'gemini-1.5-pro',
+      'gemini-pro'
     ];
-    const modelsToTry = Array.from(new Set(candidates));
+    const modelsToTry = Array.from(new Set(candidates)).filter(Boolean);
+
+    // Tentar versões v1beta e v1
+    const versionsToTry: ('v1beta' | 'v1')[] = preferredVersion === 'v1' ? ['v1', 'v1beta'] : ['v1beta', 'v1'];
 
     let lastError: Error | null = null;
-    for (const m of modelsToTry) {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`;
-      try {
-        const response = await fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(requestBody)
-        });
-
-        if (response.ok) {
-          if (m !== initialModel) {
-            console.warn(`[Gemini] Modelo ${initialModel} indisponível; alternado com sucesso para ${m}`);
-            this.setModel(m);
+    for (const ver of versionsToTry) {
+      for (const m of modelsToTry) {
+        const url = `https://generativelanguage.googleapis.com/${ver}/models/${m}:generateContent?key=${cleanApiKey}`;
+        try {
+          let bodyToSend = requestBody;
+          if (ver === 'v1' && requestBody.system_instruction) {
+            const sysText = requestBody.system_instruction?.parts?.[0]?.text || '';
+            bodyToSend = {
+              contents: [
+                { role: 'user', parts: [{ text: `[INSTRUÇÕES DO SISTEMA]:\n${sysText}` }] },
+                { role: 'model', parts: [{ text: 'Entendido. Seguirei rigorosamente as instruções do sistema.' }] },
+                ...requestBody.contents
+              ],
+              generationConfig: requestBody.generationConfig
+            };
           }
-          return await response.json();
-        }
 
-        const errorData = await response.json().catch(() => ({}));
-        const message = errorData?.error?.message || `Erro HTTP ${response.status}: ${response.statusText}`;
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyToSend)
+          });
 
-        if (response.status === 400 && message.includes('API_KEY_INVALID')) {
-          throw new Error('Chave de API inválida. Verifique sua chave no Google AI Studio (aistudio.google.com).');
-        }
+          if (response.ok) {
+            if (m !== initialModel) {
+              console.warn(`[Gemini] Alternado automaticamente para ${m} (${ver})`);
+              this.setModel(m);
+            }
+            return await response.json();
+          }
 
-        // Se o erro for 404 de modelo não encontrado ou não suportado para esta versão da API, tenta o próximo modelo
-        if (response.status === 404 || message.includes('not found') || message.includes('not supported')) {
-          lastError = new Error(`Falha na comunicação com o Gemini: ${message}`);
-          continue;
-        }
+          const errorData = await response.json().catch(() => ({}));
+          const message = errorData?.error?.message || `Erro HTTP ${response.status}: ${response.statusText}`;
 
-        throw new Error(`Falha na comunicação com o Gemini: ${message}`);
-      } catch (err: any) {
-        if (err.message && (err.message.includes('not found') || err.message.includes('not supported'))) {
-          lastError = err;
-          continue;
+          if (response.status === 400 && message.includes('API_KEY_INVALID')) {
+            throw new Error('Chave de API inválida. Verifique sua chave no Google AI Studio (aistudio.google.com).');
+          }
+
+          // Se for 404 (modelo não encontrado), continua tentando o próximo candidato
+          if (response.status === 404 || message.includes('not found') || message.includes('not supported')) {
+            lastError = new Error(`Falha na comunicação com o Gemini: ${message}`);
+            continue;
+          }
+
+          throw new Error(`Falha na comunicação com o Gemini: ${message}`);
+        } catch (err: any) {
+          if (err.message && (err.message.includes('not found') || err.message.includes('not supported'))) {
+            lastError = err;
+            continue;
+          }
+          throw err;
         }
-        throw err;
       }
+    }
+
+    if (detectedModels.length === 0) {
+      throw new Error(
+        `Nenhum modelo do Gemini foi encontrado para esta chave de API. ` +
+        `Isso costuma ocorrer se a chave foi criada no Google Cloud sem a API 'Generative Language API' ativada, ` +
+        `ou se for uma conta corporativa/Google Workspace. Crie uma chave gratuita em https://aistudio.google.com/ com uma conta pessoal @gmail.com.`
+      );
     }
 
     throw lastError || new Error('Nenhum modelo do Gemini disponível para esta chave de API.');

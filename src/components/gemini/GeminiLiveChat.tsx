@@ -41,11 +41,54 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Diagnóstico e detecção de modelos da chave de API
+  const [isTestingKey, setIsTestingKey] = useState<boolean>(false);
+  const [testResult, setTestResult] = useState<{ success: boolean; message: string; models?: string[] } | null>(null);
+  const [discoveredModels, setDiscoveredModels] = useState<string[]>([]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
+
+  const handleTestKey = async () => {
+    if (!apiKey.trim()) {
+      setTestResult({ success: false, message: 'Por favor, insira ou cole uma chave de API primeiro.' });
+      return;
+    }
+    setIsTestingKey(true);
+    setTestResult(null);
+    try {
+      const info = await GeminiApiService.listModels(apiKey.trim());
+      if (info.models.length > 0) {
+        setDiscoveredModels(info.models);
+        setTestResult({
+          success: true,
+          message: `✓ Conexão bem-sucedida (${info.version})! Encontrados ${info.models.length} modelos liberados.`,
+          models: info.models
+        });
+        if (!info.models.includes(model)) {
+          const preferred = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+          const chosen = preferred.find(p => info.models.includes(p)) || info.models[0];
+          setModel(chosen);
+          GeminiApiService.setModel(chosen);
+        }
+      } else {
+        setTestResult({
+          success: false,
+          message: '⚠️ A chave foi aceita pelo Google, mas nenhum modelo está liberado neste projeto. Se você gerou a chave no Google Cloud, ative a "Generative Language API" na biblioteca de APIs, ou gere uma chave gratuita em aistudio.google.com com uma conta pessoal @gmail.com.'
+        });
+      }
+    } catch (err: any) {
+      setTestResult({
+        success: false,
+        message: `Falha na verificação: ${err.message || 'Verifique a chave informada.'}`
+      });
+    } finally {
+      setIsTestingKey(false);
+    }
+  };
 
   const handleSaveConfig = (e: React.FormEvent) => {
     e.preventDefault();
@@ -450,29 +493,59 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                 onChange={e => setModel(e.target.value)}
                 className="w-full bg-[#090b10] border border-[#262f44] focus:border-[#f5ba42] rounded-lg px-3 py-2 text-stone-200 text-xs outline-none"
               >
-                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recomendado - Rápido)</option>
-                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Narrativa Épica)</option>
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+                {discoveredModels.length > 0 ? (
+                  discoveredModels.map(m => (
+                    <option key={m} value={m}>{m}</option>
+                  ))
+                ) : (
+                  <>
+                    <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recomendado - Rápido)</option>
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                    <option value="gemini-2.5-pro">Gemini 2.5 Pro (Narrativa Épica)</option>
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                    <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
+                  </>
+                )}
               </select>
             </div>
           </div>
 
-          <div className="flex justify-end gap-2">
+          {testResult && (
+            <div className={`p-2.5 rounded-lg text-xs border ${
+              testResult.success
+                ? 'bg-emerald-950/70 border-emerald-700 text-emerald-200'
+                : 'bg-rose-950/70 border-rose-700 text-rose-200'
+            }`}>
+              {testResult.message}
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
             <button
               type="button"
-              onClick={() => setIsConfigOpen(false)}
-              className="px-3 py-1.5 rounded-lg text-stone-400 hover:text-stone-200 text-xs"
+              disabled={isTestingKey || !apiKey.trim()}
+              onClick={handleTestKey}
+              className="px-3 py-1.5 rounded-lg border border-[#a17036] bg-[#1a140f] hover:bg-[#251d15] text-[#f5ba42] text-xs font-semibold flex items-center gap-1.5 disabled:opacity-50 transition-all shadow"
             >
-              Fechar
+              {isTestingKey ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+              {isTestingKey ? 'Testando Conexão...' : 'Testar Chave & Detectar Modelos'}
             </button>
-            <button
-              type="submit"
-              className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold text-[#f5ba42] uppercase tracking-wider shadow"
-            >
-              Salvar Chave
-            </button>
+
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setIsConfigOpen(false)}
+                className="px-3 py-1.5 rounded-lg text-stone-400 hover:text-stone-200 text-xs"
+              >
+                Fechar
+              </button>
+              <button
+                type="submit"
+                className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold text-[#f5ba42] uppercase tracking-wider shadow"
+              >
+                Salvar Chave
+              </button>
+            </div>
           </div>
         </form>
       )}
@@ -533,9 +606,25 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
 
         {/* Erro de Comunicação */}
         {errorMessage && (
-          <div className="bg-rose-950/80 border border-rose-800 text-rose-200 p-3 rounded-xl text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
-            <span>{errorMessage}</span>
+          <div className="bg-rose-950/80 border border-rose-800 text-rose-200 p-3.5 rounded-xl text-xs space-y-2.5">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <div className="flex-1 space-y-1">
+                <span className="font-semibold block">{errorMessage}</span>
+                <p className="text-[11px] text-stone-300 leading-relaxed">
+                  Isso geralmente ocorre quando a chave foi gerada em uma conta com restrições ou sem a API habilitada no Google. Use o botão abaixo para testar sua chave e verificar quais modelos estão liberados na sua conta.
+                </p>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-1 border-t border-rose-800/40">
+              <button
+                type="button"
+                onClick={() => { setIsConfigOpen(true); setErrorMessage(null); }}
+                className="px-3 py-1 bg-[#1a140f] border border-[#a17036] text-[#f5ba42] rounded-lg text-xs font-bold hover:bg-[#281f17] flex items-center gap-1.5 transition-all shadow"
+              >
+                <Key className="w-3.5 h-3.5" /> Testar / Trocar Chave de API
+              </button>
+            </div>
           </div>
         )}
 
