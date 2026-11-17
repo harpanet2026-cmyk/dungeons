@@ -28,3 +28,8 @@ dist-ssr
 
 # Cloudflare CLI
 cloudflared.exe
+
+# PDFs and raw extracted art
+*.pdf
+public/monsters_art/
+scratch/

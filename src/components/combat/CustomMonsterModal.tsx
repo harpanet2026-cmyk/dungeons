@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Enemy, AbilityName } from '../../core/types/dnd';
-import { BESTIARY_SRD, CR_XP_MAP, MonsterRegistry } from '../../core/rules/monsterData';
+import { BESTIARY_SRD, CR_XP_MAP, MonsterRegistry, getMonsterFallbackImage } from '../../core/rules/monsterData';
 import { X, Plus, Search, BookOpen, Sparkles, Check, Trash2, Shield, Swords, Heart } from 'lucide-react';
 
 interface CustomMonsterModalProps {
@@ -290,28 +290,45 @@ export const CustomMonsterModal: React.FC<CustomMonsterModalProps> = ({
 
               {/* Lista de Resultados */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-1">
-                {filteredList.map(([key, monster]) => (
-                  <div
-                    key={key}
-                    className="bg-[#141824] border border-[#262f44] hover:border-[#a17036] rounded-xl p-4 transition-all flex flex-col justify-between space-y-2 group"
-                  >
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <h4 className="font-cinzel text-base font-bold text-[#f5ba42] group-hover:text-[#ffd470]">
-                          {monster.name}
-                        </h4>
-                        <span className="bg-[#231b14] border border-[#a17036] text-[#f5ba42] text-[10px] font-bold px-2 py-0.5 rounded-full">
-                          ND {monster.cr} ({monster.xp} XP)
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-stone-400 block">{monster.type} • Desloc: {monster.speed}m</span>
+                {filteredList.map(([key, monster]) => {
+                  const monsterImg = monster.imageUrl || getMonsterFallbackImage(monster.name, monster.type);
+                  return (
+                    <div
+                      key={key}
+                      className="bg-[#141824] border border-[#262f44] hover:border-[#a17036] rounded-xl p-4 transition-all flex flex-col justify-between space-y-2 group"
+                    >
+                      <div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-14 h-14 rounded-xl overflow-hidden border border-[#a17036] shrink-0 bg-black/60 shadow">
+                            <img
+                              src={monsterImg}
+                              alt={monster.name}
+                              className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/monsters/orc.jpg';
+                              }}
+                            />
+                          </div>
 
-                      {/* Stats Rápidos */}
-                      <div className="flex items-center gap-3 text-xs mt-2 text-stone-300">
-                        <span className="flex items-center gap-1 font-bold"><Shield className="w-3.5 h-3.5 text-blue-400" /> CA {monster.ac}</span>
-                        <span className="flex items-center gap-1 font-bold"><Heart className="w-3.5 h-3.5 text-rose-500" /> {monster.maxHp} HP</span>
-                        <span className="text-stone-400 text-[11px]">Perc: {monster.passivePerception}</span>
-                      </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-1">
+                              <h4 className="font-cinzel text-base font-bold text-[#f5ba42] group-hover:text-[#ffd470] truncate">
+                                {monster.name}
+                              </h4>
+                              <span className="bg-[#231b14] border border-[#a17036] text-[#f5ba42] text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
+                                ND {monster.cr}
+                              </span>
+                            </div>
+                            <span className="text-[10px] text-stone-400 block truncate">{monster.type} • {monster.xp} XP</span>
+                          </div>
+                        </div>
+
+                        {/* Stats Rápidos */}
+                        <div className="flex items-center gap-3 text-xs mt-2.5 text-stone-300">
+                          <span className="flex items-center gap-1 font-bold"><Shield className="w-3.5 h-3.5 text-blue-400" /> CA {monster.ac}</span>
+                          <span className="flex items-center gap-1 font-bold"><Heart className="w-3.5 h-3.5 text-rose-500" /> {monster.maxHp} HP</span>
+                          <span className="text-stone-400 text-[11px]">Perc: {monster.passivePerception}</span>
+                        </div>
 
                       {/* Ataques */}
                       <div className="mt-2 text-[11px] text-stone-400 space-y-0.5">
@@ -342,7 +359,8 @@ export const CustomMonsterModal: React.FC<CustomMonsterModalProps> = ({
                       </button>
                     </div>
                   </div>
-                ))}
+                );
+              })}
               </div>
             </div>
           )}

@@ -60,7 +60,8 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
       secretsOrHooks: 'Possui uma dívida de sangue com um chefe mercenário que agora trabalha para os vilões.'
     },
     conditions: [],
-    notes: 'Estilo de Combate: Defesa (+1 na CA).'
+    notes: 'Estilo de Combate: Defesa (+1 na CA).',
+    avatarUrl: '/heroes/thorin_warrior.jpg'
   },
   {
     id: 'char_lyra',
@@ -118,7 +119,8 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
       secretsOrHooks: 'Carrega um fragmento de cristal pulsante que ouve sussurros nas noites sem lua.'
     },
     conditions: [],
-    notes: 'Tradição Arcana: Evocação.'
+    notes: 'Tradição Arcana: Evocação.',
+    avatarUrl: '/heroes/lyra_mage.jpg'
   }
 ];
 

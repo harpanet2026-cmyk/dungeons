@@ -6,56 +6,84 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     name: 'Mestre da Masmorra',
     category: 'mestre',
     iconName: 'Crown',
-    image: '/extracted_art/art_0.jpg'
+    image: '/heroes/hero_warrior.jpg'
   },
   {
     id: 'avatar_warrior_dwarf',
     name: 'Thorin (Guerreiro Anão)',
     category: 'guerreiro',
     iconName: 'Shield',
-    image: '/extracted_art/art_3.jpg'
+    image: '/heroes/thorin_warrior.jpg'
   },
   {
     id: 'avatar_mage_elf',
     name: 'Lyra (Maga Elfa)',
     category: 'conjurador',
     iconName: 'Sparkles',
-    image: '/extracted_art/art_4.jpg'
+    image: '/heroes/lyra_mage.jpg'
+  },
+  {
+    id: 'avatar_champion_volo',
+    name: 'Guerreiro Campeão (Volo)',
+    category: 'guerreiro',
+    iconName: 'Swords',
+    image: '/heroes/champion.jpg'
   },
   {
     id: 'avatar_rogue_shadow',
     name: 'Ladino das Sombras',
     category: 'ladino',
     iconName: 'Skull',
-    image: '/extracted_art/art_5.jpg'
-  },
-  {
-    id: 'avatar_paladin_holy',
-    name: 'Paladino da Luz',
-    category: 'guerreiro',
-    iconName: 'ShieldAlert',
-    image: '/extracted_art/art_7.jpg'
+    image: '/heroes/rogue.jpg'
   },
   {
     id: 'avatar_cleric_sun',
-    name: 'Clérigo da Vida',
+    name: 'Clérigo da Luz',
     category: 'conjurador',
     iconName: 'Sun',
-    image: '/extracted_art/art_8.jpg'
+    image: '/heroes/cleric.jpg'
+  },
+  {
+    id: 'avatar_druid_volo',
+    name: 'Arquidruida (Guia de Volo)',
+    category: 'conjurador',
+    iconName: 'Compass',
+    image: '/heroes/druid.jpg'
+  },
+  {
+    id: 'avatar_warlock_volo',
+    name: 'Bruxo Arquiférico (Guia de Volo)',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/heroes/warlock.jpg'
+  },
+  {
+    id: 'avatar_bard_volo',
+    name: 'Bardo Trovador (Guia de Volo)',
+    category: 'conjurador',
+    iconName: 'Music',
+    image: '/heroes/bard.jpg'
+  },
+  {
+    id: 'avatar_mind_flayer',
+    name: 'Devorador de Mentes (Guia de Volo)',
+    category: 'monstro',
+    iconName: 'Zap',
+    image: '/monsters/mind_flayer.jpg'
+  },
+  {
+    id: 'avatar_beholder',
+    name: 'Beholder Observador (Guia de Volo)',
+    category: 'monstro',
+    iconName: 'Eye',
+    image: '/monsters/beholder.jpg'
   },
   {
     id: 'avatar_dragon_fire',
-    name: 'Guerreiro Dracônico',
+    name: 'Guarda Dragonete (Guia de Volo)',
     category: 'monstro',
     iconName: 'Flame',
-    image: '/extracted_art/art_9.jpg'
-  },
-  {
-    id: 'avatar_ranger_wood',
-    name: 'Patrulheiro Selvagem',
-    category: 'guerreiro',
-    iconName: 'Compass',
-    image: '/extracted_art/art_11.jpg'
+    image: '/monsters/dragon.jpg'
   }
 ];
 

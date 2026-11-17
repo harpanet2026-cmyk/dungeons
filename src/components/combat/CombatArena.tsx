@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character, Enemy, DiceRollMode, Coins } from '../../core/types/dnd';
-import { BESTIARY_SRD, createEnemyInstance, MonsterRegistry } from '../../core/rules/monsterData';
+import { BESTIARY_SRD, createEnemyInstance, MonsterRegistry, getMonsterFallbackImage } from '../../core/rules/monsterData';
 import { calculateArmorClass, getAbilityModifier } from '../../core/rules/calculations';
 import { Swords, Shield, Heart, Skull, Plus, Trash2, Dices, AlertOctagon, Target, Check, Sparkles, BookOpen, Play, RotateCcw, ChevronRight, ChevronLeft, Coins as CoinsIcon, Users } from 'lucide-react';
 import { PendingRoll } from './ManualDiceModal';
@@ -406,37 +406,58 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
               hpPercent > 50 ? 'bg-emerald-500' : hpPercent > 20 ? 'bg-amber-500' : 'bg-rose-600';
 
             const isDead = enemy.currentHp === 0;
+            const monsterImg = enemy.imageUrl || getMonsterFallbackImage(enemy.name, enemy.type);
 
             return (
               <div
                 key={enemy.id}
-                className={`bg-[#0e111a] border rounded-2xl p-5 shadow-xl transition-all space-y-4 ${
-                  isDead ? 'border-rose-950/60 opacity-60' : 'border-[#231b14] hover:border-[#a17036]/60'
+                className={`bg-[#0e111a] border rounded-2xl p-5 shadow-xl transition-all space-y-4 group ${
+                  isDead ? 'border-rose-950/60 opacity-60' : 'border-[#231b14] hover:border-[#a17036]'
                 }`}
               >
-                {/* Header do Inimigo */}
-                <div className="flex items-start justify-between border-b border-[#231b14] pb-2.5">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-cinzel text-base font-bold text-[#f5ba42]">{enemy.name}</h4>
+                {/* Header do Inimigo com Ilustração Oficial do Guia de Volo */}
+                <div className="flex items-start gap-3 border-b border-[#231b14] pb-3">
+                  {/* Medalhão do Monstro */}
+                  <div className="relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl overflow-hidden border-2 border-[#a17036] shadow-md shrink-0 bg-black/60 group-hover:border-[#f5ba42] transition-colors">
+                    <img
+                      src={monsterImg}
+                      alt={enemy.name}
+                      className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/monsters/orc.jpg';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                    <span className="absolute bottom-0.5 right-1 text-[8px] font-mono font-bold text-[#f5ba42] drop-shadow">
+                      ND {enemy.cr}
+                    </span>
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-1">
+                      <h4 className="font-cinzel text-sm sm:text-base font-bold text-[#f5ba42] truncate tracking-wide" title={enemy.name}>
+                        {enemy.name}
+                      </h4>
+                      <button
+                        onClick={() => onRemoveEnemy(enemy.id)}
+                        className="text-stone-500 hover:text-rose-400 p-1 transition-colors shrink-0"
+                        title="Remover do Combate"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
+                      <span className="text-[10px] text-stone-400 truncate">
+                        {enemy.type} • {enemy.xp} XP
+                      </span>
                       {isDead && (
-                        <span className="bg-rose-950 text-rose-300 text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border border-rose-800">
+                        <span className="bg-rose-950 text-rose-300 text-[9px] font-bold uppercase px-2 py-0.5 rounded-full border border-rose-800 animate-pulse">
                           Morto
                         </span>
                       )}
                     </div>
-                    <span className="text-[10px] text-stone-400">
-                      {enemy.type} • ND {enemy.cr} ({enemy.xp} XP)
-                    </span>
                   </div>
-
-                  <button
-                    onClick={() => onRemoveEnemy(enemy.id)}
-                    className="text-stone-500 hover:text-rose-400 p-1 transition-colors"
-                    title="Remover do Combate"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
                 </div>
 
                 {/* Métricas de Defesa: CA, HP e Sentidos */}

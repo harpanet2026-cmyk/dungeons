@@ -173,6 +173,7 @@ export interface Character {
   // Condições ativas
   conditions: Condition[];
   notes: string;
+  avatarUrl?: string;
 }
 
 // Modelos de Análise Tática e DMG
@@ -225,4 +226,5 @@ export interface Enemy {
   passivePerception: number;
   conditions: Condition[];
   notes?: string;
+  imageUrl?: string;
 }

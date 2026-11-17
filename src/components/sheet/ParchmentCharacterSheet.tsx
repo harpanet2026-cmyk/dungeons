@@ -17,14 +17,21 @@ interface ParchmentCharacterSheetProps {
   onBackToMesa: () => void;
 }
 
-// Imagens extraídas dos PDFs oficiais para servir de pano de fundo e retrato
+// Imagens extraídas dos PDFs oficiais (Guia dos Jogadores e Guia de Volo)
 const ART_OPTIONS = [
-  { id: 'art_0', name: 'Guerreiro / Herói 5e', path: '/extracted_art/art_0.jpg' },
-  { id: 'art_2', name: 'Combate e Exploração', path: '/extracted_art/art_2.jpg' },
-  { id: 'art_3', name: 'Mago e Conjurador', path: '/extracted_art/art_3.jpg' },
-  { id: 'art_7', name: 'Mundo & Masmorras DMG', path: '/extracted_art/art_7.jpg' },
-  { id: 'art_8', name: 'Artefato & Tesouros', path: '/extracted_art/art_8.jpg' },
-  { id: 'art_9', name: 'Feras e Dragões', path: '/extracted_art/art_9.jpg' },
+  { id: 'art_thorin', name: 'Thorin (Anão Guerreiro - Guia do Jogador)', path: '/heroes/thorin_warrior.jpg' },
+  { id: 'art_lyra', name: 'Lyra (Elfa Maga - Guia do Jogador)', path: '/heroes/lyra_mage.jpg' },
+  { id: 'art_champion', name: 'Guerreiro Campeão (Guia de Volo)', path: '/heroes/champion.jpg' },
+  { id: 'art_rogue', name: 'Ladino das Sombras (Guia do Jogador)', path: '/heroes/rogue.jpg' },
+  { id: 'art_cleric', name: 'Clérigo da Luz (Guia do Jogador)', path: '/heroes/cleric.jpg' },
+  { id: 'art_druid', name: 'Arquidruida da Natureza (Guia de Volo)', path: '/heroes/druid.jpg' },
+  { id: 'art_warlock', name: 'Bruxo Arquiférico (Guia de Volo)', path: '/heroes/warlock.jpg' },
+  { id: 'art_bard', name: 'Bardo Trovador (Guia de Volo)', path: '/heroes/bard.jpg' },
+  { id: 'art_beholder', name: 'Beholder Observador (Guia de Volo)', path: '/monsters/beholder.jpg' },
+  { id: 'art_mind_flayer', name: 'Devorador de Mentes (Guia de Volo)', path: '/monsters/mind_flayer.jpg' },
+  { id: 'art_orc', name: 'Guerreiro Orc (Guia de Volo)', path: '/monsters/orc.jpg' },
+  { id: 'art_goblin', name: 'Goblin Batedor (Guia de Volo)', path: '/monsters/goblin.jpg' },
+  { id: 'art_dragon', name: 'Guarda Dragonete (Guia de Volo)', path: '/monsters/dragon.jpg' },
 ];
 
 export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = ({
@@ -41,7 +48,16 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
   onBackToMesa
 }) => {
   const [selectedArtIndex, setSelectedArtIndex] = useState<number>(() => {
-    return character.class.toLowerCase().includes('mago') ? 2 : 0;
+    const cls = character.class.toLowerCase();
+    const name = character.name.toLowerCase();
+    if (name.includes('lyra') || (cls.includes('mago') && character.race.toLowerCase().includes('elfo'))) return 1;
+    if (name.includes('thorin') || character.race.toLowerCase().includes('anão')) return 0;
+    if (cls.includes('ladino')) return 3;
+    if (cls.includes('clérigo') || cls.includes('clerigo') || cls.includes('paladino')) return 4;
+    if (cls.includes('druida') || cls.includes('patrulheiro')) return 5;
+    if (cls.includes('bruxo')) return 6;
+    if (cls.includes('bardo')) return 7;
+    return 0;
   });
   const [customHpVal, setCustomHpVal] = useState<string>('');
   const [rollMode, setRollMode] = useState<'normal' | 'vantagem' | 'desvantagem'>('normal');

@@ -24,14 +24,20 @@ const ALL_CONDITIONS: Condition[] = [
 ];
 
 const getHeroPortrait = (character: Character): string => {
+  if (character.avatarUrl) return character.avatarUrl;
   const cls = character.class.toLowerCase();
   const race = character.race.toLowerCase();
-  if (cls.includes('mago') || cls.includes('feiticeiro') || cls.includes('bruxo')) return '/extracted_art/art_4.jpg';
-  if (cls.includes('ladino')) return '/extracted_art/art_5.jpg';
-  if (cls.includes('clérigo') || cls.includes('clerigo') || cls.includes('paladino')) return '/extracted_art/art_8.jpg';
-  if (cls.includes('patrulheiro') || cls.includes('druida')) return '/extracted_art/art_11.jpg';
-  if (race.includes('anão') || race.includes('anao') || cls.includes('guerreiro')) return '/extracted_art/art_3.jpg';
-  return '/extracted_art/art_0.jpg';
+  const name = character.name.toLowerCase();
+  if (name.includes('thorin') || race.includes('anão') || race.includes('anao')) return '/heroes/thorin_warrior.jpg';
+  if (name.includes('lyra') || (cls.includes('mago') && race.includes('elfo'))) return '/heroes/lyra_mage.jpg';
+  if (cls.includes('bruxo')) return '/heroes/warlock.jpg';
+  if (cls.includes('bardo')) return '/heroes/bard.jpg';
+  if (cls.includes('druida') || cls.includes('patrulheiro')) return '/heroes/druid.jpg';
+  if (cls.includes('mago') || cls.includes('feiticeiro')) return '/heroes/evoker.jpg';
+  if (cls.includes('ladino')) return '/heroes/rogue.jpg';
+  if (cls.includes('clérigo') || cls.includes('clerigo') || cls.includes('paladino')) return '/heroes/cleric.jpg';
+  if (cls.includes('guerreiro')) return '/heroes/champion.jpg';
+  return '/heroes/hero_warrior.jpg';
 };
 
 export const CharacterCard: React.FC<CharacterCardProps> = ({

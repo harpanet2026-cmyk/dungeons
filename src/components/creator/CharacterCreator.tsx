@@ -130,7 +130,22 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
         secretsOrHooks: secretsOrHooks.trim() || 'Carrega um medalhão com uma insígnia misteriosa.'
       },
       conditions: [],
-      notes: ''
+      notes: '',
+      avatarUrl: selectedRace.toLowerCase().includes('anão') || selectedRace.toLowerCase().includes('anao')
+        ? '/heroes/thorin_warrior.jpg'
+        : selectedClass.toLowerCase().includes('mago')
+        ? '/heroes/lyra_mage.jpg'
+        : selectedClass.toLowerCase().includes('ladino')
+        ? '/heroes/rogue.jpg'
+        : selectedClass.toLowerCase().includes('clérigo') || selectedClass.toLowerCase().includes('clerigo') || selectedClass.toLowerCase().includes('paladino')
+        ? '/heroes/cleric.jpg'
+        : selectedClass.toLowerCase().includes('druida') || selectedClass.toLowerCase().includes('patrulheiro')
+        ? '/heroes/druid.jpg'
+        : selectedClass.toLowerCase().includes('bruxo')
+        ? '/heroes/warlock.jpg'
+        : selectedClass.toLowerCase().includes('bardo')
+        ? '/heroes/bard.jpg'
+        : '/heroes/champion.jpg'
     };
 
     onAddCharacter(newChar);
