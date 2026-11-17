@@ -500,10 +500,10 @@ export const App: React.FC = () => {
         </div>
       )}
 
-      {/* HERO SECTION estilo imagem template_estilo.png */}
+      {/* HERO SECTION estilo imagem background.jpg */}
       <section className="relative w-full overflow-hidden min-h-[580px] flex flex-col justify-between items-center text-center px-4 sm:px-6 lg:px-8 pt-16 pb-10 bg-center bg-cover border-b border-[#231b14]"
         style={{
-          backgroundImage: `linear-gradient(to bottom, rgba(8, 9, 13, 0.45) 0%, rgba(8, 9, 13, 0.75) 60%, #08090d 100%), url('/hero-bg.png')`
+          backgroundImage: `linear-gradient(to bottom, rgba(8, 9, 13, 0.45) 0%, rgba(8, 9, 13, 0.75) 60%, #08090d 100%), url('/artes/background.jpg')`
         }}
       >
         <div className="max-w-3xl mx-auto space-y-4 relative z-10">
