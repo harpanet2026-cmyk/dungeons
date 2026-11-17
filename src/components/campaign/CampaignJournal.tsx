@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { CampaignData, SessionLogEntry, Quest, NpcContact, QuestStatus, NpcAttitude } from '../../core/types/campaign';
 import { CampaignManager } from '../../core/state/campaignManager';
-import { BookOpen, CheckCircle2, Clock, Plus, Users, Compass, Award, Tag, Sparkles, AlertCircle } from 'lucide-react';
+import { BookOpen, CheckCircle2, Clock, Plus, Users, Compass, Award, Tag, Sparkles, AlertCircle, Edit3, Save, Copy, Check, FileText } from 'lucide-react';
 
 export const CampaignJournal: React.FC = () => {
   const [data, setData] = useState<CampaignData>(() => CampaignManager.getCampaignData());
-  const [activeTab, setActiveTab] = useState<'logs' | 'quests' | 'npcs'>('logs');
+  const [activeTab, setActiveTab] = useState<'logs' | 'quests' | 'npcs' | 'dossier'>('logs');
+
+  // Estado do Dossiê no Diário
+  const [dossierContent, setDossierContent] = useState<string>(() => CampaignManager.getDossier());
+  const [isEditingDossier, setIsEditingDossier] = useState(false);
+  const [dossierSavedFeedback, setDossierSavedFeedback] = useState(false);
 
   // Modais de Criação
   const [isAddingLog, setIsAddingLog] = useState(false);
@@ -96,6 +101,20 @@ export const CampaignJournal: React.FC = () => {
     refreshData();
   };
 
+  const handleSaveDossier = () => {
+    CampaignManager.saveDossier(dossierContent);
+    setIsEditingDossier(false);
+    setDossierSavedFeedback(true);
+    setTimeout(() => setDossierSavedFeedback(false), 2000);
+    refreshData();
+  };
+
+  const handleCopyDossier = () => {
+    navigator.clipboard.writeText(dossierContent);
+    setDossierSavedFeedback(true);
+    setTimeout(() => setDossierSavedFeedback(false), 2000);
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in">
       {/* Top Banner */}
@@ -138,6 +157,15 @@ export const CampaignJournal: React.FC = () => {
           >
             <Users className="w-3.5 h-3.5" />
             NPCs ({data.npcs.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('dossier')}
+            className={`px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 ${
+              activeTab === 'dossier' ? 'bg-[#f5ba42] text-stone-950 font-black shadow' : 'text-stone-400 hover:text-stone-200'
+            }`}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Dossiê de Campanha
           </button>
         </div>
       </div>
@@ -455,6 +483,85 @@ export const CampaignJournal: React.FC = () => {
                 )}
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. ABA: DOSSIÊ DE CAMPANHA */}
+      {activeTab === 'dossier' && (
+        <div className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-[#12141e] border border-[#23293a] p-4 rounded-xl">
+            <div>
+              <h3 className="font-cinzel text-base font-bold text-[#f5ba42] flex items-center gap-2">
+                <FileText className="w-4 h-4 text-[#f5ba42]" />
+                Dossiê Canônico da Campanha
+              </h3>
+              <p className="text-xs text-stone-400 mt-0.5">
+                Este dossiê define a premissa, antagonistas, tom e ganchos narrativos que o Mestre IA (Gemini Pro) segue estritamente.
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              {dossierSavedFeedback && (
+                <span className="text-xs text-emerald-400 flex items-center gap-1 font-bold animate-pulse">
+                  <Check className="w-3.5 h-3.5" /> Atualizado!
+                </span>
+              )}
+              {isEditingDossier ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setDossierContent(CampaignManager.getDossier());
+                      setIsEditingDossier(false);
+                    }}
+                    className="px-3 py-1.5 rounded-lg text-xs font-medium text-stone-400 hover:text-stone-200 border border-[#2a3449]"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSaveDossier}
+                    className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold text-[#f5ba42] flex items-center gap-1.5 shadow"
+                  >
+                    <Save className="w-3.5 h-3.5" /> Salvar Dossiê
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleCopyDossier}
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold text-stone-300 hover:text-[#f5ba42] bg-[#1a2030] border border-[#2a3449] flex items-center gap-1.5 transition-all"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> Copiar Texto
+                  </button>
+                  <button
+                    onClick={() => setIsEditingDossier(true)}
+                    className="bronze-btn px-4 py-1.5 rounded-lg text-xs font-bold text-[#f5ba42] flex items-center gap-1.5 shadow"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" /> Editar Dossiê
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-[#0b0d14] border border-[#231b14] rounded-xl p-5 shadow-inner">
+            {isEditingDossier ? (
+              <div className="space-y-3">
+                <textarea
+                  value={dossierContent}
+                  onChange={(e) => setDossierContent(e.target.value)}
+                  rows={20}
+                  className="w-full bg-[#08090f] border border-[#a17036]/60 rounded-xl p-4 text-xs font-mono text-stone-200 focus:outline-none focus:border-[#f5ba42] focus:ring-1 focus:ring-[#f5ba42] leading-relaxed resize-y"
+                  placeholder="Cole ou redija o dossiê oficial da sua campanha aqui..."
+                />
+                <p className="text-[11px] text-stone-500 italic">
+                  Dica: Você também pode gerar dossiês automaticamente escolhendo arquétipos (Mortos-Vivos, Dragões, etc.) diretamente no painel do Mestre IA ao Vivo!
+                </p>
+              </div>
+            ) : (
+              <div className="prose prose-invert max-w-none text-xs sm:text-sm text-stone-300 font-mono whitespace-pre-wrap leading-relaxed select-text bg-[#07080d] p-5 rounded-lg border border-[#1e2436]">
+                {dossierContent || 'Nenhum dossiê de campanha definido ainda. Clique em "Editar Dossiê" para colar o seu enredo ou selecione um arquétipo no Mestre IA.'}
+              </div>
+            )}
           </div>
         </div>
       )}

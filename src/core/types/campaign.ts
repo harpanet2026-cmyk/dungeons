@@ -36,6 +36,8 @@ export interface NpcContact {
 
 export interface CampaignData {
   title: string;
+  themeId?: string;
+  dossier?: string;
   logs: SessionLogEntry[];
   quests: Quest[];
   npcs: NpcContact[];

@@ -1,9 +1,12 @@
 import { CampaignData, SessionLogEntry, Quest, NpcContact } from '../types/campaign';
+import { ADVENTURE_THEMES } from '../campaign/adventureThemes';
 
 const STORAGE_CAMPAIGN_KEY = 'dungeons_gemini_campaign_v1';
 
 export const INITIAL_CAMPAIGN_DATA: CampaignData = {
   title: 'As Criptas Esquecidas de Kar-Drakor',
+  themeId: 'undead_plague',
+  dossier: ADVENTURE_THEMES[0].defaultDossier,
   logs: [
     {
       id: 'log_1',
@@ -72,6 +75,8 @@ export class CampaignManager {
       const parsed = JSON.parse(raw);
       return {
         title: parsed.title || INITIAL_CAMPAIGN_DATA.title,
+        themeId: parsed.themeId || INITIAL_CAMPAIGN_DATA.themeId,
+        dossier: parsed.dossier || INITIAL_CAMPAIGN_DATA.dossier,
         logs: Array.isArray(parsed.logs) ? parsed.logs : INITIAL_CAMPAIGN_DATA.logs,
         quests: Array.isArray(parsed.quests) ? parsed.quests : INITIAL_CAMPAIGN_DATA.quests,
         npcs: Array.isArray(parsed.npcs) ? parsed.npcs : INITIAL_CAMPAIGN_DATA.npcs
@@ -79,6 +84,26 @@ export class CampaignManager {
     } catch {
       return INITIAL_CAMPAIGN_DATA;
     }
+  }
+
+  static getDossier(): string {
+    return this.getCampaignData().dossier || INITIAL_CAMPAIGN_DATA.dossier || '';
+  }
+
+  static saveDossier(dossier: string): void {
+    const data = this.getCampaignData();
+    data.dossier = dossier;
+    this.saveCampaignData(data);
+  }
+
+  static getThemeId(): string {
+    return this.getCampaignData().themeId || 'undead_plague';
+  }
+
+  static saveThemeId(themeId: string): void {
+    const data = this.getCampaignData();
+    data.themeId = themeId;
+    this.saveCampaignData(data);
   }
 
   static saveCampaignData(data: CampaignData): void {

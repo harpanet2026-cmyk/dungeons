@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Character, Enemy } from '../../core/types/dnd';
 import { GeminiApiService, ChatMessage } from '../../core/gemini/geminiApiService';
-import { Sparkles, Send, Key, Settings, Trash2, Bot, User, AlertCircle, RefreshCw } from 'lucide-react';
+import { CampaignManager } from '../../core/state/campaignManager';
+import { ADVENTURE_THEMES, AdventureTheme } from '../../core/campaign/adventureThemes';
+import { Sparkles, Send, Key, Settings, Trash2, Bot, User, AlertCircle, RefreshCw, BookOpen, Wand2, Check, Copy, ChevronDown, ChevronUp, Play, Flame, Shield } from 'lucide-react';
 
 interface GeminiLiveChatProps {
   characters: Character[];
@@ -16,6 +18,15 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   const [apiKey, setApiKey] = useState<string>(() => GeminiApiService.getApiKey());
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(() => !GeminiApiService.getApiKey());
   const [model, setModel] = useState<string>(() => GeminiApiService.getModel());
+
+  // Estado do Dossiê de Campanha e Tipos de Aventura
+  const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
+  const [selectedThemeId, setSelectedThemeId] = useState<string>(() => CampaignManager.getThemeId());
+  const [dossierText, setDossierText] = useState<string>(() => CampaignManager.getDossier());
+  const [userDesires, setUserDesires] = useState<string>('');
+  const [isGeneratingDossier, setIsGeneratingDossier] = useState<boolean>(false);
+  const [dossierFeedback, setDossierFeedback] = useState<string | null>(null);
+
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     return [
       {
@@ -42,6 +53,67 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
     GeminiApiService.setModel(model);
     setIsConfigOpen(false);
     setErrorMessage(null);
+  };
+
+  const handleSelectTheme = (theme: AdventureTheme) => {
+    setSelectedThemeId(theme.id);
+    CampaignManager.saveThemeId(theme.id);
+    setDossierText(theme.defaultDossier);
+    setDossierFeedback(`Tema "${theme.title}" selecionado! O modelo base foi carregado no dossiê.`);
+    setTimeout(() => setDossierFeedback(null), 3000);
+  };
+
+  const handleGenerateDossierWithAI = async () => {
+    if (!apiKey) {
+      setIsConfigOpen(true);
+      setErrorMessage('Por favor, informe sua API Key do Google AI Studio para gerar a aventura com IA.');
+      return;
+    }
+
+    const currentTheme = ADVENTURE_THEMES.find(t => t.id === selectedThemeId) || ADVENTURE_THEMES[0];
+    setIsGeneratingDossier(true);
+    setDossierFeedback(null);
+
+    try {
+      const generated = await GeminiApiService.generateCustomDossierWithAI(
+        currentTheme.title,
+        currentTheme.shortDesc,
+        userDesires,
+        characters
+      );
+
+      if (generated) {
+        setDossierText(generated);
+        CampaignManager.saveDossier(generated);
+        setDossierFeedback('✨ Aventura épica criada com sucesso pelo Gemini Pro e salva no Dossiê!');
+      }
+    } catch (err: any) {
+      setDossierFeedback(`Erro ao gerar aventura: ${err.message || 'Falha na API'}`);
+    } finally {
+      setIsGeneratingDossier(false);
+      setTimeout(() => setDossierFeedback(null), 4000);
+    }
+  };
+
+  const handleSaveDossier = () => {
+    CampaignManager.saveDossier(dossierText);
+    setDossierFeedback('✓ Dossiê de Campanha salvo com sucesso!');
+    setTimeout(() => {
+      setDossierFeedback(null);
+      setIsDossierOpen(false);
+    }, 1500);
+  };
+
+  const handleSaveAndStartAdventure = () => {
+    CampaignManager.saveDossier(dossierText);
+    setIsDossierOpen(false);
+    const theme = ADVENTURE_THEMES.find(t => t.id === selectedThemeId);
+    const themeName = theme ? theme.title : 'Aventura Personalizada';
+    
+    // Envia a ação para iniciar no chat
+    handleSendMessage(
+      `Mestre, definimos o Dossiê da nossa Campanha ("${themeName}").\n\nDiretrizes do Dossiê:\n${dossierText.slice(0, 450)}...\n\nPor favor, dê início à nossa campanha! Descreva a atmosfera inicial e coloque nossos heróis imediatamente na cena de abertura!`
+    );
   };
 
   const handleSendMessage = async (customText?: string) => {
@@ -71,7 +143,8 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
         textToSend,
         messages,
         characters,
-        enemies
+        enemies,
+        dossierText
       );
 
       const modelMessage: ChatMessage = {
@@ -122,9 +195,35 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Botão Dossiê & Tipos de Aventura */}
+          <button
+            onClick={() => {
+              setIsDossierOpen(!isDossierOpen);
+              setIsConfigOpen(false);
+            }}
+            className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all border ${
+              isDossierOpen
+                ? 'bg-[#231b14] text-[#f5ba42] border-[#f5ba42] ring-1 ring-amber-500/50'
+                : dossierText
+                ? 'bg-[#18130e] text-[#f5ba42] border-[#a17036] hover:border-[#f5ba42]'
+                : 'bg-[#141824] text-stone-300 border-[#2b334a] hover:border-stone-500'
+            }`}
+            title="Dossiê de Campanha & Gerador de Tipos de Aventura"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-[#f5ba42]" />
+            <span className="hidden sm:inline">Dossiê de Campanha</span>
+            <span className="sm:hidden">Dossiê</span>
+            {dossierText && (
+              <span className="w-2 h-2 rounded-full bg-emerald-400 inline-block" />
+            )}
+          </button>
+
           {/* Status da API Key */}
           <button
-            onClick={() => setIsConfigOpen(!isConfigOpen)}
+            onClick={() => {
+              setIsConfigOpen(!isConfigOpen);
+              setIsDossierOpen(false);
+            }}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors border ${
               apiKey
                 ? 'bg-[#141b2b] text-emerald-300 border-emerald-800'
@@ -149,6 +248,166 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Painel Expansível de Dossiê de Campanha e Tipos de Aventura */}
+      {isDossierOpen && (
+        <div className="bg-[#10131d] border-b-2 border-[#a17036] p-4 sm:p-5 space-y-4 animate-in slide-in-from-top-3 text-xs max-h-[85%] overflow-y-auto">
+          <div className="flex items-start justify-between gap-3 border-b border-[#231b14] pb-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-[#f5ba42]" />
+                <h4 className="font-cinzel text-sm sm:text-base font-bold gold-gradient-text tracking-wider uppercase">
+                  Dossiê de Campanha & Tipos de Aventura
+                </h4>
+              </div>
+              <p className="text-[11px] text-stone-400 mt-0.5">
+                Escolha o arquétipo de aventura que deseja viver, use a IA para gerar os detalhes ou cole seu próprio lore de campanha.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setIsDossierOpen(false)}
+              className="text-stone-400 hover:text-stone-100 text-xs px-2.5 py-1 rounded border border-transparent hover:border-stone-700"
+            >
+              Fechar
+            </button>
+          </div>
+
+          {/* 1. Escolha entre Vários Tipos de Aventura */}
+          <div className="space-y-2">
+            <span className="font-cinzel text-[11px] font-bold uppercase tracking-wider text-[#f5ba42] block">
+              1. Escolha o Tipo de Aventura para esta Campanha:
+            </span>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+              {ADVENTURE_THEMES.map(theme => {
+                const isSelected = theme.id === selectedThemeId;
+                return (
+                  <div
+                    key={theme.id}
+                    onClick={() => handleSelectTheme(theme)}
+                    className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between space-y-1.5 ${
+                      isSelected
+                        ? 'bg-[#22180f] border-[#f5ba42] ring-1 ring-amber-500/50 shadow-md'
+                        : 'bg-[#141824] border-[#262f44] hover:border-[#a17036] hover:bg-[#191f30]'
+                    }`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <span className="text-xl shrink-0">{theme.icon}</span>
+                      <div className="min-w-0">
+                        <h5 className={`font-cinzel text-xs font-bold leading-tight ${isSelected ? 'text-[#f5ba42]' : 'text-stone-200'}`}>
+                          {theme.title}
+                        </h5>
+                        <span className="text-[10px] text-stone-400 block line-clamp-2 mt-0.5">
+                          {theme.shortDesc}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1 border-t border-[#231b14] text-[9px]">
+                      <span className="text-stone-400 uppercase font-semibold">{theme.tone.split(',')[0]}</span>
+                      {isSelected && <span className="text-emerald-400 font-bold">✓ Ativo</span>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 2. Personalização & Geração com Gemini */}
+          <div className="bg-[#0b0e15] border border-[#231b14] p-3.5 rounded-xl space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-cinzel text-[11px] font-bold uppercase tracking-wider text-stone-200 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-[#f5ba42]" />
+                2. O que você quer viver na campanha? (Personalize seu Desejo):
+              </span>
+              <span className="text-[10px] text-stone-400">O Gemini Pro adaptará a aventura aos seus heróis</span>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                value={userDesires}
+                onChange={e => setUserDesires(e.target.value)}
+                placeholder="Ex: Quero uma masmorra de mortos-vivos com uma cripta antiga, um livro amaldiçoado e um lich conspirador..."
+                className="flex-1 bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none placeholder:text-stone-600"
+              />
+
+              <button
+                type="button"
+                onClick={handleGenerateDossierWithAI}
+                disabled={isGeneratingDossier}
+                className="bronze-btn px-4 py-2 rounded-xl text-xs font-cinzel font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-lg text-[#f5ba42] disabled:opacity-50 shrink-0"
+              >
+                <Wand2 className={`w-3.5 h-3.5 ${isGeneratingDossier ? 'animate-spin' : ''}`} />
+                <span>{isGeneratingDossier ? 'Criando Aventura...' : '⚡ Gerar com IA (Gemini)'}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 3. Área de Texto do Dossiê (Colável e Editável) */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="font-cinzel text-[11px] font-bold uppercase tracking-wider text-stone-300">
+                3. Texto do Dossiê de Campanha (Cole aqui seu material ou edite as diretrizes):
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(dossierText);
+                  setDossierFeedback('Dossiê copiado para a área de transferência!');
+                  setTimeout(() => setDossierFeedback(null), 2500);
+                }}
+                className="text-[10px] text-stone-400 hover:text-[#f5ba42] flex items-center gap-1 transition-colors"
+              >
+                <Copy className="w-3 h-3" /> Copiar Texto
+              </button>
+            </div>
+
+            <textarea
+              rows={6}
+              value={dossierText}
+              onChange={e => setDossierText(e.target.value)}
+              placeholder="Cole aqui o dossiê da campanha (lore, sinopse, vilão, gancho inicial, locais e segredos)..."
+              className="w-full bg-[#090b10] border border-[#262f44] focus:border-[#f5ba42] rounded-xl p-3 text-stone-200 text-xs font-mono outline-none leading-relaxed"
+            />
+          </div>
+
+          {/* Feedback temporário */}
+          {dossierFeedback && (
+            <div className="p-2.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-200 text-xs flex items-center gap-2">
+              <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+              <span>{dossierFeedback}</span>
+            </div>
+          )}
+
+          {/* Rodapé de Ações do Dossiê */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-[#231b14]">
+            <span className="text-[10px] text-stone-400 italic">
+              Este dossiê será injetado diretamente nas diretrizes secretas do Mestre Gemini Pro.
+            </span>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSaveDossier}
+                className="px-4 py-2 bg-[#141824] hover:bg-[#1d2333] border border-[#2b334a] hover:border-[#a17036] rounded-xl text-xs font-bold text-stone-200 uppercase tracking-wider transition-colors"
+              >
+                Salvar Dossiê
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveAndStartAdventure}
+                className="bronze-btn px-5 py-2 rounded-xl text-xs font-cinzel font-bold text-[#f5ba42] uppercase tracking-wider flex items-center gap-2 shadow-lg"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Salvar & Iniciar Aventura no Chat</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Painel Expansível de Configuração da API */}
       {isConfigOpen && (
