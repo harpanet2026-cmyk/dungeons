@@ -11,7 +11,25 @@ export interface ClassDefinition {
   weaponProficiencies: string[];
   description: string;
   suggestedRoles: ('Tank' | 'DPS' | 'Healer' | 'Control' | 'Utility' | 'Support')[];
+  imageUrl?: string;
 }
+
+export const getClassPortrait = (className: string): string => {
+  const c = (className || '').toLowerCase().trim();
+  if (c.includes('mago')) return '/artes/mago.jpeg';
+  if (c.includes('guerreiro')) return '/artes/guerreiro.jpeg';
+  if (c.includes('ladino')) return '/artes/ladino.jpeg';
+  if (c.includes('clérigo') || c.includes('clerigo')) return '/artes/clerigo.jpeg';
+  if (c.includes('bárbaro') || c.includes('barbaro')) return '/artes/barbaro.jpeg';
+  if (c.includes('bardo')) return '/artes/bardo.jpeg';
+  if (c.includes('paladino')) return '/artes/paladino.jpeg';
+  if (c.includes('patrulheiro') || c.includes('ranger')) return '/artes/patrulheiro.jpeg';
+  if (c.includes('druida')) return '/artes/druida.jpeg';
+  if (c.includes('monge')) return '/artes/monge.jpeg';
+  if (c.includes('bruxo')) return '/artes/bruxo.jpeg';
+  if (c.includes('feiticeiro')) return '/artes/feiticeiro.jpeg';
+  return '/artes/guerreiro.jpeg';
+};
 
 export interface RaceDefinition {
   name: string;
@@ -40,7 +58,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Todas as armaduras', 'Escudos'],
     weaponProficiencies: ['Armas simples', 'Armas marciais'],
     description: 'Mestre do combate marcial, perito com uma variedade de armas e armaduras.',
-    suggestedRoles: ['Tank', 'DPS']
+    suggestedRoles: ['Tank', 'DPS'],
+    imageUrl: '/artes/guerreiro.jpeg'
   },
   Mago: {
     name: 'Mago',
@@ -52,7 +71,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Nenhuma'],
     weaponProficiencies: ['Adagas', 'Dardos', 'Fundas', 'Bordões', 'Bestas leves'],
     description: 'Conjurador erudito capaz de manipular a própria estrutura da realidade através de feitiços arcanos.',
-    suggestedRoles: ['Control', 'DPS', 'Utility']
+    suggestedRoles: ['Control', 'DPS', 'Utility'],
+    imageUrl: '/artes/mago.jpeg'
   },
   Ladino: {
     name: 'Ladino',
@@ -63,7 +83,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves'],
     weaponProficiencies: ['Armas simples', 'Bestas de mão', 'Espadas longas', 'Rapieiras', 'Espadas curtas'],
     description: 'Especialista em furtividade, precisão cirúrgica e resolução engenhosa de problemas.',
-    suggestedRoles: ['DPS', 'Utility']
+    suggestedRoles: ['DPS', 'Utility'],
+    imageUrl: '/artes/ladino.jpeg'
   },
   Clérigo: {
     name: 'Clérigo',
@@ -75,7 +96,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves', 'Armaduras médias', 'Escudos'],
     weaponProficiencies: ['Armas simples'],
     description: 'Campeão sacerdotal que empunha magia divina e canaliza o poder de sua divindade.',
-    suggestedRoles: ['Healer', 'Support', 'Tank']
+    suggestedRoles: ['Healer', 'Support', 'Tank'],
+    imageUrl: '/artes/clerigo.jpeg'
   },
   Bárbaro: {
     name: 'Bárbaro',
@@ -86,7 +108,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves', 'Armaduras médias', 'Escudos'],
     weaponProficiencies: ['Armas simples', 'Armas marciais'],
     description: 'Guerreiro feroz guiado por instinto primal e fúria em combate.',
-    suggestedRoles: ['Tank', 'DPS']
+    suggestedRoles: ['Tank', 'DPS'],
+    imageUrl: '/artes/barbaro.jpeg'
   },
   Bardo: {
     name: 'Bardo',
@@ -98,7 +121,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves'],
     weaponProficiencies: ['Armas simples', 'Bestas de mão', 'Espadas longas', 'Rapieiras', 'Espadas curtas'],
     description: 'Mestre da canção e da magia, capaz de inspirar aliados e manipular inimigos.',
-    suggestedRoles: ['Support', 'Control', 'Utility']
+    suggestedRoles: ['Support', 'Control', 'Utility'],
+    imageUrl: '/artes/bardo.jpeg'
   },
   Paladino: {
     name: 'Paladino',
@@ -110,7 +134,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Todas as armaduras', 'Escudos'],
     weaponProficiencies: ['Armas simples', 'Armas marciais'],
     description: 'Guerreiro santo juramentado a defender a justiça com espada e milagre.',
-    suggestedRoles: ['Tank', 'DPS', 'Healer']
+    suggestedRoles: ['Tank', 'DPS', 'Healer'],
+    imageUrl: '/artes/paladino.jpeg'
   },
   Patrulheiro: {
     name: 'Patrulheiro',
@@ -122,7 +147,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves', 'Armaduras médias', 'Escudos'],
     weaponProficiencies: ['Armas simples', 'Armas marciais'],
     description: 'Guerreiro dos ermos, rastreador supremo e protetor das fronteiras selvagens.',
-    suggestedRoles: ['DPS', 'Utility']
+    suggestedRoles: ['DPS', 'Utility'],
+    imageUrl: '/artes/patrulheiro.jpeg'
   },
   Druida: {
     name: 'Druida',
@@ -134,7 +160,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves', 'Armaduras médias (não-metálicas)', 'Escudos'],
     weaponProficiencies: ['Clavas', 'Adagas', 'Dardos', 'Azagaias', 'Maças', 'Bordões', 'Cimitarras', 'Foices', 'Fundas', 'Lanças'],
     description: 'Guardião das forças naturais e mestre da metamorfose selvagem.',
-    suggestedRoles: ['Control', 'Healer', 'Utility', 'Tank']
+    suggestedRoles: ['Control', 'Healer', 'Utility', 'Tank'],
+    imageUrl: '/artes/druida.jpeg'
   },
   Monge: {
     name: 'Monge',
@@ -145,7 +172,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Nenhuma'],
     weaponProficiencies: ['Armas simples', 'Espadas curtas'],
     description: 'Praticante de artes marciais que canaliza energia Ki corporal.',
-    suggestedRoles: ['DPS', 'Control']
+    suggestedRoles: ['DPS', 'Control'],
+    imageUrl: '/artes/monge.jpeg'
   },
   Bruxo: {
     name: 'Bruxo',
@@ -157,7 +185,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Armaduras leves'],
     weaponProficiencies: ['Armas simples'],
     description: 'Portador de segredos arcanos outorgados por um patrono extraplanar.',
-    suggestedRoles: ['DPS', 'Control']
+    suggestedRoles: ['DPS', 'Control'],
+    imageUrl: '/artes/bruxo.jpeg'
   },
   Feiticeiro: {
     name: 'Feiticeiro',
@@ -169,7 +198,8 @@ export const CLASSES_5E: Record<string, ClassDefinition> = {
     armorProficiencies: ['Nenhuma'],
     weaponProficiencies: ['Adagas', 'Dardos', 'Fundas', 'Bordões', 'Bestas leves'],
     description: 'Conjurador cujo poder mágico flui de sua linhagem mágica ou anomalia cósmica.',
-    suggestedRoles: ['DPS', 'Control']
+    suggestedRoles: ['DPS', 'Control'],
+    imageUrl: '/artes/feiticeiro.jpeg'
   }
 };
 

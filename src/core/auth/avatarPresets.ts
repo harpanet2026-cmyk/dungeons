@@ -2,88 +2,116 @@ import { AvatarPreset } from '../types/auth';
 
 export const AVATAR_PRESETS: AvatarPreset[] = [
   {
+    id: 'avatar_mage_art',
+    name: 'Mago Arcano',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/mago.jpeg'
+  },
+  {
+    id: 'avatar_warrior_art',
+    name: 'Guerreiro Marcial',
+    category: 'guerreiro',
+    iconName: 'Swords',
+    image: '/artes/guerreiro.jpeg'
+  },
+  {
+    id: 'avatar_rogue_art',
+    name: 'Ladino das Sombras',
+    category: 'ladino',
+    iconName: 'Skull',
+    image: '/artes/ladino.jpeg'
+  },
+  {
+    id: 'avatar_cleric_art',
+    name: 'Clérigo da Fé',
+    category: 'conjurador',
+    iconName: 'Sun',
+    image: '/artes/clerigo.jpeg'
+  },
+  {
+    id: 'avatar_barbarian_art',
+    name: 'Bárbaro Primal',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/barbaro.jpeg'
+  },
+  {
+    id: 'avatar_bard_art',
+    name: 'Bardo Menestrel',
+    category: 'conjurador',
+    iconName: 'Music',
+    image: '/artes/bardo.jpeg'
+  },
+  {
+    id: 'avatar_paladin_art',
+    name: 'Paladino Sagrado',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/paladino.jpeg'
+  },
+  {
+    id: 'avatar_ranger_art',
+    name: 'Patrulheiro dos Ermos',
+    category: 'guerreiro',
+    iconName: 'Compass',
+    image: '/artes/patrulheiro.jpeg'
+  },
+  {
+    id: 'avatar_druid_art',
+    name: 'Druida da Natureza',
+    category: 'conjurador',
+    iconName: 'Compass',
+    image: '/artes/druida.jpeg'
+  },
+  {
+    id: 'avatar_monk_art',
+    name: 'Monge Ki',
+    category: 'guerreiro',
+    iconName: 'Zap',
+    image: '/artes/monge.jpeg'
+  },
+  {
+    id: 'avatar_warlock_art',
+    name: 'Bruxo do Pacto',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/bruxo.jpeg'
+  },
+  {
+    id: 'avatar_sorcerer_art',
+    name: 'Feiticeiro Dracônico',
+    category: 'conjurador',
+    iconName: 'Flame',
+    image: '/artes/feiticeiro.jpeg'
+  },
+  {
+    id: 'avatar_balrog_art',
+    name: 'Balrog Demônio Maior',
+    category: 'monstro',
+    iconName: 'Flame',
+    image: '/artes/Balrog.jpeg'
+  },
+  {
+    id: 'avatar_vampire_art',
+    name: 'Lorde Vampiro',
+    category: 'monstro',
+    iconName: 'Skull',
+    image: '/artes/vampiro.jpeg'
+  },
+  {
+    id: 'avatar_troll_art',
+    name: 'Troll da Caverna',
+    category: 'monstro',
+    iconName: 'Zap',
+    image: '/artes/Troll.jpeg'
+  },
+  {
     id: 'avatar_dm_tome',
     name: 'Mestre da Masmorra',
     category: 'mestre',
     iconName: 'Crown',
-    image: '/heroes/hero_warrior.jpg'
-  },
-  {
-    id: 'avatar_warrior_dwarf',
-    name: 'Thorin (Guerreiro Anão)',
-    category: 'guerreiro',
-    iconName: 'Shield',
-    image: '/heroes/thorin_warrior.jpg'
-  },
-  {
-    id: 'avatar_mage_elf',
-    name: 'Lyra (Maga Elfa)',
-    category: 'conjurador',
-    iconName: 'Sparkles',
-    image: '/heroes/lyra_mage.jpg'
-  },
-  {
-    id: 'avatar_champion_volo',
-    name: 'Guerreiro Campeão (Volo)',
-    category: 'guerreiro',
-    iconName: 'Swords',
-    image: '/heroes/champion.jpg'
-  },
-  {
-    id: 'avatar_rogue_shadow',
-    name: 'Ladino das Sombras',
-    category: 'ladino',
-    iconName: 'Skull',
-    image: '/heroes/rogue.jpg'
-  },
-  {
-    id: 'avatar_cleric_sun',
-    name: 'Clérigo da Luz',
-    category: 'conjurador',
-    iconName: 'Sun',
-    image: '/heroes/cleric.jpg'
-  },
-  {
-    id: 'avatar_druid_volo',
-    name: 'Arquidruida (Guia de Volo)',
-    category: 'conjurador',
-    iconName: 'Compass',
-    image: '/heroes/druid.jpg'
-  },
-  {
-    id: 'avatar_warlock_volo',
-    name: 'Bruxo Arquiférico (Guia de Volo)',
-    category: 'conjurador',
-    iconName: 'Sparkles',
-    image: '/heroes/warlock.jpg'
-  },
-  {
-    id: 'avatar_bard_volo',
-    name: 'Bardo Trovador (Guia de Volo)',
-    category: 'conjurador',
-    iconName: 'Music',
-    image: '/heroes/bard.jpg'
-  },
-  {
-    id: 'avatar_mind_flayer',
-    name: 'Devorador de Mentes (Guia de Volo)',
-    category: 'monstro',
-    iconName: 'Zap',
-    image: '/monsters/mind_flayer.jpg'
-  },
-  {
-    id: 'avatar_beholder',
-    name: 'Beholder Observador (Guia de Volo)',
-    category: 'monstro',
-    iconName: 'Eye',
-    image: '/monsters/beholder.jpg'
-  },
-  {
-    id: 'avatar_dragon_fire',
-    name: 'Guarda Dragonete (Guia de Volo)',
-    category: 'monstro',
-    iconName: 'Flame',
-    image: '/monsters/dragon.jpg'
+    image: '/artes/guerreiro.jpeg'
   }
 ];
 
@@ -91,5 +119,5 @@ export const getAvatarImage = (avatarIdOrUrl: string): string => {
   const preset = AVATAR_PRESETS.find(p => p.id === avatarIdOrUrl);
   if (preset && preset.image) return preset.image;
   if (avatarIdOrUrl.startsWith('http') || avatarIdOrUrl.startsWith('/')) return avatarIdOrUrl;
-  return '/extracted_art/art_0.jpg';
+  return '/artes/guerreiro.jpeg';
 };

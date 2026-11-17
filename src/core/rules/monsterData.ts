@@ -40,16 +40,21 @@ export const CR_XP_MAP: Record<string, number> = {
 
 export const getMonsterFallbackImage = (name: string, type?: string): string => {
   const n = (name + ' ' + (type || '')).toLowerCase();
-  if (n.includes('goblin')) return '/monsters/goblin.jpg';
-  if (n.includes('kobold')) return '/monsters/kobold.jpg';
-  if (n.includes('orc')) return '/monsters/orc.jpg';
+  if (n.includes('goblin')) return '/artes/goblin.jpeg';
+  if (n.includes('kobold')) return '/artes/kobold.jpeg';
+  if (n.includes('orc')) return '/artes/orc.jpeg';
+  if (n.includes('aranha') || n.includes('spider')) return '/artes/aranha.jpeg';
+  if (n.includes('balrog') || n.includes('demônio') || n.includes('demonio') || n.includes('demon') || n.includes('fiend')) return '/artes/Balrog.jpeg';
+  if (n.includes('espectro') || n.includes('fantasma') || n.includes('ghost') || n.includes('wraith') || n.includes('specter')) return '/artes/espectro.jpeg';
+  if (n.includes('esqueleto') || n.includes('skeleton')) return '/artes/esqueleto.jpeg';
+  if (n.includes('hobgoblin') || n.includes('hobiglobin')) return '/artes/hobiglobin.jpeg';
+  if (n.includes('troll')) return '/artes/Troll.jpeg';
+  if (n.includes('vampiro') || n.includes('vampire')) return '/artes/vampiro.jpeg';
+  if (n.includes('zumbi') || n.includes('zombie')) return '/artes/zumbi.jpeg';
   if (n.includes('mente') || n.includes('mind') || n.includes('flayer') || n.includes('ilithid')) return '/monsters/mind_flayer.jpg';
   if (n.includes('beholder') || n.includes('observador')) return '/monsters/beholder.jpg';
   if (n.includes('gnoll')) return '/monsters/gnoll.jpg';
   if (n.includes('ogro') || n.includes('ogre')) return '/monsters/ogre.jpg';
-  if (n.includes('troll')) return '/monsters/troll.jpg';
-  if (n.includes('zumbi') || n.includes('zombie')) return '/monsters/zombie.jpg';
-  if (n.includes('esqueleto') || n.includes('skeleton')) return '/monsters/skeleton.jpg';
   if (n.includes('lobo') || n.includes('wolf')) return '/monsters/wolf.jpg';
   if (n.includes('dragão') || n.includes('dragao') || n.includes('dragon')) return '/monsters/dragon.jpg';
   if (n.includes('bruxa') || n.includes('hag') || n.includes('medusa')) return '/monsters/hag.jpg';
@@ -62,7 +67,7 @@ export const getMonsterFallbackImage = (name: string, type?: string): string => 
   if (n.includes('manticora') || n.includes('manticore')) return '/monsters/manticore.jpg';
   if (n.includes('cubo') || n.includes('gelatinoso')) return '/monsters/gelatinous_cube.jpg';
   if (n.includes('carniçal') || n.includes('ghoul')) return '/monsters/gnoll.jpg';
-  return '/monsters/orc.jpg';
+  return '/artes/orc.jpeg';
 };
 
 export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'conditions'>> = {
@@ -70,7 +75,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Goblin: {
     name: 'Goblin Batedor',
     type: 'Humanoide (Goblinóide)',
-    imageUrl: '/monsters/goblin.jpg',
+    imageUrl: '/artes/goblin.jpeg',
     cr: '1/4',
     xp: 50,
     ac: 15,
@@ -88,6 +93,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Kobold: {
     name: 'Kobold Emboscador',
     type: 'Humanoide (Dracônico)',
+    imageUrl: '/artes/kobold.jpeg',
     cr: '1/8',
     xp: 25,
     ac: 12,
@@ -105,6 +111,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Orc: {
     name: 'Orc Guerreiro',
     type: 'Humanoide (Orc)',
+    imageUrl: '/artes/orc.jpeg',
     cr: '1/2',
     xp: 100,
     ac: 13,
@@ -122,6 +129,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Esqueleto: {
     name: 'Esqueleto Legionário',
     type: 'Morto-vivo',
+    imageUrl: '/artes/esqueleto.jpeg',
     cr: '1/4',
     xp: 50,
     ac: 13,
@@ -139,6 +147,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Zumbi: {
     name: 'Zumbi Pútrido',
     type: 'Morto-vivo',
+    imageUrl: '/artes/zumbi.jpeg',
     cr: '1/4',
     xp: 50,
     ac: 8,
@@ -193,6 +202,59 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
       { id: 'atk_cimitarra_bandido', name: 'Cimitarra', bonus: 3, damage: '1d6 + 1', damageType: 'cortante', range: 'Corpo a corpo (1.5m)' },
       { id: 'atk_besta_leve', name: 'Besta Leve', bonus: 3, damage: '1d8 + 1', damageType: 'perfurante', range: 'Distância (24/96m)' }
     ]
+  },
+  Hobgoblin: {
+    name: 'Hobgoblin Capitão',
+    type: 'Humanoide (Goblinóide)',
+    imageUrl: '/artes/hobiglobin.jpeg',
+    cr: '1/2',
+    xp: 100,
+    ac: 18,
+    maxHp: 11,
+    speed: 9,
+    initiativeMod: 1,
+    passivePerception: 10,
+    savingThrows: {},
+    attacks: [
+      { id: 'atk_espada_longa_hob', name: 'Espada Longa', bonus: 3, damage: '1d8 + 1', damageType: 'cortante', range: 'Corpo a corpo (1.5m)' },
+      { id: 'atk_arco_longo_hob', name: 'Arco Longo', bonus: 3, damage: '1d8 + 1', damageType: 'perfurante', range: 'Distância (45/180m)' }
+    ],
+    notes: 'Vantagem Marcial: Causa 2d6 extra de dano se tiver um aliado próximo.'
+  },
+  AranhaGigante: {
+    name: 'Aranha Gigante',
+    type: 'Fera',
+    imageUrl: '/artes/aranha.jpeg',
+    cr: '1',
+    xp: 200,
+    ac: 14,
+    maxHp: 26,
+    speed: 9,
+    initiativeMod: 3,
+    passivePerception: 10,
+    savingThrows: {},
+    attacks: [
+      { id: 'atk_mordida_aranha', name: 'Mordida Venenosa', bonus: 5, damage: '1d8 + 3', damageType: 'perfurante', description: 'Mais 2d8 de veneno (CON CD 11 metade).' },
+      { id: 'atk_teia', name: 'Lançar Teia', bonus: 5, damage: '0', damageType: 'concussão', range: 'Distância (9/18m)', description: 'Alvo fica contido na teia (CD 12 FOR para escapar).' }
+    ],
+    notes: 'Escalada e Sentido de Teia.'
+  },
+  Espectro: {
+    name: 'Espectro Sombrio',
+    type: 'Morto-vivo',
+    imageUrl: '/artes/espectro.jpeg',
+    cr: '1',
+    xp: 200,
+    ac: 12,
+    maxHp: 22,
+    speed: 15,
+    initiativeMod: 2,
+    passivePerception: 10,
+    savingThrows: {},
+    attacks: [
+      { id: 'atk_dreno_vida', name: 'Dreno de Vida', bonus: 4, damage: '3d6', damageType: 'necrótico', range: 'Corpo a corpo (1.5m)', description: 'Alvo deve passar em salvaguarda de CON CD 10 ou seu HP máximo diminui pelo dano sofrido.' }
+    ],
+    notes: 'Movimento Incorpóreo: Pode atravessar criaturas e objetos como se fossem terreno difícil.'
   },
 
   // ND 1 a 3
@@ -304,6 +366,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Troll: {
     name: 'Troll da Caverna',
     type: 'Gigante',
+    imageUrl: '/artes/Troll.jpeg',
     cr: '5',
     xp: 1800,
     ac: 15,
@@ -509,6 +572,42 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
       }
     ],
     notes: 'Presença Aterradora (CD 21 SAB). Resistência Lendária (3/dia). Ações Lendárias (Ataque com cauda, bater de asas).'
+  },
+  Vampiro: {
+    name: 'Lorde Vampiro',
+    type: 'Morto-vivo (Metamorfo)',
+    imageUrl: '/artes/vampiro.jpeg',
+    cr: '13',
+    xp: 10000,
+    ac: 16,
+    maxHp: 144,
+    speed: 9,
+    initiativeMod: 4,
+    passivePerception: 17,
+    savingThrows: { des: 9, sab: 7, car: 9 },
+    attacks: [
+      { id: 'atk_garras_vampiro', name: 'Garras Cortantes', bonus: 9, damage: '2d8 + 4', damageType: 'cortante', range: 'Corpo a corpo (1.5m)', description: 'Alvo fica agarrado.' },
+      { id: 'atk_mordida_vampiro', name: 'Mordida Voraz', bonus: 9, damage: '1d6 + 4', damageType: 'perfurante', description: 'Mais 3d6 de necrótico. O vampiro regenera vida igual ao dano necrótico causado.' }
+    ],
+    notes: 'Regeneração: 20 PV no início de cada turno se não estiver exposto à luz solar.'
+  },
+  Balrog: {
+    name: 'Balrog (Demônio da Ruína)',
+    type: 'Corruptor (Demônio Maior)',
+    imageUrl: '/artes/Balrog.jpeg',
+    cr: '19',
+    xp: 22000,
+    ac: 19,
+    maxHp: 262,
+    speed: 12,
+    initiativeMod: 2,
+    passivePerception: 19,
+    savingThrows: { for: 14, con: 12, sab: 9, car: 11 },
+    attacks: [
+      { id: 'atk_espada_fogo', name: 'Espada de Fogo Primal', bonus: 14, damage: '3d8 + 8', damageType: 'cortante', description: 'Mais 3d8 de fogo.' },
+      { id: 'atk_chicote_fogo', name: 'Chicote de Chamas', bonus: 14, damage: '2d6 + 8', damageType: 'fogo', range: 'Corpo a corpo (9m)', description: 'Puxa o alvo até 7.5m.' }
+    ],
+    notes: 'Aura de Chamas: Criaturas a 1.5m sofrem 3d6 de fogo. Explosão da Morte: Ao morrer explode em 20d6 de fogo.'
   }
 };
 

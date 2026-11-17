@@ -61,7 +61,7 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
     },
     conditions: [],
     notes: 'Estilo de Combate: Defesa (+1 na CA).',
-    avatarUrl: '/heroes/thorin_warrior.jpg'
+    avatarUrl: '/artes/guerreiro.jpeg'
   },
   {
     id: 'char_lyra',
@@ -120,7 +120,7 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
     },
     conditions: [],
     notes: 'Tradição Arcana: Evocação.',
-    avatarUrl: '/heroes/lyra_mage.jpg'
+    avatarUrl: '/artes/mago.jpeg'
   }
 ];
 
@@ -134,7 +134,27 @@ export class SessionManager {
   private static loadFromStorage(): Character[] {
     try {
       const data = localStorage.getItem(STORAGE_KEY);
-      if (data) return JSON.parse(data);
+      if (data) {
+        const parsed: Character[] = JSON.parse(data);
+        return parsed.map(c => {
+          if (c.avatarUrl && c.avatarUrl.includes('/heroes/')) {
+            const cls = (c.class || '').toLowerCase();
+            if (cls.includes('mago')) c.avatarUrl = '/artes/mago.jpeg';
+            else if (cls.includes('guerreiro')) c.avatarUrl = '/artes/guerreiro.jpeg';
+            else if (cls.includes('ladino')) c.avatarUrl = '/artes/ladino.jpeg';
+            else if (cls.includes('clérigo') || cls.includes('clerigo')) c.avatarUrl = '/artes/clerigo.jpeg';
+            else if (cls.includes('bárbaro') || cls.includes('barbaro')) c.avatarUrl = '/artes/barbaro.jpeg';
+            else if (cls.includes('bardo')) c.avatarUrl = '/artes/bardo.jpeg';
+            else if (cls.includes('paladino')) c.avatarUrl = '/artes/paladino.jpeg';
+            else if (cls.includes('patrulheiro')) c.avatarUrl = '/artes/patrulheiro.jpeg';
+            else if (cls.includes('druida')) c.avatarUrl = '/artes/druida.jpeg';
+            else if (cls.includes('monge')) c.avatarUrl = '/artes/monge.jpeg';
+            else if (cls.includes('bruxo')) c.avatarUrl = '/artes/bruxo.jpeg';
+            else if (cls.includes('feiticeiro')) c.avatarUrl = '/artes/feiticeiro.jpeg';
+          }
+          return c;
+        });
+      }
     } catch (e) {
       console.error('Falha ao carregar personagens:', e);
     }

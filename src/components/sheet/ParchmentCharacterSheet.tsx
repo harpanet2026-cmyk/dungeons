@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Character, Condition, SkillName, AbilityName } from '../../core/types/dnd';
 import { calculateArmorClass, getPassiveSense, getAbilityModifier, formatModifier, calculateSpellcastingMetrics, getSkillModifier, SKILL_ABILITY_MAP } from '../../core/rules/calculations';
 import { Shield, Heart, Zap, Sparkles, Dices, Eye, Skull, ArrowLeft, ChevronLeft, ChevronRight, Check, Image as ImageIcon } from 'lucide-react';
@@ -17,22 +17,62 @@ interface ParchmentCharacterSheetProps {
   onBackToMesa: () => void;
 }
 
-// Imagens extraídas dos PDFs oficiais (Guia dos Jogadores e Guia de Volo)
+// Imagens de Alta Fidelidade das Classes de RPG e Monstros (Nano Banana)
 const ART_OPTIONS = [
+  // 12 Classes Oficiais de RPG
+  { id: 'art_mago', name: 'Mago Arcano', path: '/artes/mago.jpeg' },
+  { id: 'art_guerreiro', name: 'Guerreiro Marcial', path: '/artes/guerreiro.jpeg' },
+  { id: 'art_ladino', name: 'Ladino das Sombras', path: '/artes/ladino.jpeg' },
+  { id: 'art_clerigo', name: 'Clérigo Sagrado', path: '/artes/clerigo.jpeg' },
+  { id: 'art_barbaro', name: 'Bárbaro Primal', path: '/artes/barbaro.jpeg' },
+  { id: 'art_bardo', name: 'Bardo Menestrel', path: '/artes/bardo.jpeg' },
+  { id: 'art_paladino', name: 'Paladino Sagrado', path: '/artes/paladino.jpeg' },
+  { id: 'art_patrulheiro', name: 'Patrulheiro dos Ermos', path: '/artes/patrulheiro.jpeg' },
+  { id: 'art_druida', name: 'Druida da Natureza', path: '/artes/druida.jpeg' },
+  { id: 'art_monge', name: 'Monge das Artes Marciais', path: '/artes/monge.jpeg' },
+  { id: 'art_bruxo', name: 'Bruxo do Pacto', path: '/artes/bruxo.jpeg' },
+  { id: 'art_feiticeiro', name: 'Feiticeiro Dracônico', path: '/artes/feiticeiro.jpeg' },
+  // Monstros e Chefes Épicos
+  { id: 'art_balrog', name: 'Balrog Demônio Maior', path: '/artes/Balrog.jpeg' },
+  { id: 'art_troll', name: 'Troll da Caverna', path: '/artes/Troll.jpeg' },
+  { id: 'art_vampiro', name: 'Lorde Vampiro', path: '/artes/vampiro.jpeg' },
+  { id: 'art_espectro', name: 'Espectro Sombrio', path: '/artes/espectro.jpeg' },
+  { id: 'art_aranha', name: 'Aranha Gigante', path: '/artes/aranha.jpeg' },
+  { id: 'art_hobgoblin', name: 'Hobgoblin Capitão', path: '/artes/hobiglobin.jpeg' },
+  { id: 'art_orc', name: 'Guerreiro Orc', path: '/artes/orc.jpeg' },
+  { id: 'art_goblin', name: 'Goblin Batedor', path: '/artes/goblin.jpeg' },
+  { id: 'art_kobold', name: 'Kobold Emboscador', path: '/artes/kobold.jpeg' },
+  { id: 'art_esqueleto', name: 'Esqueleto Legionário', path: '/artes/esqueleto.jpeg' },
+  { id: 'art_zumbi', name: 'Zumbi Errante', path: '/artes/zumbi.jpeg' },
+  // Clássicos dos Manuais Oficiais
   { id: 'art_thorin', name: 'Thorin (Anão Guerreiro - Guia do Jogador)', path: '/heroes/thorin_warrior.jpg' },
   { id: 'art_lyra', name: 'Lyra (Elfa Maga - Guia do Jogador)', path: '/heroes/lyra_mage.jpg' },
   { id: 'art_champion', name: 'Guerreiro Campeão (Guia de Volo)', path: '/heroes/champion.jpg' },
-  { id: 'art_rogue', name: 'Ladino das Sombras (Guia do Jogador)', path: '/heroes/rogue.jpg' },
-  { id: 'art_cleric', name: 'Clérigo da Luz (Guia do Jogador)', path: '/heroes/cleric.jpg' },
-  { id: 'art_druid', name: 'Arquidruida da Natureza (Guia de Volo)', path: '/heroes/druid.jpg' },
-  { id: 'art_warlock', name: 'Bruxo Arquiférico (Guia de Volo)', path: '/heroes/warlock.jpg' },
-  { id: 'art_bard', name: 'Bardo Trovador (Guia de Volo)', path: '/heroes/bard.jpg' },
   { id: 'art_beholder', name: 'Beholder Observador (Guia de Volo)', path: '/monsters/beholder.jpg' },
   { id: 'art_mind_flayer', name: 'Devorador de Mentes (Guia de Volo)', path: '/monsters/mind_flayer.jpg' },
-  { id: 'art_orc', name: 'Guerreiro Orc (Guia de Volo)', path: '/monsters/orc.jpg' },
-  { id: 'art_goblin', name: 'Goblin Batedor (Guia de Volo)', path: '/monsters/goblin.jpg' },
   { id: 'art_dragon', name: 'Guarda Dragonete (Guia de Volo)', path: '/monsters/dragon.jpg' },
 ];
+
+const getArtIndexForCharacter = (char: Character): number => {
+  if (char.avatarUrl) {
+    const idx = ART_OPTIONS.findIndex(a => a.path === char.avatarUrl);
+    if (idx !== -1) return idx;
+  }
+  const cls = (char.class || '').toLowerCase();
+  if (cls.includes('mago')) return ART_OPTIONS.findIndex(a => a.id === 'art_mago');
+  if (cls.includes('guerreiro')) return ART_OPTIONS.findIndex(a => a.id === 'art_guerreiro');
+  if (cls.includes('ladino')) return ART_OPTIONS.findIndex(a => a.id === 'art_ladino');
+  if (cls.includes('clérigo') || cls.includes('clerigo')) return ART_OPTIONS.findIndex(a => a.id === 'art_clerigo');
+  if (cls.includes('bárbaro') || cls.includes('barbaro')) return ART_OPTIONS.findIndex(a => a.id === 'art_barbaro');
+  if (cls.includes('bardo')) return ART_OPTIONS.findIndex(a => a.id === 'art_bardo');
+  if (cls.includes('paladino')) return ART_OPTIONS.findIndex(a => a.id === 'art_paladino');
+  if (cls.includes('patrulheiro') || cls.includes('ranger')) return ART_OPTIONS.findIndex(a => a.id === 'art_patrulheiro');
+  if (cls.includes('druida')) return ART_OPTIONS.findIndex(a => a.id === 'art_druida');
+  if (cls.includes('monge')) return ART_OPTIONS.findIndex(a => a.id === 'art_monge');
+  if (cls.includes('bruxo')) return ART_OPTIONS.findIndex(a => a.id === 'art_bruxo');
+  if (cls.includes('feiticeiro')) return ART_OPTIONS.findIndex(a => a.id === 'art_feiticeiro');
+  return 0;
+};
 
 export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = ({
   character,
@@ -47,18 +87,11 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
   onRollCheck,
   onBackToMesa
 }) => {
-  const [selectedArtIndex, setSelectedArtIndex] = useState<number>(() => {
-    const cls = character.class.toLowerCase();
-    const name = character.name.toLowerCase();
-    if (name.includes('lyra') || (cls.includes('mago') && character.race.toLowerCase().includes('elfo'))) return 1;
-    if (name.includes('thorin') || character.race.toLowerCase().includes('anão')) return 0;
-    if (cls.includes('ladino')) return 3;
-    if (cls.includes('clérigo') || cls.includes('clerigo') || cls.includes('paladino')) return 4;
-    if (cls.includes('druida') || cls.includes('patrulheiro')) return 5;
-    if (cls.includes('bruxo')) return 6;
-    if (cls.includes('bardo')) return 7;
-    return 0;
-  });
+  const [selectedArtIndex, setSelectedArtIndex] = useState<number>(() => getArtIndexForCharacter(character));
+
+  useEffect(() => {
+    setSelectedArtIndex(getArtIndexForCharacter(character));
+  }, [character.id, character.class, character.avatarUrl]);
   const [customHpVal, setCustomHpVal] = useState<string>('');
   const [rollMode, setRollMode] = useState<'normal' | 'vantagem' | 'desvantagem'>('normal');
 
@@ -135,7 +168,7 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
           <span className="text-[10px] text-stone-300 px-1 font-semibold flex items-center gap-1">
-            <ImageIcon className="w-3 h-3 text-[#f5ba42]" /> {ART_OPTIONS[selectedArtIndex].name}
+            <ImageIcon className="w-3 h-3 text-[#f5ba42]" /> {(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).name}
           </span>
           <button
             onClick={() => setSelectedArtIndex((prev) => (prev < ART_OPTIONS.length - 1 ? prev + 1 : 0))}
@@ -155,10 +188,10 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
           backgroundImage: `radial-gradient(circle at 50% 50%, rgba(255,250,240,0.85) 0%, rgba(245,235,212,0.92) 70%, rgba(212,186,140,0.98) 100%)`
         }}
       >
-        {/* Marca d'água / Pano de fundo sutil com arte do PDF */}
+        {/* Marca d'água / Pano de fundo sutil com arte da Classe */}
         <div
           className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-center bg-cover"
-          style={{ backgroundImage: `url('${ART_OPTIONS[selectedArtIndex].path}')` }}
+          style={{ backgroundImage: `url('${(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).path}')` }}
         />
 
         {/* 1. TOP BANNER: NOME E INFORMAÇÕES BÁSICAS */}
@@ -402,7 +435,7 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
               <div className="md:col-span-5 bg-[#eddcb9] border-2 border-[#8c6721] rounded-2xl overflow-hidden shadow-lg flex flex-col">
                 <div className="relative flex-1 min-h-[220px] bg-stone-900">
                   <img
-                    src={ART_OPTIONS[selectedArtIndex].path}
+                    src={(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).path}
                     alt={character.name}
                     className="w-full h-full object-cover object-top opacity-90 hover:opacity-100 transition-opacity"
                   />

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Character, Condition, SkillName } from '../../core/types/dnd';
 import { calculateArmorClass, getPassiveSense, getAbilityModifier, formatModifier, calculateSpellcastingMetrics, getSkillModifier, SKILL_ABILITY_MAP } from '../../core/rules/calculations';
+import { getClassPortrait } from '../../core/rules/srdData';
 import { Shield, Heart, Zap, Sparkles, ChevronDown, ChevronUp, Dices, AlertTriangle, Eye, Flame, Skull, Swords, Trash2, Award } from 'lucide-react';
 
 interface CharacterCardProps {
@@ -24,20 +25,10 @@ const ALL_CONDITIONS: Condition[] = [
 ];
 
 const getHeroPortrait = (character: Character): string => {
-  if (character.avatarUrl) return character.avatarUrl;
-  const cls = character.class.toLowerCase();
-  const race = character.race.toLowerCase();
-  const name = character.name.toLowerCase();
-  if (name.includes('thorin') || race.includes('anão') || race.includes('anao')) return '/heroes/thorin_warrior.jpg';
-  if (name.includes('lyra') || (cls.includes('mago') && race.includes('elfo'))) return '/heroes/lyra_mage.jpg';
-  if (cls.includes('bruxo')) return '/heroes/warlock.jpg';
-  if (cls.includes('bardo')) return '/heroes/bard.jpg';
-  if (cls.includes('druida') || cls.includes('patrulheiro')) return '/heroes/druid.jpg';
-  if (cls.includes('mago') || cls.includes('feiticeiro')) return '/heroes/evoker.jpg';
-  if (cls.includes('ladino')) return '/heroes/rogue.jpg';
-  if (cls.includes('clérigo') || cls.includes('clerigo') || cls.includes('paladino')) return '/heroes/cleric.jpg';
-  if (cls.includes('guerreiro')) return '/heroes/champion.jpg';
-  return '/heroes/hero_warrior.jpg';
+  if (character.avatarUrl && (character.avatarUrl.startsWith('/artes/') || character.avatarUrl.startsWith('http') || character.avatarUrl.startsWith('data:'))) {
+    return character.avatarUrl;
+  }
+  return getClassPortrait(character.class);
 };
 
 export const CharacterCard: React.FC<CharacterCardProps> = ({

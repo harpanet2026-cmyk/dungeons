@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Character, AbilityScores, SkillName, Alignment, Condition, Item } from '../../core/types/dnd';
-import { CLASSES_5E, RACES_5E, BACKGROUNDS_5E, COMMON_ARMORS, COMMON_WEAPONS, STANDARD_ARRAY } from '../../core/rules/srdData';
+import { CLASSES_5E, RACES_5E, BACKGROUNDS_5E, COMMON_ARMORS, COMMON_WEAPONS, STANDARD_ARRAY, getClassPortrait } from '../../core/rules/srdData';
 import { getAbilityModifier, formatModifier, SKILL_ABILITY_MAP } from '../../core/rules/calculations';
 import { UserPlus, Sparkles, Shield, Heart, Dices, BookOpen, Check } from 'lucide-react';
 
@@ -131,21 +131,7 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
       },
       conditions: [],
       notes: '',
-      avatarUrl: selectedRace.toLowerCase().includes('anão') || selectedRace.toLowerCase().includes('anao')
-        ? '/heroes/thorin_warrior.jpg'
-        : selectedClass.toLowerCase().includes('mago')
-        ? '/heroes/lyra_mage.jpg'
-        : selectedClass.toLowerCase().includes('ladino')
-        ? '/heroes/rogue.jpg'
-        : selectedClass.toLowerCase().includes('clérigo') || selectedClass.toLowerCase().includes('clerigo') || selectedClass.toLowerCase().includes('paladino')
-        ? '/heroes/cleric.jpg'
-        : selectedClass.toLowerCase().includes('druida') || selectedClass.toLowerCase().includes('patrulheiro')
-        ? '/heroes/druid.jpg'
-        : selectedClass.toLowerCase().includes('bruxo')
-        ? '/heroes/warlock.jpg'
-        : selectedClass.toLowerCase().includes('bardo')
-        ? '/heroes/bard.jpg'
-        : '/heroes/champion.jpg'
+      avatarUrl: getClassPortrait(selectedClass)
     };
 
     onAddCharacter(newChar);
@@ -242,15 +228,24 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
             <label className="block text-stone-300 font-semibold mb-1.5 uppercase tracking-wider text-[11px]">
               Classe:
             </label>
-            <select
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
-            >
-              {Object.keys(CLASSES_5E).map(c => (
-                <option key={c} value={c}>{c} ({CLASSES_5E[c].hitDie})</option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2.5">
+              <div className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-[#f5ba42] shadow-md flex-shrink-0 bg-stone-900">
+                <img
+                  src={getClassPortrait(selectedClass)}
+                  alt={selectedClass}
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+              <select
+                value={selectedClass}
+                onChange={(e) => setSelectedClass(e.target.value)}
+                className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all"
+              >
+                {Object.keys(CLASSES_5E).map(c => (
+                  <option key={c} value={c}>{c} ({CLASSES_5E[c].hitDie})</option>
+                ))}
+              </select>
+            </div>
             <p className="text-[11px] text-stone-400 mt-1">{classDef.description}</p>
           </div>
 
