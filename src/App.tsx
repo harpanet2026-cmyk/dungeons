@@ -771,6 +771,7 @@ export const App: React.FC = () => {
             diceMode={diceMode}
             onSetDiceMode={setDiceMode}
             onApplyDamageHero={handleApplyDamage}
+            onHealHero={handleHeal}
             onApplyDamageEnemy={handleApplyDamageEnemy}
             onHealEnemy={handleHealEnemy}
             onAddEnemy={handleAddEnemy}
