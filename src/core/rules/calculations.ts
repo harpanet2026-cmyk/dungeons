@@ -99,7 +99,7 @@ export function getPassiveSense(
  * Cálculo determinístico da Classe de Armadura (CA) segundo as regras de D&D 5e
  */
 export function calculateArmorClass(
-  char: Pick<Character, 'baseAbilities' | 'equippedArmor' | 'equippedShield' | 'class'>
+  char: Pick<Character, 'baseAbilities' | 'equippedArmor' | 'equippedShield' | 'class'> & { subclass?: string }
 ): { ac: number; breakdown: string } {
   const desMod = getAbilityModifier(char.baseAbilities.des);
   const conMod = getAbilityModifier(char.baseAbilities.con);
@@ -132,14 +132,19 @@ export function calculateArmorClass(
         breakdown = `Sem armadura (10) + Des (${formatModifier(desMod)})`;
     }
   } else {
-    // Sem armadura: verifica características de classe
+    // Sem armadura: verifica características de classe e subclasse
     const className = char.class.toLowerCase();
+    const subclass = (char.subclass || '').toLowerCase();
+    
     if (className.includes('bárbaro') || className.includes('barbaro')) {
       baseAc = 10 + desMod + conMod;
       breakdown = `Defesa sem Armadura (Bárbaro): 10 + Des (${desMod}) + Con (${conMod})`;
     } else if (className.includes('monge')) {
       baseAc = 10 + desMod + wisMod;
       breakdown = `Defesa sem Armadura (Monge): 10 + Des (${desMod}) + Sab (${wisMod})`;
+    } else if (subclass.includes('dracônica') || subclass.includes('draconica')) {
+      baseAc = 13 + desMod;
+      breakdown = `Resiliência Dracônica (13) + Des (${formatModifier(desMod)})`;
     } else {
       baseAc = 10 + desMod;
       breakdown = `Sem armadura: 10 + Des (${formatModifier(desMod)})`;
@@ -152,6 +157,83 @@ export function calculateArmorClass(
   }
 
   return { ac: finalAc, breakdown };
+}
+
+/**
+ * Calcula bônus de acerto e dano para uma arma segundo regras 5e (Acuidade, Distância, Força)
+ */
+export function calculateWeaponAttack(
+  char: Pick<Character, 'baseAbilities' | 'level'>,
+  weapon: Item,
+  fightingStyle?: string
+): { attackBonus: number; damageFormula: string; keyAbility: AbilityName } {
+  const forMod = getAbilityModifier(char.baseAbilities.for);
+  const desMod = getAbilityModifier(char.baseAbilities.des);
+  const prof = getProficiencyBonus(char.level);
+  
+  const desc = (weapon.description || '').toLowerCase();
+  const name = weapon.name.toLowerCase();
+  const isRanged = desc.includes('munição') || desc.includes('distância') || name.includes('arco') || name.includes('besta') || name.includes('funda');
+  const isFinesse = desc.includes('acuidade') || name.includes('rapieira') || name.includes('adaga') || name.includes('espada curta') || name.includes('cimitarra');
+
+  let keyAbility: AbilityName = 'for';
+  let abilityMod = forMod;
+
+  if (isRanged) {
+    keyAbility = 'des';
+    abilityMod = desMod;
+  } else if (isFinesse) {
+    if (desMod > forMod) {
+      keyAbility = 'des';
+      abilityMod = desMod;
+    } else {
+      keyAbility = 'for';
+      abilityMod = forMod;
+    }
+  }
+
+  let attackBonus = prof + abilityMod;
+  if (isRanged && fightingStyle === 'arquearia') {
+    attackBonus += 2;
+  }
+
+  let damageBonus = abilityMod;
+  if (!isRanged && fightingStyle === 'duelo') {
+    damageBonus += 2;
+  }
+
+  const baseDamage = weapon.damage || '1d4';
+  const damageFormula = `${baseDamage} ${formatModifier(damageBonus)} ${weapon.damageType || 'dano'}`;
+
+  return {
+    attackBonus,
+    damageFormula,
+    keyAbility
+  };
+}
+
+/**
+ * Calcula os Pontos de Vida (PV) exatos para o nível 1 com bônus de raça e classe
+ */
+export function calculateLevel1Hp(
+  hitDieValue: number,
+  conScore: number,
+  subraceId?: string,
+  subclassId?: string
+): number {
+  const conMod = getAbilityModifier(conScore);
+  let hp = hitDieValue + conMod;
+  
+  // Anão da Colina ganha +1 PV
+  if (subraceId === 'anao_colina') {
+    hp += 1;
+  }
+  // Feiticeiro Dracônico ganha +1 PV
+  if (subclassId === 'linhagem_draconica') {
+    hp += 1;
+  }
+
+  return Math.max(1, hp);
 }
 
 /**
