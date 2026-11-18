@@ -4,6 +4,7 @@ import { generateCampaignDossier, generateCombatSnapshot } from '../../core/gemi
 import { GEMINI_TOOLS_DECLARATION } from '../../core/gemini/toolSchemas';
 import { calculatePartyEncounterThresholds, analyzePartySynergy } from '../../core/analysis/encounterAnalysis';
 import { OllamaApiService, AiProvider } from '../../core/ollama/ollamaApiService';
+import { GeminiApiService } from '../../core/gemini/geminiApiService';
 import { Copy, Check, Sparkles, Terminal, FileText, Swords, Key, Send, Bot, User, RefreshCw, Cpu, Globe } from 'lucide-react';
 
 interface GeminiHubProps {
@@ -11,13 +12,17 @@ interface GeminiHubProps {
   enemies?: Enemy[];
   onApplyDamage: (id: string, amount: number) => void;
   onHeal: (id: string, amount: number) => void;
+  onCharactersUpdated?: (updated: Character[]) => void;
+  onEnemiesUpdated?: (updated: Enemy[]) => void;
 }
 
 export const GeminiHub: React.FC<GeminiHubProps> = ({
   characters,
   enemies = [],
   onApplyDamage,
-  onHeal
+  onHeal,
+  onCharactersUpdated,
+  onEnemiesUpdated
 }) => {
   const [activeTab, setActiveTab] = useState<'dossier' | 'combat' | 'tools' | 'chat'>('dossier');
   const [copiedType, setCopiedType] = useState<string | null>(null);
@@ -61,20 +66,22 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
 
     setIsAiLoading(true);
     try {
+      let result;
+      const historyToSend = chatMessages.filter(m => m.role !== 'system').map((m, i) => ({
+        id: `hub_${i}`,
+        role: m.role as 'user' | 'model',
+        text: m.text,
+        timestamp: ''
+      }));
+
       if (hubProvider === 'ollama') {
-        const reply = await OllamaApiService.sendMessage(
+        result = await OllamaApiService.sendMessage(
           userText,
-          chatMessages.filter(m => m.role !== 'system').map((m, i) => ({
-            id: `hub_${i}`,
-            role: m.role as 'user' | 'model',
-            text: m.text,
-            timestamp: ''
-          })),
+          historyToSend,
           characters,
           enemies,
           dossierText
         );
-        setChatMessages(prev => [...prev, { role: 'model', text: reply }]);
       } else {
         if (!apiKey) {
           setChatMessages(prev => [
@@ -88,39 +95,23 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
           return;
         }
 
-        const targetModel = (localStorage.getItem('dungeons_gemini_model') || 'gemini-2.5-flash').replace('gemini-1.5-flash', 'gemini-2.5-flash');
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            systemInstruction: {
-              parts: [{ text: dossierText }]
-            },
-            contents: [
-              ...chatMessages.filter(m => m.role !== 'system').map(m => ({
-                role: m.role,
-                parts: [{ text: m.text }]
-              })),
-              { role: 'user', parts: [{ text: `${userText}\n\n[Estado Atual dos Heróis]:\n${combatSnapshotText}` }] }
-            ],
-            generationConfig: {
-              temperature: 0.7,
-              maxOutputTokens: 1500
-            }
-          })
-        });
-
-        const data = await response.json();
-        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
-          const reply = data.candidates[0].content.parts[0].text;
-          setChatMessages(prev => [...prev, { role: 'model', text: reply }]);
-        } else if (data.error) {
-          setChatMessages(prev => [
-            ...prev,
-            { role: 'model', text: `Erro na API do Gemini: ${data.error.message || JSON.stringify(data.error)}` }
-          ]);
-        }
+        result = await GeminiApiService.sendMessage(
+          userText,
+          historyToSend,
+          characters,
+          enemies,
+          dossierText
+        );
       }
+
+      if (result.updatedCharacters && onCharactersUpdated) {
+        onCharactersUpdated(result.updatedCharacters);
+      }
+      if (result.updatedEnemies && onEnemiesUpdated) {
+        onEnemiesUpdated(result.updatedEnemies);
+      }
+
+      setChatMessages(prev => [...prev, { role: 'model', text: result.text }]);
     } catch (err: any) {
       setChatMessages(prev => [
         ...prev,

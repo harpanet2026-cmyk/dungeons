@@ -1,5 +1,7 @@
 import { Character, Enemy } from '../types/dnd';
 import { CampaignManager } from '../state/campaignManager';
+import { ToolExecutor, ExecutedToolResult } from './toolExecutor';
+import { GEMINI_TOOLS_DECLARATION } from './toolSchemas';
 
 const STORAGE_API_KEY = 'dungeons_gemini_api_key';
 const STORAGE_MODEL_KEY = 'dungeons_gemini_model';
@@ -9,6 +11,14 @@ export interface ChatMessage {
   role: 'user' | 'model';
   text: string;
   timestamp: string;
+  toolResults?: ExecutedToolResult[];
+}
+
+export interface AiNarrativeResult {
+  text: string;
+  executedTools: ExecutedToolResult[];
+  updatedCharacters?: Character[];
+  updatedEnemies?: Enemy[];
 }
 
 export class GeminiApiService {
@@ -45,12 +55,17 @@ export class GeminiApiService {
 
     return `Você é o Mestre da Masmorra (Dungeon Master) oficial de D&D 5ª Edição narrando uma campanha no cenário de fantasia heroica REALMS.
 
-REGRAS IMPRESCINDÍVEIS DE IMPARCIALIDADE E SISTEMA DETERMINÍSTICO:
-1. NUNCA invente ou alucine rolagens de dados secretas. Todas as rolagens devem ser solicitadas ao jogador ou resolvidas pela interface.
-2. Seja neutro e justo: não favoreça nem puna os personagens sem motivo narrativo ou mecânico.
-3. Se um jogador declarar uma ação que envolva risco ou oposição, declare qual perícia ou salvaguarda e a Classe de Dificuldade (CD) sugerida (Fácil CD 10, Moderado CD 15, Difícil CD 20, Quase Impossível CD 25).
-4. Responda em Português do Brasil com prosa envolvente, sensorial e concisa (máximo 2 a 4 parágrafos por turno), descrevendo o ambiente, reações de NPCs e consequências táteis.
-5. Em combate, narre os golpes com base nos dados reais fornecidos pelo jogador.
+REGRAS DE IMPARCIALIDADE E TOOL CALLING DETERMINÍSTICO (100% AUTOMÁTICO):
+1. Você possui ferramentas mecânicas integradas diretamente ao sistema (Function Calling):
+   - 'roll_d20_check': Invoque sempre que um herói tentar uma ação incerta (atletismo, percepção, furtividade, arrombamento) ou salvaguarda.
+   - 'apply_damage': Invoque sempre que um ataque acertar ou houver dano de armadilha/feitiço.
+   - 'heal_character': Invoque sempre que houver magia de cura, poção ou descanso.
+   - 'spend_spell_slot': Invoque quando um personagem gastar um espaço de magia de 1º círculo ou superior.
+   - 'set_condition': Invoque quando aplicar ou remover condições de status (Envenenado, Caído, etc.).
+2. NUNCA invente números de HP ou rolagens falsas na fala. O aplicativo rolará os dados matemáticos reais e alterará a vida na ficha dos personagens automaticamente!
+3. Seja neutro e justo: narre as consequências sensoriais e dramáticas baseando-se nos resultados calculados.
+4. Responda em Português do Brasil com narrativa cinematográfica, sensorial e envolvente (máximo 2 a 4 parágrafos por resposta).
+5. O Dossiê da Campanha abaixo dita os perigos, ganchos e segredos da aventura.
 
 ========================================================================
 DOSSIÊ OFICIAL DA CAMPANHA (DIRETRIZES DE LORE, CENÁRIO, ANTAGONISTAS E OBJETIVOS):
@@ -248,7 +263,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     characters: Character[],
     enemies: Enemy[],
     customDossier?: string
-  ): Promise<string> {
+  ): Promise<AiNarrativeResult> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
       throw new Error('Chave de API do Gemini não configurada. Por favor, insira sua chave do Google AI Studio.');
@@ -258,7 +273,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     const systemInstructionText = this.generateSystemInstruction(characters, enemies, customDossier);
 
     // Formata o histórico no padrão da Gemini API
-    const contents = history.map(msg => ({
+    const contents: any[] = history.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.text }]
     }));
@@ -269,10 +284,11 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
       parts: [{ text: userPrompt }]
     });
 
-    const requestBody = {
+    const requestBody: any = {
       system_instruction: {
         parts: [{ text: systemInstructionText }]
       },
+      tools: [GEMINI_TOOLS_DECLARATION],
       contents,
       generationConfig: {
         temperature: 0.85,
@@ -281,13 +297,105 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
       }
     };
 
-    const data = await this.executeWithFallback(apiKey, model, requestBody);
-    const candidateText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    let data = await this.executeWithFallback(apiKey, model, requestBody);
+    let parts: any[] = data.candidates?.[0]?.content?.parts || [];
 
-    if (!candidateText) {
-      throw new Error('O Gemini não retornou texto na resposta. Tente reformular a ação.');
+    const executedTools: ExecutedToolResult[] = [];
+    let currentCharacters = characters;
+    let currentEnemies = enemies;
+
+    // 1. Detecta chamadas nativas de ferramentas (Function Calling)
+    const functionCalls = parts.filter((p: any) => p.functionCall);
+
+    if (functionCalls.length > 0) {
+      for (const callPart of functionCalls) {
+        const { name, args } = callPart.functionCall;
+        const result = ToolExecutor.execute(name, args, currentCharacters, currentEnemies);
+        executedTools.push(result);
+        if (result.updatedCharacters) currentCharacters = result.updatedCharacters;
+        if (result.updatedEnemies) currentEnemies = result.updatedEnemies;
+      }
+
+      // Constrói a segunda rodada (Function Response) para o Gemini continuar a narração baseada no resultado
+      const secondContents = [
+        ...contents,
+        {
+          role: 'model',
+          parts: functionCalls
+        },
+        {
+          role: 'function',
+          parts: functionCalls.map((fc: any, idx: number) => ({
+            functionResponse: {
+              name: fc.functionCall.name,
+              response: {
+                name: fc.functionCall.name,
+                content: executedTools[idx]?.summary || 'Ação resolvida.'
+              }
+            }
+          }))
+        }
+      ];
+
+      try {
+        const secondRequestBody = {
+          system_instruction: {
+            parts: [{ text: systemInstructionText }]
+          },
+          contents: secondContents,
+          generationConfig: {
+            temperature: 0.85,
+            topP: 0.95,
+            maxOutputTokens: 1200
+          }
+        };
+
+        const secondData = await this.executeWithFallback(apiKey, model, secondRequestBody);
+        const secondText = secondData.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (secondText) {
+          return {
+            text: secondText,
+            executedTools,
+            updatedCharacters: currentCharacters !== characters ? currentCharacters : undefined,
+            updatedEnemies: currentEnemies !== enemies ? currentEnemies : undefined
+          };
+        }
+      } catch (err) {
+        // Se a segunda chamada falhar, prossegue com os resultados das ferramentas
+      }
     }
 
-    return candidateText;
+    // 2. Extrai texto gerado
+    let text = parts.find((p: any) => p.text)?.text || '';
+
+    // 3. Fallback: Detecta chamadas inline no formato [TOOL: name(...)] se o modelo gerou em texto
+    const inlineMatch = text.match(/\[(?:TOOL|ACTION):\s*(\w+)\((.*?)\)\]/i);
+    if (inlineMatch) {
+      const toolName = inlineMatch[1];
+      const rawArgs = inlineMatch[2];
+      const parsedArgs: any = {};
+      rawArgs.split(',').forEach((param: string) => {
+        const [k, v] = param.split('=').map(s => s.trim().replace(/^['"]|['"]$/g, ''));
+        if (k && v !== undefined) parsedArgs[k] = v;
+      });
+
+      const result = ToolExecutor.execute(toolName, parsedArgs, currentCharacters, currentEnemies);
+      executedTools.push(result);
+      if (result.updatedCharacters) currentCharacters = result.updatedCharacters;
+      if (result.updatedEnemies) currentEnemies = result.updatedEnemies;
+
+      text = text.replace(/\[(?:TOOL|ACTION):.*?\]/gi, '').trim();
+    }
+
+    if (!text && executedTools.length > 0) {
+      text = executedTools.map(t => t.summary).join('\n');
+    }
+
+    return {
+      text: text || 'Ação resolvida pelas regras estritas de D&D 5e.',
+      executedTools,
+      updatedCharacters: currentCharacters !== characters ? currentCharacters : undefined,
+      updatedEnemies: currentEnemies !== enemies ? currentEnemies : undefined
+    };
   }
 }

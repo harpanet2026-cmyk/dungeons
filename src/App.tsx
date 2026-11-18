@@ -790,7 +790,12 @@ export const App: React.FC = () => {
         {activeTab === 'gemini' && (
           <div className="space-y-8">
             {/* Chat com Mestre IA ao Vivo via API do Google AI Studio */}
-            <GeminiLiveChat characters={characters} enemies={enemies} />
+            <GeminiLiveChat
+              characters={characters}
+              enemies={enemies}
+              onCharactersUpdated={setCharacters}
+              onEnemiesUpdated={setEnemies}
+            />
 
             {/* Hub de Prompts e Schemas de Tool Calling */}
             <GeminiHub
@@ -798,6 +803,8 @@ export const App: React.FC = () => {
               enemies={enemies}
               onApplyDamage={handleApplyDamage}
               onHeal={handleHeal}
+              onCharactersUpdated={setCharacters}
+              onEnemiesUpdated={setEnemies}
             />
           </div>
         )}

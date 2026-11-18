@@ -1,6 +1,8 @@
 import { Character, Enemy } from '../types/dnd';
 import { CampaignManager } from '../state/campaignManager';
-import { ChatMessage } from '../gemini/geminiApiService';
+import { ChatMessage, AiNarrativeResult } from '../gemini/geminiApiService';
+import { ToolExecutor, ExecutedToolResult } from '../gemini/toolExecutor';
+import { GEMINI_TOOLS_DECLARATION } from '../gemini/toolSchemas';
 
 const STORAGE_PROVIDER_KEY = 'dungeons_ai_provider';
 const STORAGE_OLLAMA_MODEL_KEY = 'dungeons_ollama_model';
@@ -117,11 +119,23 @@ export class OllamaApiService {
 
     return `Você é o Mestre da Masmorra (Dungeon Master) oficial de D&D 5ª Edição narrando uma campanha épica no cenário REALMS.
 
-REGRAS DE CONDUTA DO MESTRE:
-1. Imparcialidade estrita: nunca invente ou presuma rolagens de dados secretas. Se houver desafio, peça a rolagem ao jogador com a Perícia e Classe de Dificuldade (CD).
-2. Responda SEMPRE em Português do Brasil com narrativa rica, sensorial, atmosférica e ágil (2 a 4 parágrafos por resposta).
-3. Use o Dossiê de Campanha abaixo para guiar os mistérios, antagonistas, NPCs e locais da masmorra.
-4. Quando os heróis agirem, descreva as consequências imediatas e dê a deixa para o próximo turno do grupo.
+REGRAS DE CONDUTA DO MESTRE & TOOL CALLING DETERMINÍSTICO (100% AUTOMÁTICO):
+1. Você tem ferramentas integradas diretamente ao sistema mecânico do jogo:
+   - 'roll_d20_check': Invoque sempre que um herói fizer uma ação incerta, teste de perícia (atletismo, percepção, etc.) ou salvaguarda.
+   - 'apply_damage': Invoque sempre que um ataque de monstro/herói acertar ou houver dano de armadilha/feitiço.
+   - 'heal_character': Invoque sempre que houver magia de cura, poção ou descanso.
+   - 'spend_spell_slot': Invoque quando um personagem gastar um espaço de magia de 1º círculo ou superior.
+   - 'set_condition': Invoque quando aplicar ou remover condições de status (Envenenado, Caído, etc.).
+   Você pode acionar ferramentas incluindo comandos na sua resposta no formato:
+   [TOOL: roll_d20_check(character_name="Nome", check_type="pericia", target_dc=15)]
+   [TOOL: apply_damage(character_name="Nome", amount=8, damage_type="cortante")]
+   [TOOL: heal_character(character_name="Nome", amount=6)]
+   [TOOL: spend_spell_slot(character_name="Nome", spell_level=1)]
+   [TOOL: set_condition(character_name="Nome", condition="Envenenado", active=true)]
+2. NUNCA invente números de HP ou rolagens falsas na fala. O aplicativo rolará os dados matemáticos reais e alterará a vida na ficha dos personagens automaticamente!
+3. Responda SEMPRE em Português do Brasil com narrativa rica, sensorial, atmosférica e ágil (2 a 4 parágrafos por resposta).
+4. Use o Dossiê de Campanha abaixo para guiar os mistérios, antagonistas, NPCs e locais da masmorra.
+5. Quando os heróis agirem, descreva as consequências imediatas e dê a deixa para o próximo turno do grupo.
 
 DOSSIÊ DA CAMPANHA:
 ${dossier || 'Conduza livremente pelas ruínas ancestrais e masmorras escuras do cenário.'}
@@ -135,7 +149,7 @@ ${enemiesSummary}
   }
 
   /**
-   * Envia uma mensagem para o Mestre Ollama
+   * Envia uma mensagem para o Mestre Ollama com execução de ferramentas
    */
   static async sendMessage(
     userPrompt: string,
@@ -144,7 +158,7 @@ ${enemiesSummary}
     enemies: Enemy[],
     customDossier?: string,
     overrideModel?: string
-  ): Promise<string> {
+  ): Promise<AiNarrativeResult> {
     const targetModel = overrideModel || this.getModel();
     const systemText = this.generateSystemInstruction(characters, enemies, customDossier);
 
@@ -157,9 +171,19 @@ ${enemiesSummary}
       { role: 'user', content: userPrompt }
     ];
 
-    const payload = {
+    const ollamaTools = GEMINI_TOOLS_DECLARATION.functionDeclarations.map(f => ({
+      type: 'function',
+      function: {
+        name: f.name,
+        description: f.description,
+        parameters: f.parameters
+      }
+    }));
+
+    const payload: any = {
       model: targetModel,
       messages,
+      tools: ollamaTools,
       stream: false,
       options: {
         temperature: 0.82,
@@ -182,8 +206,50 @@ ${enemiesSummary}
 
         if (res.ok) {
           const data = await res.json();
-          const reply = data?.message?.content?.trim();
-          if (reply) return reply;
+          let reply = data?.message?.content?.trim() || '';
+          const executedTools: ExecutedToolResult[] = [];
+          let currentCharacters = characters;
+          let currentEnemies = enemies;
+
+          // 1. Tool calls nativos do Ollama
+          const nativeToolCalls = data?.message?.tool_calls || [];
+          for (const tc of nativeToolCalls) {
+            const func = tc.function || tc;
+            if (func && func.name) {
+              const res = ToolExecutor.execute(func.name, func.arguments || {}, currentCharacters, currentEnemies);
+              executedTools.push(res);
+              if (res.updatedCharacters) currentCharacters = res.updatedCharacters;
+              if (res.updatedEnemies) currentEnemies = res.updatedEnemies;
+            }
+          }
+
+          // 2. Fallback de tool calls inline no texto [TOOL: name(...)]
+          const inlineRegex = /\[(?:TOOL|ACTION):\s*(\w+)\((.*?)\)\]/gi;
+          let match;
+          while ((match = inlineRegex.exec(reply)) !== null) {
+            const toolName = match[1];
+            const rawArgs = match[2];
+            const parsedArgs: any = {};
+            rawArgs.split(',').forEach((param: string) => {
+              const [k, v] = param.split('=').map(s => s.trim().replace(/^['"]|['"]$/g, ''));
+              if (k && v !== undefined) parsedArgs[k] = v;
+            });
+
+            const res = ToolExecutor.execute(toolName, parsedArgs, currentCharacters, currentEnemies);
+            executedTools.push(res);
+            if (res.updatedCharacters) currentCharacters = res.updatedCharacters;
+            if (res.updatedEnemies) currentEnemies = res.updatedEnemies;
+          }
+
+          // Limpa as tags inline do texto exibido
+          const cleanText = reply.replace(/\[(?:TOOL|ACTION):.*?\]/gi, '').trim();
+
+          return {
+            text: cleanText || (executedTools.length > 0 ? executedTools.map(t => t.summary).join('\n') : 'Ação resolvida.'),
+            executedTools,
+            updatedCharacters: currentCharacters !== characters ? currentCharacters : undefined,
+            updatedEnemies: currentEnemies !== enemies ? currentEnemies : undefined
+          };
         } else {
           const errData = await res.json().catch(() => ({}));
           const errMsg = errData.error || `Erro HTTP ${res.status}`;

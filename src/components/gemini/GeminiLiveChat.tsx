@@ -30,11 +30,15 @@ interface GeminiLiveChatProps {
   characters: Character[];
   enemies: Enemy[];
   onRollDiceRequest?: () => void;
+  onCharactersUpdated?: (updated: Character[]) => void;
+  onEnemiesUpdated?: (updated: Enemy[]) => void;
 }
 
 export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   characters,
-  enemies
+  enemies,
+  onCharactersUpdated,
+  onEnemiesUpdated
 }) => {
   // Provedor ativo: 'ollama' (offline) ou 'gemini' (nuvem)
   const [provider, setProvider] = useState<AiProvider>(() => OllamaApiService.getProvider());
@@ -270,9 +274,9 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
     setErrorMessage(null);
 
     try {
-      let responseText = '';
+      let result;
       if (provider === 'ollama') {
-        responseText = await OllamaApiService.sendMessage(
+        result = await OllamaApiService.sendMessage(
           textToSend,
           messages,
           characters,
@@ -281,7 +285,7 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
           ollamaModel
         );
       } else {
-        responseText = await GeminiApiService.sendMessage(
+        result = await GeminiApiService.sendMessage(
           textToSend,
           messages,
           characters,
@@ -290,10 +294,19 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
         );
       }
 
+      // Aplica as atualizações nas fichas dos heróis e inimigos (Tool Calling automático)
+      if (result.updatedCharacters && onCharactersUpdated) {
+        onCharactersUpdated(result.updatedCharacters);
+      }
+      if (result.updatedEnemies && onEnemiesUpdated) {
+        onEnemiesUpdated(result.updatedEnemies);
+      }
+
       const modelMessage: ChatMessage = {
         id: `msg_${Date.now() + 1}`,
         role: 'model',
-        text: responseText,
+        text: result.text,
+        toolResults: result.executedTools,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -340,6 +353,9 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                   : 'bg-sky-950/80 text-sky-300 border-sky-700'
               }`}>
                 {provider === 'ollama' ? '🖥️ OFFLINE (OLLAMA)' : '🌐 NUVEM (GEMINI)'}
+              </span>
+              <span className="text-[10px] font-sans px-2 py-0.5 rounded-full border font-semibold bg-amber-950/70 text-amber-300 border-amber-700/80 hidden sm:inline-flex items-center gap-1" title="A IA aciona dano, cura e rolagens reais na ficha automaticamente!">
+                ⚡ Tool Calling Ativo
               </span>
             </h3>
             <span className="text-[10px] text-stone-400 block font-sans">
@@ -905,6 +921,35 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                   </span>
                   <span>{msg.timestamp}</span>
                 </div>
+
+                {/* Badges de Ferramentas Automáticas (Tool Calling) */}
+                {msg.toolResults && msg.toolResults.length > 0 && (
+                  <div className="space-y-1.5 my-2">
+                    {msg.toolResults.map((t, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 text-xs shadow-md transition-all animate-in fade-in ${
+                          t.badge.success === true
+                            ? 'bg-emerald-950/70 border-emerald-700/80 text-emerald-200'
+                            : t.badge.success === false
+                            ? 'bg-rose-950/70 border-rose-700/80 text-rose-200'
+                            : 'bg-amber-950/70 border-amber-700/80 text-amber-200'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg shrink-0">{t.badge.icon}</span>
+                          <div>
+                            <span className="font-bold block leading-tight">{t.badge.title}</span>
+                            <span className="text-[10px] opacity-85 block">{t.badge.description}</span>
+                          </div>
+                        </div>
+                        <span className="text-[9px] uppercase tracking-wider font-mono font-bold px-2 py-0.5 rounded bg-black/50 border border-white/10 shrink-0 text-amber-300">
+                          ⚡ Auto Tool
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 <div className="whitespace-pre-wrap font-sans">
                   {msg.text}
