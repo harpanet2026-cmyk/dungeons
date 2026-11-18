@@ -14,21 +14,23 @@ export interface ClassDefinition {
   imageUrl?: string;
 }
 
-export const getClassPortrait = (className: string): string => {
+export const getClassPortrait = (className: string, gender: string = 'masculino'): string => {
   const c = (className || '').toLowerCase().trim();
-  if (c.includes('mago')) return '/artes/mago.jpeg';
-  if (c.includes('guerreiro')) return '/artes/guerreiro.jpeg';
-  if (c.includes('ladino')) return '/artes/ladino.jpeg';
-  if (c.includes('clérigo') || c.includes('clerigo')) return '/artes/clerigo.jpeg';
-  if (c.includes('bárbaro') || c.includes('barbaro')) return '/artes/barbaro.jpeg';
-  if (c.includes('bardo')) return '/artes/bardo.jpeg';
-  if (c.includes('paladino')) return '/artes/paladino.jpeg';
-  if (c.includes('patrulheiro') || c.includes('ranger')) return '/artes/patrulheiro.jpeg';
-  if (c.includes('druida')) return '/artes/druida.jpeg';
-  if (c.includes('monge')) return '/artes/monge.jpeg';
-  if (c.includes('bruxo')) return '/artes/bruxo.jpeg';
-  if (c.includes('feiticeiro')) return '/artes/feiticeiro.jpeg';
-  return '/artes/guerreiro.jpeg';
+  const isFem = (gender || '').toLowerCase().includes('fem') || (gender || '').toLowerCase() === 'f';
+  const suffix = isFem ? '_f.jpeg' : '.jpeg';
+  if (c.includes('mago')) return `/artes/mago${suffix}`;
+  if (c.includes('guerreiro')) return `/artes/guerreiro${suffix}`;
+  if (c.includes('ladino')) return `/artes/ladino${suffix}`;
+  if (c.includes('clérigo') || c.includes('clerigo')) return `/artes/clerigo${suffix}`;
+  if (c.includes('bárbaro') || c.includes('barbaro')) return `/artes/barbaro${suffix}`;
+  if (c.includes('bardo')) return `/artes/bardo${suffix}`;
+  if (c.includes('paladino')) return `/artes/paladino${suffix}`;
+  if (c.includes('patrulheiro') || c.includes('ranger')) return `/artes/patrulheiro${suffix}`;
+  if (c.includes('druida')) return `/artes/druida${suffix}`;
+  if (c.includes('monge')) return `/artes/monge${suffix}`;
+  if (c.includes('bruxo')) return `/artes/bruxo${suffix}`;
+  if (c.includes('feiticeiro')) return `/artes/feiticeiro${suffix}`;
+  return `/artes/guerreiro${suffix}`;
 };
 
 export interface RaceDefinition {

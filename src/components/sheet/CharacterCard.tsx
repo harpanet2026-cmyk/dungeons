@@ -28,7 +28,7 @@ const getHeroPortrait = (character: Character): string => {
   if (character.avatarUrl && (character.avatarUrl.startsWith('/artes/') || character.avatarUrl.startsWith('http') || character.avatarUrl.startsWith('data:'))) {
     return character.avatarUrl;
   }
-  return getClassPortrait(character.class);
+  return getClassPortrait(character.class, character.gender);
 };
 
 export const CharacterCard: React.FC<CharacterCardProps> = ({

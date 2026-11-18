@@ -130,6 +130,7 @@ export interface Character {
   xp: number;
   alignment: Alignment;
   background: string;
+  gender?: 'masculino' | 'feminino' | string;
 
   // Atributos base (sem mod racial)
   baseAbilities: AbilityScores;

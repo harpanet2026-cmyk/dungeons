@@ -104,6 +104,7 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
   // ==========================================
   const [name, setName] = useState<string>('');
   const [player, setPlayer] = useState<string>('');
+  const [gender, setGender] = useState<'masculino' | 'feminino'>('masculino');
   const [alignment, setAlignment] = useState<Alignment>('Leal e Bom');
   const [selectedBackground, setSelectedBackground] = useState<string>('Soldado');
   const [replacementSkills, setReplacementSkills] = useState<SkillName[]>([]);
@@ -548,7 +549,8 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
       },
       conditions: [],
       notes: notesSummary,
-      avatarUrl: getClassPortrait(selectedClass)
+      gender,
+      avatarUrl: getClassPortrait(selectedClass, gender)
     };
 
     onAddCharacter(newChar);
@@ -660,6 +662,8 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
               selectedClass={selectedClass}
               onSelectClass={setSelectedClass}
               level={level}
+              gender={gender}
+              onChangeGender={setGender}
               selectedClassSkills={selectedClassSkills}
               onToggleClassSkill={(sk) => {
                 if (selectedClassSkills.includes(sk)) {
@@ -708,6 +712,8 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
               onChangeName={setName}
               player={player}
               onChangePlayer={setPlayer}
+              gender={gender}
+              onChangeGender={setGender}
               selectedBackground={selectedBackground}
               onSelectBackground={setSelectedBackground}
               conflictedSkills={bgSkillCollisions.filter(c => c.isColliding).map(c => c.originalSkill)}
@@ -856,6 +862,7 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
             selectedSubclass
           ) : undefined}
           level={level}
+          gender={gender}
           alignment={alignment}
           background={selectedBackground}
           finalAbilities={finalAbilities}

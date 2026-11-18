@@ -622,7 +622,7 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
                     <div className="flex items-start gap-3 border-b border-[#231b14] pb-3">
                       <div className="relative w-14 h-14 rounded-2xl overflow-hidden border-2 border-sky-400 shadow-md shrink-0 bg-black/60">
                         <img
-                          src={hero.avatarUrl || getClassPortrait(hero.class)}
+                          src={hero.avatarUrl || getClassPortrait(hero.class, hero.gender)}
                           alt={hero.name}
                           className="w-full h-full object-cover object-top"
                         />

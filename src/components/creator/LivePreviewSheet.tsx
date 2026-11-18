@@ -29,6 +29,7 @@ interface LivePreviewSheetProps {
   coins: { pc: number; pp: number; pe: number; po: number; pl: number };
   inventory: Item[];
   traits: string[];
+  gender?: 'masculino' | 'feminino' | string;
 }
 
 export const LivePreviewSheet: React.FC<LivePreviewSheetProps> = ({
@@ -41,6 +42,7 @@ export const LivePreviewSheet: React.FC<LivePreviewSheetProps> = ({
   level,
   alignment,
   background,
+  gender = 'masculino',
   finalAbilities,
   savingThrowProficiencies,
   skillProficiencies,
@@ -101,7 +103,8 @@ export const LivePreviewSheet: React.FC<LivePreviewSheetProps> = ({
     },
     conditions: [],
     notes: '',
-    avatarUrl: getClassPortrait(className)
+    gender,
+    avatarUrl: getClassPortrait(className, gender)
   };
 
   const { ac, breakdown: acBreakdown } = calculateArmorClass(mockChar);
@@ -133,7 +136,7 @@ export const LivePreviewSheet: React.FC<LivePreviewSheetProps> = ({
       <div className="flex items-center gap-3 bg-[#131724] p-3 rounded-2xl border border-[#262f44]">
         <div className="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-[#f5ba42] shadow-md flex-shrink-0 bg-stone-900">
           <img
-            src={getClassPortrait(className)}
+            src={getClassPortrait(className, gender)}
             alt={className}
             className="w-full h-full object-cover object-top"
           />

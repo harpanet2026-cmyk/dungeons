@@ -19,19 +19,33 @@ interface ParchmentCharacterSheetProps {
 
 // Imagens de Alta Fidelidade das Classes de RPG e Monstros (Nano Banana)
 const ART_OPTIONS = [
-  // 12 Classes Oficiais de RPG
-  { id: 'art_mago', name: 'Mago Arcano', path: '/artes/mago.jpeg' },
-  { id: 'art_guerreiro', name: 'Guerreiro Marcial', path: '/artes/guerreiro.jpeg' },
-  { id: 'art_ladino', name: 'Ladino das Sombras', path: '/artes/ladino.jpeg' },
-  { id: 'art_clerigo', name: 'Clérigo Sagrado', path: '/artes/clerigo.jpeg' },
-  { id: 'art_barbaro', name: 'Bárbaro Primal', path: '/artes/barbaro.jpeg' },
-  { id: 'art_bardo', name: 'Bardo Menestrel', path: '/artes/bardo.jpeg' },
-  { id: 'art_paladino', name: 'Paladino Sagrado', path: '/artes/paladino.jpeg' },
-  { id: 'art_patrulheiro', name: 'Patrulheiro dos Ermos', path: '/artes/patrulheiro.jpeg' },
-  { id: 'art_druida', name: 'Druida da Natureza', path: '/artes/druida.jpeg' },
-  { id: 'art_monge', name: 'Monge das Artes Marciais', path: '/artes/monge.jpeg' },
-  { id: 'art_bruxo', name: 'Bruxo do Pacto', path: '/artes/bruxo.jpeg' },
-  { id: 'art_feiticeiro', name: 'Feiticeiro Dracônico', path: '/artes/feiticeiro.jpeg' },
+  // 12 Classes Oficiais de RPG (Versões Masculinas / Padrão)
+  { id: 'art_mago', name: 'Mago Arcano (Masculino)', path: '/artes/mago.jpeg' },
+  { id: 'art_guerreiro', name: 'Guerreiro Marcial (Masculino)', path: '/artes/guerreiro.jpeg' },
+  { id: 'art_ladino', name: 'Ladino das Sombras (Masculino)', path: '/artes/ladino.jpeg' },
+  { id: 'art_clerigo', name: 'Clérigo Sagrado (Masculino)', path: '/artes/clerigo.jpeg' },
+  { id: 'art_barbaro', name: 'Bárbaro Primal (Masculino)', path: '/artes/barbaro.jpeg' },
+  { id: 'art_bardo', name: 'Bardo Menestrel (Masculino)', path: '/artes/bardo.jpeg' },
+  { id: 'art_paladino', name: 'Paladino Sagrado (Masculino)', path: '/artes/paladino.jpeg' },
+  { id: 'art_patrulheiro', name: 'Patrulheiro dos Ermos (Masculino)', path: '/artes/patrulheiro.jpeg' },
+  { id: 'art_druida', name: 'Druida da Natureza (Masculino)', path: '/artes/druida.jpeg' },
+  { id: 'art_monge', name: 'Monge das Artes Marciais (Masculino)', path: '/artes/monge.jpeg' },
+  { id: 'art_bruxo', name: 'Bruxo do Pacto (Masculino)', path: '/artes/bruxo.jpeg' },
+  { id: 'art_feiticeiro', name: 'Feiticeiro Dracônico (Masculino)', path: '/artes/feiticeiro.jpeg' },
+  // 12 Classes Oficiais de RPG (Versões Femininas)
+  { id: 'art_mago_f', name: 'Maga Arcana (Feminino)', path: '/artes/mago_f.jpeg' },
+  { id: 'art_mago_idosa_f', name: 'Maga Anciã (Feminino)', path: '/artes/mago_idosa_f.jpeg' },
+  { id: 'art_guerreiro_f', name: 'Guerreira Marcial (Feminino)', path: '/artes/guerreiro_f.jpeg' },
+  { id: 'art_ladino_f', name: 'Ladina das Sombras (Feminino)', path: '/artes/ladino_f.jpeg' },
+  { id: 'art_clerigo_f', name: 'Clériga Sagrada (Feminino)', path: '/artes/clerigo_f.jpeg' },
+  { id: 'art_barbaro_f', name: 'Bárbara Primal (Feminino)', path: '/artes/barbaro_f.jpeg' },
+  { id: 'art_bardo_f', name: 'Barda Menestrel (Feminino)', path: '/artes/bardo_f.jpeg' },
+  { id: 'art_paladino_f', name: 'Paladina Sagrada (Feminino)', path: '/artes/paladino_f.jpeg' },
+  { id: 'art_patrulheiro_f', name: 'Patrulheira dos Ermos (Feminino)', path: '/artes/patrulheiro_f.jpeg' },
+  { id: 'art_druida_f', name: 'Druidesa da Natureza (Feminino)', path: '/artes/druida_f.jpeg' },
+  { id: 'art_monge_f', name: 'Monja das Artes Marciais (Feminino)', path: '/artes/monge_f.jpeg' },
+  { id: 'art_bruxo_f', name: 'Bruxa do Pacto (Feminino)', path: '/artes/bruxo_f.jpeg' },
+  { id: 'art_feiticeiro_f', name: 'Feiticeira Dracônica (Feminino)', path: '/artes/feiticeiro_f.jpeg' },
   // Monstros e Chefes Épicos
   { id: 'art_balrog', name: 'Balrog Demônio Maior', path: '/artes/Balrog.jpeg' },
   { id: 'art_troll', name: 'Troll da Caverna', path: '/artes/Troll.jpeg' },
@@ -58,19 +72,21 @@ const getArtIndexForCharacter = (char: Character): number => {
     const idx = ART_OPTIONS.findIndex(a => a.path === char.avatarUrl);
     if (idx !== -1) return idx;
   }
+  const isFem = (char.gender || '').toLowerCase().includes('fem') || (char.gender || '').toLowerCase() === 'f';
+  const suffix = isFem ? '_f' : '';
   const cls = (char.class || '').toLowerCase();
-  if (cls.includes('mago')) return ART_OPTIONS.findIndex(a => a.id === 'art_mago');
-  if (cls.includes('guerreiro')) return ART_OPTIONS.findIndex(a => a.id === 'art_guerreiro');
-  if (cls.includes('ladino')) return ART_OPTIONS.findIndex(a => a.id === 'art_ladino');
-  if (cls.includes('clérigo') || cls.includes('clerigo')) return ART_OPTIONS.findIndex(a => a.id === 'art_clerigo');
-  if (cls.includes('bárbaro') || cls.includes('barbaro')) return ART_OPTIONS.findIndex(a => a.id === 'art_barbaro');
-  if (cls.includes('bardo')) return ART_OPTIONS.findIndex(a => a.id === 'art_bardo');
-  if (cls.includes('paladino')) return ART_OPTIONS.findIndex(a => a.id === 'art_paladino');
-  if (cls.includes('patrulheiro') || cls.includes('ranger')) return ART_OPTIONS.findIndex(a => a.id === 'art_patrulheiro');
-  if (cls.includes('druida')) return ART_OPTIONS.findIndex(a => a.id === 'art_druida');
-  if (cls.includes('monge')) return ART_OPTIONS.findIndex(a => a.id === 'art_monge');
-  if (cls.includes('bruxo')) return ART_OPTIONS.findIndex(a => a.id === 'art_bruxo');
-  if (cls.includes('feiticeiro')) return ART_OPTIONS.findIndex(a => a.id === 'art_feiticeiro');
+  if (cls.includes('mago')) return ART_OPTIONS.findIndex(a => a.id === `art_mago${suffix}`);
+  if (cls.includes('guerreiro')) return ART_OPTIONS.findIndex(a => a.id === `art_guerreiro${suffix}`);
+  if (cls.includes('ladino')) return ART_OPTIONS.findIndex(a => a.id === `art_ladino${suffix}`);
+  if (cls.includes('clérigo') || cls.includes('clerigo')) return ART_OPTIONS.findIndex(a => a.id === `art_clerigo${suffix}`);
+  if (cls.includes('bárbaro') || cls.includes('barbaro')) return ART_OPTIONS.findIndex(a => a.id === `art_barbaro${suffix}`);
+  if (cls.includes('bardo')) return ART_OPTIONS.findIndex(a => a.id === `art_bardo${suffix}`);
+  if (cls.includes('paladino')) return ART_OPTIONS.findIndex(a => a.id === `art_paladino${suffix}`);
+  if (cls.includes('patrulheiro') || cls.includes('ranger')) return ART_OPTIONS.findIndex(a => a.id === `art_patrulheiro${suffix}`);
+  if (cls.includes('druida')) return ART_OPTIONS.findIndex(a => a.id === `art_druida${suffix}`);
+  if (cls.includes('monge')) return ART_OPTIONS.findIndex(a => a.id === `art_monge${suffix}`);
+  if (cls.includes('bruxo')) return ART_OPTIONS.findIndex(a => a.id === `art_bruxo${suffix}`);
+  if (cls.includes('feiticeiro')) return ART_OPTIONS.findIndex(a => a.id === `art_feiticeiro${suffix}`);
   return 0;
 };
 
@@ -91,7 +107,7 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
 
   useEffect(() => {
     setSelectedArtIndex(getArtIndexForCharacter(character));
-  }, [character.id, character.class, character.avatarUrl]);
+  }, [character.id, character.class, character.avatarUrl, character.gender]);
   const [customHpVal, setCustomHpVal] = useState<string>('');
   const [rollMode, setRollMode] = useState<'normal' | 'vantagem' | 'desvantagem'>('normal');
 

@@ -9,6 +9,8 @@ interface StepBackgroundProps {
   onChangeName: (name: string) => void;
   player: string;
   onChangePlayer: (player: string) => void;
+  gender: 'masculino' | 'feminino';
+  onChangeGender: (gender: 'masculino' | 'feminino') => void;
   
   selectedBackground: string;
   onSelectBackground: (bg: string) => void;
@@ -37,6 +39,8 @@ export const StepBackground: React.FC<StepBackgroundProps> = ({
   onChangeName,
   player,
   onChangePlayer,
+  gender,
+  onChangeGender,
   selectedBackground,
   onSelectBackground,
   conflictedSkills,
@@ -71,8 +75,8 @@ export const StepBackground: React.FC<StepBackgroundProps> = ({
         </p>
       </div>
 
-      {/* Identidade: Nome e Jogador */}
-      <div className="bg-[#0e111a] p-4 rounded-2xl border border-[#231b14] grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Identidade: Nome, Jogador e Gênero */}
+      <div className="bg-[#0e111a] p-4 rounded-2xl border border-[#231b14] grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div>
           <label className="block text-stone-300 font-semibold mb-1 uppercase tracking-wider text-[11px]">
             Nome do Personagem: <span className="text-rose-400">*</span>
@@ -98,6 +102,36 @@ export const StepBackground: React.FC<StepBackgroundProps> = ({
             onChange={(e) => onChangePlayer(e.target.value)}
             className="w-full bg-[#141824] border border-[#2b334a] focus:border-[#f5ba42] rounded-xl px-3 py-2 text-stone-100 text-xs outline-none transition-all placeholder:text-stone-600"
           />
+        </div>
+
+        <div>
+          <label className="block text-stone-300 font-semibold mb-1 uppercase tracking-wider text-[11px]">
+            Gênero & Arte:
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => onChangeGender('masculino')}
+              className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                gender === 'masculino'
+                  ? 'bg-amber-600/30 border-amber-400 text-amber-200 shadow'
+                  : 'bg-[#141824] border-[#2b334a] text-stone-400 hover:border-stone-500'
+              }`}
+            >
+              <span>♂ Masculino</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onChangeGender('feminino')}
+              className={`py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                gender === 'feminino'
+                  ? 'bg-purple-600/30 border-purple-400 text-purple-200 shadow'
+                  : 'bg-[#141824] border-[#2b334a] text-stone-400 hover:border-stone-500'
+              }`}
+            >
+              <span>♀ Feminino</span>
+            </button>
+          </div>
         </div>
       </div>
 

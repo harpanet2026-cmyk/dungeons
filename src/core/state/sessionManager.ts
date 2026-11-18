@@ -61,6 +61,7 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
     },
     conditions: [],
     notes: 'Estilo de Combate: Defesa (+1 na CA).',
+    gender: 'masculino',
     avatarUrl: '/artes/guerreiro.jpeg'
   },
   {
@@ -73,6 +74,7 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
     xp: 900,
     alignment: 'Caótico e Bom',
     background: 'Sábio',
+    gender: 'feminino',
     baseAbilities: {
       for: 8,
       des: 15,
@@ -120,7 +122,7 @@ export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
     },
     conditions: [],
     notes: 'Tradição Arcana: Evocação.',
-    avatarUrl: '/artes/mago.jpeg'
+    avatarUrl: '/artes/mago_f.jpeg'
   }
 ];
 
@@ -139,18 +141,20 @@ export class SessionManager {
         return parsed.map(c => {
           if (c.avatarUrl && c.avatarUrl.includes('/heroes/')) {
             const cls = (c.class || '').toLowerCase();
-            if (cls.includes('mago')) c.avatarUrl = '/artes/mago.jpeg';
-            else if (cls.includes('guerreiro')) c.avatarUrl = '/artes/guerreiro.jpeg';
-            else if (cls.includes('ladino')) c.avatarUrl = '/artes/ladino.jpeg';
-            else if (cls.includes('clérigo') || cls.includes('clerigo')) c.avatarUrl = '/artes/clerigo.jpeg';
-            else if (cls.includes('bárbaro') || cls.includes('barbaro')) c.avatarUrl = '/artes/barbaro.jpeg';
-            else if (cls.includes('bardo')) c.avatarUrl = '/artes/bardo.jpeg';
-            else if (cls.includes('paladino')) c.avatarUrl = '/artes/paladino.jpeg';
-            else if (cls.includes('patrulheiro')) c.avatarUrl = '/artes/patrulheiro.jpeg';
-            else if (cls.includes('druida')) c.avatarUrl = '/artes/druida.jpeg';
-            else if (cls.includes('monge')) c.avatarUrl = '/artes/monge.jpeg';
-            else if (cls.includes('bruxo')) c.avatarUrl = '/artes/bruxo.jpeg';
-            else if (cls.includes('feiticeiro')) c.avatarUrl = '/artes/feiticeiro.jpeg';
+            const isFem = (c.gender || '').toLowerCase().includes('fem') || (c.gender || '').toLowerCase() === 'f';
+            const suffix = isFem ? '_f.jpeg' : '.jpeg';
+            if (cls.includes('mago')) c.avatarUrl = `/artes/mago${suffix}`;
+            else if (cls.includes('guerreiro')) c.avatarUrl = `/artes/guerreiro${suffix}`;
+            else if (cls.includes('ladino')) c.avatarUrl = `/artes/ladino${suffix}`;
+            else if (cls.includes('clérigo') || cls.includes('clerigo')) c.avatarUrl = `/artes/clerigo${suffix}`;
+            else if (cls.includes('bárbaro') || cls.includes('barbaro')) c.avatarUrl = `/artes/barbaro${suffix}`;
+            else if (cls.includes('bardo')) c.avatarUrl = `/artes/bardo${suffix}`;
+            else if (cls.includes('paladino')) c.avatarUrl = `/artes/paladino${suffix}`;
+            else if (cls.includes('patrulheiro')) c.avatarUrl = `/artes/patrulheiro${suffix}`;
+            else if (cls.includes('druida')) c.avatarUrl = `/artes/druida${suffix}`;
+            else if (cls.includes('monge')) c.avatarUrl = `/artes/monge${suffix}`;
+            else if (cls.includes('bruxo')) c.avatarUrl = `/artes/bruxo${suffix}`;
+            else if (cls.includes('feiticeiro')) c.avatarUrl = `/artes/feiticeiro${suffix}`;
           }
           return c;
         });

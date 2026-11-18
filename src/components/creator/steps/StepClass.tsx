@@ -17,6 +17,8 @@ interface StepClassProps {
   selectedClass: string;
   onSelectClass: (className: string) => void;
   level: number;
+  gender?: 'masculino' | 'feminino';
+  onChangeGender?: (gender: 'masculino' | 'feminino') => void;
   
   // Perícias da Classe
   selectedClassSkills: SkillName[];
@@ -45,6 +47,8 @@ export const StepClass: React.FC<StepClassProps> = ({
   selectedClass,
   onSelectClass,
   level,
+  gender = 'masculino',
+  onChangeGender,
   selectedClassSkills,
   onToggleClassSkill,
   raceGrantedSkills,
@@ -69,15 +73,45 @@ export const StepClass: React.FC<StepClassProps> = ({
 
   return (
     <div className="space-y-6 text-stone-200">
-      {/* Título da Seção */}
-      <div className="border-b border-[#231b14] pb-3">
-        <h3 className="font-cinzel text-lg font-bold text-[#f5ba42] uppercase tracking-wider flex items-center gap-2">
-          <Sword className="w-5 h-5 text-[#f5ba42]" />
-          2. Escolha de Classe e Decisões de Nível 1 (Capítulo 3 do PHB)
-        </h3>
-        <p className="text-xs text-stone-400 mt-1">
-          A classe dita sua vocação heroica, dados de vida, perícias treinadas e recursos de combate ou conjuração.
-        </p>
+      {/* Título da Seção & Alternador de Gênero da Arte */}
+      <div className="border-b border-[#231b14] pb-3 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h3 className="font-cinzel text-lg font-bold text-[#f5ba42] uppercase tracking-wider flex items-center gap-2">
+            <Sword className="w-5 h-5 text-[#f5ba42]" />
+            2. Escolha de Classe e Decisões de Nível 1 (Capítulo 3 do PHB)
+          </h3>
+          <p className="text-xs text-stone-400 mt-1">
+            A classe dita sua vocação heroica, dados de vida, perícias treinadas e recursos de combate ou conjuração.
+          </p>
+        </div>
+
+        {onChangeGender && (
+          <div className="flex items-center gap-1.5 bg-[#0e111a] p-1 rounded-xl border border-[#2b334a]">
+            <span className="text-[10px] text-stone-400 font-semibold px-2 uppercase tracking-wider">Arte:</span>
+            <button
+              type="button"
+              onClick={() => onChangeGender('masculino')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                gender === 'masculino'
+                  ? 'bg-amber-600/40 text-amber-200 border border-amber-500/60 shadow'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              ♂ Masculino
+            </button>
+            <button
+              type="button"
+              onClick={() => onChangeGender('feminino')}
+              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                gender === 'feminino'
+                  ? 'bg-purple-600/40 text-purple-200 border border-purple-500/60 shadow'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              ♀ Feminino
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Grid de Seleção das 12 Classes */}
@@ -106,7 +140,7 @@ export const StepClass: React.FC<StepClassProps> = ({
             >
               <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-[#a17036]/60 mb-2 shadow">
                 <img
-                  src={getClassPortrait(className)}
+                  src={getClassPortrait(className, gender)}
                   alt={className}
                   className="w-full h-full object-cover object-top"
                 />
@@ -125,7 +159,7 @@ export const StepClass: React.FC<StepClassProps> = ({
           <div className="flex items-center gap-3">
             <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-[#f5ba42] shadow">
               <img
-                src={getClassPortrait(selectedClass)}
+                src={getClassPortrait(selectedClass, gender)}
                 alt={selectedClass}
                 className="w-full h-full object-cover object-top"
               />
