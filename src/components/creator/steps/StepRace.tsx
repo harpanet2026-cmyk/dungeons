@@ -100,7 +100,7 @@ export const StepRace: React.FC<StepRaceProps> = ({
                   onSelectSubrace('');
                 }
               }}
-              className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+              className={`p-3 rounded-2xl border text-left transition-all flex flex-col justify-between overflow-hidden ${
                 isSelected
                   ? 'bg-gradient-to-b from-[#2a2016] to-[#1a140e] border-[#f5ba42] shadow-lg shadow-amber-950/40 text-[#ffd470]'
                   : 'bg-[#121622] border-[#262f44] text-stone-300 hover:border-[#3d496a] hover:bg-[#161c2c]'
@@ -110,9 +110,9 @@ export const StepRace: React.FC<StepRaceProps> = ({
                 <span className="font-cinzel font-bold text-xs uppercase tracking-wider block">{r.name}</span>
                 <span className="text-[10px] text-stone-400 line-clamp-2 mt-0.5">{r.description}</span>
               </div>
-              <div className="mt-2 text-[10px] font-semibold text-emerald-400 flex items-center gap-1">
+              <div className="mt-2 text-[10px] font-semibold text-emerald-400 flex flex-wrap items-center gap-1">
                 {Object.entries(r.baseAbilityBonuses).map(([ab, bonus]) => (
-                  <span key={ab} className="bg-[#0b0e17] px-1.5 py-0.5 rounded border border-[#2b354f]">
+                  <span key={ab} className="bg-[#0b0e17] px-1.5 py-0.5 rounded border border-[#2b354f] whitespace-nowrap">
                     +{bonus} {ab.toUpperCase()}
                   </span>
                 ))}
@@ -170,7 +170,7 @@ export const StepRace: React.FC<StepRaceProps> = ({
                     <p className="text-[10px] text-stone-400 mt-1 line-clamp-2">{sub.description}</p>
                     <div className="mt-2 text-[10px] text-emerald-400 font-semibold flex flex-wrap gap-1">
                       {Object.entries(sub.abilityBonuses).map(([ab, b]) => (
-                        <span key={ab} className="bg-[#0b0e17] px-1 py-0.5 rounded border border-[#262f44]">
+                        <span key={ab} className="bg-[#0b0e17] px-1 py-0.5 rounded border border-[#262f44] whitespace-nowrap">
                           +{b} {ab.toUpperCase()}
                         </span>
                       ))}
