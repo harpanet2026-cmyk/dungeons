@@ -149,6 +149,10 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
       } catch {}
 
       if (health.success) {
+        // Persiste imediatamente a chave testada e validada
+        GeminiApiService.setApiKey(cleanKey);
+        setApiKey(cleanKey);
+
         const isFallback = health.model !== geminiModel;
         setTestResult({
           success: true,
@@ -226,7 +230,8 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
           currentTheme.title,
           currentTheme.shortDesc,
           userDesires,
-          characters
+          characters,
+          apiKey.trim() || GeminiApiService.getApiKey()
         );
       }
 
@@ -307,7 +312,8 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
           messages,
           characters,
           enemies,
-          dossierText
+          dossierText,
+          activeKey
         );
       }
 

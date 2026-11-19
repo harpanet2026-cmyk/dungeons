@@ -173,9 +173,10 @@ ${enemiesSummary}
     themeTitle: string,
     themeDesc: string,
     userDesires: string,
-    characters: Character[]
+    characters: Character[],
+    explicitApiKey?: string
   ): Promise<string> {
-    const apiKey = this.getApiKey();
+    const apiKey = (explicitApiKey || this.getApiKey()).replace(/^["']|["']$/g, '').trim();
     if (!apiKey) {
       throw new Error('Chave de API do Gemini não configurada. Por favor, insira sua chave do Google AI Studio para gerar a aventura com IA.');
     }
@@ -305,6 +306,8 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
 
         if (res.ok) {
           const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'OK';
+          // Se a validação teve sucesso, persiste a chave verificada imediatamente
+          this.setApiKey(key);
           // Se o modelo solicitado retornou 404 mas o fallback funcionou, ativa o fallback como modelo ativo!
           if (currentModel !== requestedModel) {
             console.warn(`[Gemini API] Modelo '${requestedModel}' retornou 404. Modelo ativo atualizado para '${currentModel}'.`);
@@ -460,14 +463,94 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     throw lastError || new Error(`[HTTP 404] Nenhum dos modelos configurados (${candidateModels.join(', ')}) está disponível para sua chave.`);
   }
 
+  /**
+   * Constrói e sanitiza a lista de mensagens 'contents' garantindo conformidade total com a Gemini API v1beta:
+   * 1. Remove saudações/mensagens iniciais com role 'model' (o Gemini REJEITA chats que não começam com 'user').
+   * 2. Garante alternância estrita entre 'user' e 'model', mesclando mensagens consecutivas da mesma role.
+   * 3. Garante que o último turno seja 'user' com o prompt atual.
+   * 4. Remove partes de texto vazias para evitar HTTP 400.
+   */
+  public static formatContentsForGemini(history: ChatMessage[], newPrompt: string): any[] {
+    const rawTurns: Array<{ role: 'user' | 'model'; text: string }> = [];
+
+    // 1. Coleta mensagens anteriores com texto não-vazio
+    for (const msg of history || []) {
+      const clean = (msg.text || '').trim();
+      if (!clean) continue;
+      rawTurns.push({
+        role: msg.role === 'model' ? 'model' : 'user',
+        text: clean
+      });
+    }
+
+    // 2. Adiciona o novo prompt do usuário
+    const cleanPrompt = (newPrompt || '').trim();
+    if (cleanPrompt) {
+      rawTurns.push({
+        role: 'user',
+        text: cleanPrompt
+      });
+    }
+
+    // 3. Remove mensagens no início que sejam 'model' (ex: saudação estática de abertura da interface)
+    // A especificação da Google Gemini API exige estritamente que multiturn comece com role 'user'
+    while (rawTurns.length > 0 && rawTurns[0].role === 'model') {
+      rawTurns.shift();
+    }
+
+    // 4. Se não sobrou nenhum turno, adiciona ao menos o prompt atual
+    if (rawTurns.length === 0) {
+      return [
+        {
+          role: 'user',
+          parts: [{ text: cleanPrompt || 'Olá, Mestre!' }]
+        }
+      ];
+    }
+
+    // 5. Garante alternância estrita (user -> model -> user -> model)
+    const normalized: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
+
+    for (const turn of rawTurns) {
+      if (normalized.length === 0) {
+        normalized.push({
+          role: turn.role,
+          parts: [{ text: turn.text }]
+        });
+      } else {
+        const last = normalized[normalized.length - 1];
+        if (last.role === turn.role) {
+          // Se houver dois turnos seguidos com a mesma role, concatena os textos para evitar HTTP 400
+          last.parts[0].text += `\n\n${turn.text}`;
+        } else {
+          normalized.push({
+            role: turn.role,
+            parts: [{ text: turn.text }]
+          });
+        }
+      }
+    }
+
+    // 6. Garante que o último turno seja 'user'
+    if (normalized[normalized.length - 1].role !== 'user') {
+      normalized.push({
+        role: 'user',
+        parts: [{ text: cleanPrompt || 'Continue narrando os acontecimentos.' }]
+      });
+    }
+
+    return normalized;
+  }
+
   static async sendMessage(
     userPrompt: string,
     history: ChatMessage[],
     characters: Character[],
     enemies: Enemy[],
-    customDossier?: string
+    customDossier?: string,
+    explicitApiKey?: string
   ): Promise<AiNarrativeResult> {
-    const apiKey = this.getApiKey();
+    const apiKey = (explicitApiKey || this.getApiKey()).replace(/^["']|["']$/g, '').trim();
     if (!apiKey) {
       throw new Error('Chave de API do Gemini não configurada. Por favor, insira sua chave do Google AI Studio ou defina GEMINI_API_KEY no arquivo .env.');
     }
@@ -475,19 +558,8 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     const model = this.getModel();
     const systemInstructionText = this.generateSystemInstruction(characters, enemies, customDossier);
 
-    // Formata o histórico filtrando mensagens vazias para evitar HTTP 400
-    const contents: any[] = history
-      .filter(msg => msg.text && msg.text.trim())
-      .map(msg => ({
-        role: msg.role === 'model' ? 'model' : 'user',
-        parts: [{ text: msg.text.trim() }]
-      }));
-
-    // Adiciona a nova mensagem do usuário
-    contents.push({
-      role: 'user',
-      parts: [{ text: userPrompt.trim() }]
-    });
+    // Sanitiza e formata o histórico em estrita conformidade com a Gemini API (começando sempre por 'user')
+    const contents = this.formatContentsForGemini(history, userPrompt);
 
     // Formatação 100% compatível com a especificação REST v1beta da Gemini API
     const requestBody: any = {
@@ -503,7 +575,20 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
       }
     };
 
-    let data = await this.executeWithFallback(apiKey, model, requestBody);
+    let data;
+    try {
+      data = await this.executeWithFallback(apiKey, model, requestBody);
+    } catch (err: any) {
+      // Se falhar com 400 (Bad Request) ou erro de schema/ferramenta, tenta novamente em modo narrativo puro
+      if (err.message && (err.message.includes('400') || err.message.includes('INVALID_ARGUMENT')) && requestBody.tools) {
+        console.warn('[Gemini API] Falha na requisição com ferramentas integradas. Retentando em modo puramente narrativo...', err);
+        const { tools, ...narrativeOnlyBody } = requestBody;
+        data = await this.executeWithFallback(apiKey, model, narrativeOnlyBody);
+      } else {
+        throw err;
+      }
+    }
+
     let parts: any[] = data.candidates?.[0]?.content?.parts || [];
 
     const executedTools: ExecutedToolResult[] = [];

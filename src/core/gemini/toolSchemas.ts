@@ -122,7 +122,8 @@ export const GEMINI_TOOLS_DECLARATION = {
             description: 'Filtro opcional: "all" para todos, "heroes" para heróis ou "enemies" para inimigos.',
             enum: ['all', 'heroes', 'enemies']
           }
-        }
+        },
+        required: []
       }
     }
   ]

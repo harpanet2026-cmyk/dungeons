@@ -104,7 +104,8 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
           historyToSend,
           characters,
           enemies,
-          dossierText
+          dossierText,
+          activeKey
         );
       }
 
