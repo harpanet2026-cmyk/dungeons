@@ -569,11 +569,16 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
   ];
 
   return (
-    <div className="bg-gradient-to-b from-[#131622] via-[#0d0f17] to-[#090b10] border-2 border-[#a17036] rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl max-w-7xl mx-auto space-y-6 text-stone-200">
+    <div
+      className="relative overflow-hidden bg-cover bg-center bg-no-repeat border-2 border-[#a17036] rounded-3xl p-4 sm:p-6 lg:p-8 shadow-2xl max-w-7xl mx-auto space-y-6 text-stone-200"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(10, 13, 20, 0.65) 0%, rgba(8, 10, 16, 0.82) 40%, rgba(6, 7, 10, 0.95) 100%), url('/artes/herois_1.jpeg')`
+      }}
+    >
       {/* 1. TOPO: TÍTULO, SUBTÍTULO E CANCELAR */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#231b14] pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#a17036] to-[#4a3419] flex items-center justify-center shadow-lg border border-[#f5ba42]/30">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#a17036]/90 to-[#4a3419]/90 backdrop-blur-sm flex items-center justify-center shadow-lg border border-[#f5ba42]/30">
             <UserPlus className="w-6 h-6 text-[#ffd470]" />
           </div>
           <div>
@@ -608,10 +613,10 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
               onClick={() => setCurrentStep(step.id)}
               className={`p-2.5 rounded-2xl border text-left transition-all flex items-center gap-2.5 ${
                 isCurrent
-                  ? 'bg-gradient-to-r from-[#2a2016] to-[#1c1610] border-[#f5ba42] text-[#f5ba42] shadow-md shadow-amber-950/30'
+                  ? 'bg-gradient-to-r from-[#2a2016]/95 to-[#1c1610]/95 border-[#f5ba42] text-[#f5ba42] shadow-md shadow-amber-950/30 backdrop-blur-sm'
                   : isPassed
-                  ? 'bg-[#121622] border-[#34405e] text-stone-300 hover:border-[#4d5e8a]'
-                  : 'bg-[#0e111a] border-[#1d2333] text-stone-500 hover:border-[#2b354f]'
+                  ? 'bg-[#121622]/80 backdrop-blur-sm border-[#34405e] text-stone-300 hover:border-[#4d5e8a] hover:bg-[#161c2c]/90'
+                  : 'bg-[#0e111a]/70 backdrop-blur-sm border-[#1d2333] text-stone-500 hover:border-[#2b354f] hover:bg-[#121622]/80'
               }`}
             >
               <div
@@ -637,7 +642,7 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
       {/* 3. CORPO CENTRAL: PASSO ATUAL (ESQUERDA) + LIVE PREVIEW SHEET (DIREITA) */}
       <div className="flex flex-col lg:flex-row items-start gap-6">
         {/* Lado Esquerdo: Formulário Dinâmico da Etapa Atual */}
-        <div className="flex-1 w-full min-w-0 bg-[#0a0c13] border border-[#231b14] rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
+        <div className="flex-1 w-full min-w-0 bg-[#0a0c13]/80 backdrop-blur-md border border-[#231b14]/80 rounded-3xl p-5 sm:p-6 shadow-xl space-y-6">
           {currentStep === 1 && (
             <StepRace
               selectedRace={selectedRace}

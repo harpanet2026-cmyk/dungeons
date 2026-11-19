@@ -123,7 +123,7 @@ export const StepRace: React.FC<StepRaceProps> = ({
       </div>
 
       {/* Detalhes da Raça Selecionada */}
-      <div className="bg-[#0e111a] p-5 rounded-2xl border border-[#231b14] space-y-4">
+      <div className="bg-[#0e111a]/80 backdrop-blur-sm p-5 rounded-2xl border border-[#231b14]/80 space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#1f2638] pb-3">
           <div>
             <h4 className="font-cinzel text-base font-bold text-[#f5ba42]">

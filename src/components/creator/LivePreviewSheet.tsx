@@ -118,7 +118,7 @@ export const LivePreviewSheet: React.FC<LivePreviewSheetProps> = ({
   const spellAttackBonus = spellcastingAbility ? profBonus + spellMod : null;
 
   return (
-    <aside className="w-full lg:w-80 xl:w-96 flex-shrink-0 bg-[#0c0e15] border-2 border-[#a17036]/60 rounded-3xl p-5 shadow-2xl flex flex-col gap-4 text-stone-200 sticky top-6">
+    <aside className="w-full lg:w-80 xl:w-96 flex-shrink-0 bg-[#0c0e15]/80 backdrop-blur-md border-2 border-[#a17036]/60 rounded-3xl p-5 shadow-2xl flex flex-col gap-4 text-stone-200 sticky top-6">
       {/* Cabeçalho do Card */}
       <div className="flex items-center justify-between border-b border-[#231b14] pb-3">
         <div className="flex items-center gap-2">

@@ -153,7 +153,7 @@ export const StepClass: React.FC<StepClassProps> = ({
       </div>
 
       {/* Painel de Informações da Classe Selecionada */}
-      <div className="bg-[#0e111a] p-5 rounded-2xl border border-[#231b14] space-y-5">
+      <div className="bg-[#0e111a]/80 backdrop-blur-sm p-5 rounded-2xl border border-[#231b14]/80 space-y-5">
         {/* Banner com Hit Die e Salvaguardas */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1f2638] pb-4">
           <div className="flex items-center gap-3">
