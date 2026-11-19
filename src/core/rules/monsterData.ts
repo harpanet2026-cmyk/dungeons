@@ -329,6 +329,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Ogro: {
     name: 'Ogro Furioso',
     type: 'Gigante',
+    imageUrl: '/monsters/ogre.jpg',
     cr: '2',
     xp: 450,
     ac: 11,
@@ -439,6 +440,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   DevoradorDeMentes: {
     name: 'Devorador de Mentes (Mind Flayer)',
     type: 'Aberração',
+    imageUrl: '/monsters/mind_flayer.jpg',
     cr: '7',
     xp: 2900,
     ac: 15,
