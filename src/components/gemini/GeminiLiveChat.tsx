@@ -149,16 +149,17 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
       } catch {}
 
       if (health.success) {
+        const isFallback = health.model !== geminiModel;
         setTestResult({
           success: true,
-          message: `✓ Conexão bem-sucedida (HTTP 200)! Modelo '${health.model}' validado e respondendo.`,
+          message: isFallback
+            ? `✓ Conexão bem-sucedida (HTTP 200)! O modelo '${geminiModel}' retornou 404 (indisponível no Google AI Studio), fallback ativado automaticamente para '${health.model}'.`
+            : `✓ Conexão bem-sucedida (HTTP 200)! Modelo '${health.model}' validado e respondendo.`,
           models: discovered
         });
-        if (discovered.length > 0 && !discovered.includes(geminiModel)) {
-          const preferred = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro'];
-          const chosen = preferred.find(p => discovered.includes(p)) || discovered[0];
-          setGeminiModel(chosen);
-          GeminiApiService.setModel(chosen);
+        if (health.model) {
+          setGeminiModel(health.model);
+          GeminiApiService.setModel(health.model);
         }
       } else {
         setTestResult({

@@ -11,6 +11,16 @@ export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
 export const FALLBACK_GEMINI_MODEL = 'gemini-2.5-flash';
 export const GEMINI_API_VERSION = 'v1beta';
 
+// Lista de modelos suportados em ordem de preferência
+export const SUPPORTED_GEMINI_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-2.5-flash',
+  'gemini-2.0-flash',
+  'gemini-1.5-flash',
+  'gemini-1.5-pro',
+  'gemini-2.5-pro'
+];
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'model';
@@ -51,26 +61,30 @@ export class GeminiApiService {
   static getApiKey(): string {
     let key = '';
 
-    // 1. Variáveis de ambiente Vite (import.meta.env)
+    // 1. Variáveis de ambiente Vite (import.meta.env de forma segura)
     try {
-      if (typeof import.meta !== 'undefined' && import.meta?.env) {
-        key = (import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || '') as string;
+      const meta = import.meta as any;
+      if (meta && meta.env) {
+        key = (meta.env.GEMINI_API_KEY || meta.env.VITE_GEMINI_API_KEY || '') as string;
       }
     } catch {}
 
-    // 2. Variáveis de ambiente Node / process.env
+    // 2. Variáveis de ambiente Node / process.env de forma segura
     if (!key) {
       try {
-        if (typeof process !== 'undefined' && process?.env) {
-          key = (process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '') as string;
+        const proc = (globalThis as any)?.process;
+        if (proc && proc.env) {
+          key = (proc.env.GEMINI_API_KEY || proc.env.VITE_GEMINI_API_KEY || '') as string;
         }
       } catch {}
     }
 
-    // 3. localStorage do navegador (ambas as chaves históricas)
+    // 3. localStorage do navegador (ambas as chaves)
     if (!key) {
       try {
-        key = localStorage.getItem(STORAGE_API_KEY) || localStorage.getItem(STORAGE_LEGACY_KEY) || '';
+        if (typeof localStorage !== 'undefined') {
+          key = localStorage.getItem(STORAGE_API_KEY) || localStorage.getItem(STORAGE_LEGACY_KEY) || '';
+        }
       } catch {}
     }
 
@@ -81,21 +95,25 @@ export class GeminiApiService {
   static setApiKey(key: string): void {
     const clean = (key || '').replace(/^["']|["']$/g, '').trim();
     try {
-      localStorage.setItem(STORAGE_API_KEY, clean);
-      localStorage.setItem(STORAGE_LEGACY_KEY, clean);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_API_KEY, clean);
+        localStorage.setItem(STORAGE_LEGACY_KEY, clean);
+      }
     } catch {}
   }
 
   static getModel(): string {
     try {
-      const saved = localStorage.getItem(STORAGE_MODEL_KEY);
-      if (!saved) return DEFAULT_GEMINI_MODEL;
-      const clean = this.cleanModelName(saved);
-      // Migra modelos descontinuados ou obsoletos para o padrão gemini-3.8-flash
-      if (['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro', 'gemini-1.0-pro'].includes(clean)) {
-        return DEFAULT_GEMINI_MODEL;
+      if (typeof localStorage !== 'undefined') {
+        const saved = localStorage.getItem(STORAGE_MODEL_KEY);
+        if (saved) {
+          const clean = this.cleanModelName(saved);
+          if (clean && !['gemini-1.0-pro', 'gemini-pro'].includes(clean)) {
+            return clean;
+          }
+        }
       }
-      return clean || DEFAULT_GEMINI_MODEL;
+      return DEFAULT_GEMINI_MODEL;
     } catch {
       return DEFAULT_GEMINI_MODEL;
     }
@@ -104,7 +122,9 @@ export class GeminiApiService {
   static setModel(model: string): void {
     const clean = this.cleanModelName(model);
     try {
-      localStorage.setItem(STORAGE_MODEL_KEY, clean || DEFAULT_GEMINI_MODEL);
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(STORAGE_MODEL_KEY, clean || DEFAULT_GEMINI_MODEL);
+      }
     } catch {}
   }
 
@@ -203,7 +223,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
   }
 
   /**
-   * Consulta a lista de modelos suportados para a chave informada (apenas para diagnósticos)
+   * Consulta a lista de modelos suportados para a chave informada
    */
   static async listModels(apiKey?: string): Promise<{ version: 'v1beta'; models: string[] }> {
     const cleanKey = (apiKey || this.getApiKey()).replace(/^["']|["']$/g, '').trim();
@@ -228,6 +248,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
 
   /**
    * Teste rápido de conectividade com prompt mínimo ("Responda apenas: OK")
+   * Se o modelo solicitado retornar 404, testa os fallbacks automaticamente e ativa o que responder HTTP 200.
    */
   static async quickHealthcheck(apiKey?: string, modelName?: string): Promise<HealthcheckResult> {
     const key = (apiKey || this.getApiKey()).replace(/^["']|["']$/g, '').trim();
@@ -241,60 +262,96 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
       };
     }
 
-    const model = this.cleanModelName(modelName || this.getModel() || DEFAULT_GEMINI_MODEL);
-    const url = `https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models/${model}:generateContent?key=${key}`;
+    const requestedModel = this.cleanModelName(modelName || this.getModel() || DEFAULT_GEMINI_MODEL);
+    
+    // Lista ordenada para o healthcheck: tenta o solicitado e em caso de 404 testa os modelos reais da API
+    const testCandidates = Array.from(new Set([
+      requestedModel,
+      FALLBACK_GEMINI_MODEL,
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-pro'
+    ]));
 
-    const requestBody = {
-      contents: [
-        {
-          role: 'user',
-          parts: [{ text: 'Responda apenas: OK' }]
+    let lastError = '';
+    let lastStatus = 0;
+    let lastRaw: any = null;
+
+    for (const currentModel of testCandidates) {
+      const url = `https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models/${currentModel}:generateContent?key=${key}`;
+      const requestBody = {
+        contents: [
+          {
+            role: 'user',
+            parts: [{ text: 'Responda apenas: OK' }]
+          }
+        ],
+        generationConfig: {
+          maxOutputTokens: 15,
+          temperature: 0.1
         }
-      ],
-      generationConfig: {
-        maxOutputTokens: 15,
-        temperature: 0.1
-      }
-    };
-
-    try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (res.ok) {
-        const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'OK';
-        return {
-          success: true,
-          status: res.status,
-          text: replyText,
-          model,
-          raw: data
-        };
-      }
-
-      const errorMsg = data?.error?.message || res.statusText || 'Erro desconhecido';
-      return {
-        success: false,
-        status: res.status,
-        text: '',
-        model,
-        raw: data,
-        error: `[HTTP ${res.status}] ${errorMsg}`
       };
-    } catch (err: any) {
-      return {
-        success: false,
-        status: 0,
-        text: '',
-        model,
-        error: err.message || 'Falha de rede ao conectar com a Google Gemini API.'
-      };
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(requestBody)
+        });
+
+        const data = await res.json().catch(() => ({}));
+        lastStatus = res.status;
+        lastRaw = data;
+
+        if (res.ok) {
+          const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'OK';
+          // Se o modelo solicitado retornou 404 mas o fallback funcionou, ativa o fallback como modelo ativo!
+          if (currentModel !== requestedModel) {
+            console.warn(`[Gemini API] Modelo '${requestedModel}' retornou 404. Modelo ativo atualizado para '${currentModel}'.`);
+            this.setModel(currentModel);
+          }
+          return {
+            success: true,
+            status: res.status,
+            text: replyText,
+            model: currentModel,
+            raw: data
+          };
+        }
+
+        const errorMsg = data?.error?.message || res.statusText || 'Erro desconhecido';
+        lastError = `[HTTP ${res.status}] ${errorMsg}`;
+
+        // Se for 401, 403 ou erro de chave inválida, encerra imediatamente (não adianta tentar outro modelo)
+        if (res.status === 401 || res.status === 403 || (res.status === 400 && errorMsg.includes('API_KEY_INVALID'))) {
+          break;
+        }
+
+        // Se for 429, encerra imediatamente para não consumir mais quota
+        if (res.status === 429) {
+          break;
+        }
+
+        // Se for 404, continua para o próximo fallback
+        if (res.status === 404 || errorMsg.includes('not found') || errorMsg.includes('not supported')) {
+          continue;
+        }
+
+        break;
+      } catch (err: any) {
+        lastError = err.message || 'Falha de rede ao conectar com a Google Gemini API.';
+        break;
+      }
     }
+
+    return {
+      success: false,
+      status: lastStatus,
+      text: '',
+      model: requestedModel,
+      raw: lastRaw,
+      error: lastError || 'Nenhum modelo do Gemini respondeu com sucesso.'
+    };
   }
 
   /**
@@ -308,14 +365,13 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     const cleanApiKey = apiKey.trim();
     const primaryModel = this.cleanModelName(initialModel) || DEFAULT_GEMINI_MODEL;
     
-    // Lista ordenada estrita de fallback:
-    // 1. Modelo selecionado (padrão gemini-3.8-flash)
-    // 2. Fallback oficial gemini-2.5-flash
-    // 3. Fallback opcional gemini-2.0-flash
+    // Lista ordenada estrita de fallback com modelos reais do Google AI Studio
     const candidateModels = Array.from(new Set([
       primaryModel,
       FALLBACK_GEMINI_MODEL,
-      'gemini-2.0-flash'
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-1.5-pro'
     ]));
 
     let lastError: Error | null = null;
