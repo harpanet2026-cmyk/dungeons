@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Character, Enemy } from '../../core/types/dnd';
 import { generateCampaignDossier, generateCombatSnapshot } from '../../core/gemini/promptGenerator';
 import { GEMINI_TOOLS_DECLARATION } from '../../core/gemini/toolSchemas';
@@ -29,7 +29,7 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
 
   // Provedor e Chat
   const [hubProvider, setHubProvider] = useState<AiProvider>(() => OllamaApiService.getProvider());
-  const [apiKey, setApiKey] = useState<string>(() => localStorage.getItem('gemini_api_key') || '');
+  const [apiKey, setApiKey] = useState<string>(() => GeminiApiService.getApiKey());
   const [chatInput, setChatInput] = useState<string>('');
   const [chatMessages, setChatMessages] = useState<Array<{ role: 'user' | 'model' | 'system'; text: string }>>([
     {
@@ -38,6 +38,7 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
     }
   ]);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const thresholds = calculatePartyEncounterThresholds(characters);
   const synergy = analyzePartySynergy(characters);
@@ -54,13 +55,14 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
 
   const handleSaveApiKey = (key: string) => {
     setApiKey(key);
-    localStorage.setItem('gemini_api_key', key);
+    GeminiApiService.setApiKey(key);
   };
 
   const handleSendChat = async () => {
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || isAiLoading || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
-    const userText = chatInput;
+    const userText = chatInput.trim();
     setChatInput('');
     setChatMessages(prev => [...prev, { role: 'user', text: userText }]);
 
@@ -83,15 +85,17 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
           dossierText
         );
       } else {
-        if (!apiKey) {
+        const activeKey = apiKey.trim() || GeminiApiService.getApiKey();
+        if (!activeKey) {
           setChatMessages(prev => [
             ...prev,
             {
               role: 'model',
-              text: `[Modo Simulação Sem Chave]: Para que o Gemini em nuvem responda diretamente, configure sua Gemini API Key no campo acima. Ou selecione a opção "Ollama Offline" para jogar sem custos e sem internet!`
+              text: `[Modo Simulação Sem Chave]: Para que o Gemini em nuvem responda diretamente, configure sua Gemini API Key no campo acima ou defina GEMINI_API_KEY no arquivo .env.`
             }
           ]);
           setIsAiLoading(false);
+          isSubmittingRef.current = false;
           return;
         }
 
@@ -115,10 +119,13 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
     } catch (err: any) {
       setChatMessages(prev => [
         ...prev,
-        { role: 'model', text: `Erro de conexão: ${err.message}` }
+        { role: 'model', text: `${err.message || 'Erro de conexão com o modelo de IA.'}` }
       ]);
     } finally {
       setIsAiLoading(false);
+      setTimeout(() => {
+        isSubmittingRef.current = false;
+      }, 500);
     }
   };
 

@@ -85,6 +85,7 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const isSubmittingRef = useRef<boolean>(false);
 
   // Verifica status do Ollama na inicialização
   useEffect(() => {
@@ -126,31 +127,43 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   };
 
   const handleTestKey = async () => {
-    if (!apiKey.trim()) {
+    const cleanKey = apiKey.trim();
+    if (!cleanKey) {
       setTestResult({ success: false, message: 'Por favor, insira ou cole uma chave de API primeiro.' });
       return;
     }
     setIsTestingKey(true);
     setTestResult(null);
     try {
-      const info = await GeminiApiService.listModels(apiKey.trim());
-      if (info.models.length > 0) {
-        setDiscoveredModels(info.models);
+      // 1. Testa conectividade real com healthcheck mínimo
+      const health = await GeminiApiService.quickHealthcheck(cleanKey, geminiModel);
+      
+      // 2. Consulta lista de modelos disponíveis
+      let discovered: string[] = [];
+      try {
+        const info = await GeminiApiService.listModels(cleanKey);
+        if (info.models.length > 0) {
+          discovered = info.models;
+          setDiscoveredModels(discovered);
+        }
+      } catch {}
+
+      if (health.success) {
         setTestResult({
           success: true,
-          message: `✓ Conexão bem-sucedida (${info.version})! Encontrados ${info.models.length} modelos liberados.`,
-          models: info.models
+          message: `✓ Conexão bem-sucedida (HTTP 200)! Modelo '${health.model}' validado e respondendo.`,
+          models: discovered
         });
-        if (!info.models.includes(geminiModel)) {
-          const preferred = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
-          const chosen = preferred.find(p => info.models.includes(p)) || info.models[0];
+        if (discovered.length > 0 && !discovered.includes(geminiModel)) {
+          const preferred = ['gemini-3.8-flash', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-2.5-pro'];
+          const chosen = preferred.find(p => discovered.includes(p)) || discovered[0];
           setGeminiModel(chosen);
           GeminiApiService.setModel(chosen);
         }
       } else {
         setTestResult({
           success: false,
-          message: '⚠️ A chave foi aceita pelo Google, mas nenhum modelo está liberado neste projeto. Verifique a Generative Language API em aistudio.google.com.'
+          message: `⚠️ Falha no teste: ${health.error || 'A chave não pôde ser validada.'}`
         });
       }
     } catch (err: any) {
@@ -252,12 +265,15 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
 
   const handleSendMessage = async (customText?: string) => {
     const textToSend = customText || inputPrompt;
-    if (!textToSend.trim() || isLoading) return;
+    if (!textToSend.trim() || isLoading || isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
 
-    if (provider === 'gemini' && !apiKey) {
+    const activeKey = apiKey.trim() || GeminiApiService.getApiKey();
+    if (provider === 'gemini' && !activeKey) {
       setIsConfigOpen(true);
       setConfigTab('gemini');
-      setErrorMessage('Para usar o Gemini em nuvem, informe sua chave de API ou mude para o Ollama (Offline).');
+      setErrorMessage('Para usar o Gemini em nuvem, informe sua chave de API ou configure GEMINI_API_KEY no arquivo .env.');
+      isSubmittingRef.current = false;
       return;
     }
 
@@ -315,6 +331,9 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
       setErrorMessage(err.message || 'Erro ao comunicar com a IA.');
     } finally {
       setIsLoading(false);
+      setTimeout(() => {
+        isSubmittingRef.current = false;
+      }, 600);
     }
   };
 
@@ -665,11 +684,10 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                       ))
                     ) : (
                       <>
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Recomendado)</option>
+                        <option value="gemini-3.8-flash">Gemini 3.8 Flash (Padrão Recomendado)</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fallback Estável)</option>
                         <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                         <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                        <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash (Latest)</option>
                       </>
                     )}
                   </select>

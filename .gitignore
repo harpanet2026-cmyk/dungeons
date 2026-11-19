@@ -26,6 +26,11 @@ dist-ssr
 # Vite timestamp files
 *.timestamp-*.mjs
 
+# Environment variables
+.env
+.env.local
+.env.*.local
+
 # Cloudflare CLI
 cloudflared.exe
 

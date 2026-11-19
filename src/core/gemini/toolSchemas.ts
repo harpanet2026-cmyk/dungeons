@@ -116,7 +116,13 @@ export const GEMINI_TOOLS_DECLARATION = {
       description: 'Consulta o estado em tempo real de todo o grupo (HP atual, CA, espaços de magia restantes e condições ativas).',
       parameters: {
         type: 'OBJECT',
-        properties: {}
+        properties: {
+          filter: {
+            type: 'STRING',
+            description: 'Filtro opcional: "all" para todos, "heroes" para heróis ou "enemies" para inimigos.',
+            enum: ['all', 'heroes', 'enemies']
+          }
+        }
       }
     }
   ]

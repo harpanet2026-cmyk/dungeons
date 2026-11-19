@@ -4,7 +4,12 @@ import { ToolExecutor, ExecutedToolResult } from './toolExecutor';
 import { GEMINI_TOOLS_DECLARATION } from './toolSchemas';
 
 const STORAGE_API_KEY = 'dungeons_gemini_api_key';
+const STORAGE_LEGACY_KEY = 'gemini_api_key';
 const STORAGE_MODEL_KEY = 'dungeons_gemini_model';
+
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.8-flash';
+export const FALLBACK_GEMINI_MODEL = 'gemini-2.5-flash';
+export const GEMINI_API_VERSION = 'v1beta';
 
 export interface ChatMessage {
   id: string;
@@ -21,25 +26,86 @@ export interface AiNarrativeResult {
   updatedEnemies?: Enemy[];
 }
 
+export interface HealthcheckResult {
+  success: boolean;
+  status: number;
+  text: string;
+  model: string;
+  raw?: any;
+  error?: string;
+}
+
 export class GeminiApiService {
+  /**
+   * Remove prefixos como 'models/' e espaços invisíveis para garantir o formato correto da URL REST
+   */
+  public static cleanModelName(model: string): string {
+    return (model || '')
+      .replace(/^models\//, '')
+      .trim();
+  }
+
+  /**
+   * Obtém a API Key com .trim(), buscando em variáveis de ambiente (.env) e localStorage
+   */
   static getApiKey(): string {
-    return localStorage.getItem(STORAGE_API_KEY) || '';
+    let key = '';
+
+    // 1. Variáveis de ambiente Vite (import.meta.env)
+    try {
+      if (typeof import.meta !== 'undefined' && import.meta?.env) {
+        key = (import.meta.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY || '') as string;
+      }
+    } catch {}
+
+    // 2. Variáveis de ambiente Node / process.env
+    if (!key) {
+      try {
+        if (typeof process !== 'undefined' && process?.env) {
+          key = (process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || '') as string;
+        }
+      } catch {}
+    }
+
+    // 3. localStorage do navegador (ambas as chaves históricas)
+    if (!key) {
+      try {
+        key = localStorage.getItem(STORAGE_API_KEY) || localStorage.getItem(STORAGE_LEGACY_KEY) || '';
+      } catch {}
+    }
+
+    // Limpa aspas acidentais, espaços e quebras de linha
+    return (key || '').replace(/^["']|["']$/g, '').trim();
   }
 
   static setApiKey(key: string): void {
-    localStorage.setItem(STORAGE_API_KEY, key.trim());
+    const clean = (key || '').replace(/^["']|["']$/g, '').trim();
+    try {
+      localStorage.setItem(STORAGE_API_KEY, clean);
+      localStorage.setItem(STORAGE_LEGACY_KEY, clean);
+    } catch {}
   }
 
   static getModel(): string {
-    const saved = localStorage.getItem(STORAGE_MODEL_KEY);
-    if (!saved || saved === 'gemini-1.5-flash') {
-      return 'gemini-2.5-flash';
+    try {
+      const saved = localStorage.getItem(STORAGE_MODEL_KEY);
+      if (!saved) return DEFAULT_GEMINI_MODEL;
+      const clean = this.cleanModelName(saved);
+      // Migra modelos descontinuados ou obsoletos para o padrão gemini-3.8-flash
+      if (['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-pro', 'gemini-1.0-pro'].includes(clean)) {
+        return DEFAULT_GEMINI_MODEL;
+      }
+      return clean || DEFAULT_GEMINI_MODEL;
+    } catch {
+      return DEFAULT_GEMINI_MODEL;
     }
-    return saved;
   }
 
   static setModel(model: string): void {
-    localStorage.setItem(STORAGE_MODEL_KEY, model);
+    const clean = this.cleanModelName(model);
+    try {
+      localStorage.setItem(STORAGE_MODEL_KEY, clean || DEFAULT_GEMINI_MODEL);
+    } catch {}
   }
 
   static generateSystemInstruction(characters: Character[], enemies: Enemy[], customDossier?: string): string {
@@ -62,6 +128,7 @@ REGRAS DE IMPARCIALIDADE E TOOL CALLING DETERMINÍSTICO (100% AUTOMÁTICO):
    - 'heal_character': Invoque sempre que houver magia de cura, poção ou descanso.
    - 'spend_spell_slot': Invoque quando um personagem gastar um espaço de magia de 1º círculo ou superior.
    - 'set_condition': Invoque quando aplicar ou remover condições de status (Envenenado, Caído, etc.).
+   - 'get_party_status': Invoque quando precisar consultar o estado atual de todo o grupo.
 2. NUNCA invente números de HP ou rolagens falsas na fala. O aplicativo rolará os dados matemáticos reais e alterará a vida na ficha dos personagens automaticamente!
 3. Seja neutro e justo: narre as consequências sensoriais e dramáticas baseando-se nos resultados calculados.
 4. Responda em Português do Brasil com narrativa cinematográfica, sensorial e envolvente (máximo 2 a 4 parágrafos por resposta).
@@ -94,8 +161,6 @@ ${enemiesSummary}
     }
 
     const model = this.getModel();
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
     const heroesList = characters.map(c => `${c.name} (${c.race} ${c.class}, Nível ${c.level})`).join(', ');
 
     const prompt = `Você é um lendário designer de aventuras de D&D 5ª Edição. Crie um DOSSIÊ DE CAMPANHA completo, imersivo e imediatamente jogável para o seguinte grupo de aventureiros.
@@ -137,124 +202,206 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     return data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
   }
 
-  static async listModels(apiKey: string): Promise<{ version: 'v1beta' | 'v1'; models: string[] }> {
-    const cleanKey = apiKey.trim();
-    for (const ver of ['v1beta', 'v1'] as const) {
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/${ver}/models?key=${cleanKey}`);
-        if (res.ok) {
-          const data = await res.json();
-          const models: string[] = (data.models || [])
-            .filter((m: any) => m.supportedGenerationMethods?.includes('generateContent'))
-            .map((m: any) => m.name.replace('models/', ''));
-          if (models.length > 0) {
-            return { version: ver, models };
-          }
-        }
-      } catch (e) {}
+  /**
+   * Consulta a lista de modelos suportados para a chave informada (apenas para diagnósticos)
+   */
+  static async listModels(apiKey?: string): Promise<{ version: 'v1beta'; models: string[] }> {
+    const cleanKey = (apiKey || this.getApiKey()).replace(/^["']|["']$/g, '').trim();
+    if (!cleanKey) return { version: 'v1beta', models: [] };
+
+    try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models?key=${cleanKey}`);
+      if (res.ok) {
+        const data = await res.json();
+        const models: string[] = (data.models || [])
+          .filter((m: any) => m.supportedGenerationMethods?.includes('generateContent'))
+          .map((m: any) => m.name.replace(/^models\//, ''));
+        return { version: 'v1beta', models };
+      }
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`[HTTP ${res.status}] ${errorData?.error?.message || res.statusText}`);
+    } catch (e: any) {
+      console.warn('Falha ao listar modelos do Gemini:', e);
+      throw e;
     }
-    return { version: 'v1beta', models: [] };
   }
 
+  /**
+   * Teste rápido de conectividade com prompt mínimo ("Responda apenas: OK")
+   */
+  static async quickHealthcheck(apiKey?: string, modelName?: string): Promise<HealthcheckResult> {
+    const key = (apiKey || this.getApiKey()).replace(/^["']|["']$/g, '').trim();
+    if (!key) {
+      return {
+        success: false,
+        status: 400,
+        text: '',
+        model: modelName || DEFAULT_GEMINI_MODEL,
+        error: 'Chave de API do Gemini não informada ou vazia. Verifique a variável GEMINI_API_KEY ou configure na tela.'
+      };
+    }
+
+    const model = this.cleanModelName(modelName || this.getModel() || DEFAULT_GEMINI_MODEL);
+    const url = `https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models/${model}:generateContent?key=${key}`;
+
+    const requestBody = {
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: 'Responda apenas: OK' }]
+        }
+      ],
+      generationConfig: {
+        maxOutputTokens: 15,
+        temperature: 0.1
+      }
+    };
+
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok) {
+        const replyText = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'OK';
+        return {
+          success: true,
+          status: res.status,
+          text: replyText,
+          model,
+          raw: data
+        };
+      }
+
+      const errorMsg = data?.error?.message || res.statusText || 'Erro desconhecido';
+      return {
+        success: false,
+        status: res.status,
+        text: '',
+        model,
+        raw: data,
+        error: `[HTTP ${res.status}] ${errorMsg}`
+      };
+    } catch (err: any) {
+      return {
+        success: false,
+        status: 0,
+        text: '',
+        model,
+        error: err.message || 'Falha de rede ao conectar com a Google Gemini API.'
+      };
+    }
+  }
+
+  /**
+   * Executa a requisição REST com fallback estrito (evitando múltiplos disparos e loops 429)
+   */
   private static async executeWithFallback(
     apiKey: string,
     initialModel: string,
     requestBody: any
   ): Promise<any> {
     const cleanApiKey = apiKey.trim();
-
-    // 1. Tentar detectar modelos habilitados na conta da API Key
-    let detectedModels: string[] = [];
-    let preferredVersion: 'v1beta' | 'v1' = 'v1beta';
-    try {
-      const info = await this.listModels(cleanApiKey);
-      if (info.models.length > 0) {
-        detectedModels = info.models;
-        preferredVersion = info.version;
-      }
-    } catch {}
-
-    const candidates = [
-      ...detectedModels,
-      initialModel,
-      'gemini-2.5-flash',
-      'gemini-2.0-flash',
-      'gemini-2.5-pro',
-      'gemini-1.5-flash-latest',
-      'gemini-1.5-flash',
-      'gemini-1.5-pro',
-      'gemini-pro'
-    ];
-    const modelsToTry = Array.from(new Set(candidates)).filter(Boolean);
-
-    // Tentar versões v1beta e v1
-    const versionsToTry: ('v1beta' | 'v1')[] = preferredVersion === 'v1' ? ['v1', 'v1beta'] : ['v1beta', 'v1'];
+    const primaryModel = this.cleanModelName(initialModel) || DEFAULT_GEMINI_MODEL;
+    
+    // Lista ordenada estrita de fallback:
+    // 1. Modelo selecionado (padrão gemini-3.8-flash)
+    // 2. Fallback oficial gemini-2.5-flash
+    // 3. Fallback opcional gemini-2.0-flash
+    const candidateModels = Array.from(new Set([
+      primaryModel,
+      FALLBACK_GEMINI_MODEL,
+      'gemini-2.0-flash'
+    ]));
 
     let lastError: Error | null = null;
-    for (const ver of versionsToTry) {
-      for (const m of modelsToTry) {
-        const url = `https://generativelanguage.googleapis.com/${ver}/models/${m}:generateContent?key=${cleanApiKey}`;
-        try {
-          let bodyToSend = requestBody;
-          if (ver === 'v1' && requestBody.system_instruction) {
-            const sysText = requestBody.system_instruction?.parts?.[0]?.text || '';
-            bodyToSend = {
-              contents: [
-                { role: 'user', parts: [{ text: `[INSTRUÇÕES DO SISTEMA]:\n${sysText}` }] },
-                { role: 'model', parts: [{ text: 'Entendido. Seguirei rigorosamente as instruções do sistema.' }] },
-                ...requestBody.contents
-              ],
-              generationConfig: requestBody.generationConfig
-            };
+
+    for (let i = 0; i < candidateModels.length; i++) {
+      const currentModel = candidateModels[i];
+      const url = `https://generativelanguage.googleapis.com/${GEMINI_API_VERSION}/models/${currentModel}:generateContent?key=${cleanApiKey}`;
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(requestBody)
+        });
+
+        if (response.ok) {
+          if (currentModel !== primaryModel) {
+            console.warn(`[Gemini API] Fallback ativado: ${primaryModel} indisponível -> usando ${currentModel}`);
+            this.setModel(currentModel);
           }
-
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bodyToSend)
-          });
-
-          if (response.ok) {
-            if (m !== initialModel) {
-              console.warn(`[Gemini] Alternado automaticamente para ${m} (${ver})`);
-              this.setModel(m);
-            }
-            return await response.json();
-          }
-
-          const errorData = await response.json().catch(() => ({}));
-          const message = errorData?.error?.message || `Erro HTTP ${response.status}: ${response.statusText}`;
-
-          if (response.status === 400 && message.includes('API_KEY_INVALID')) {
-            throw new Error('Chave de API inválida. Verifique sua chave no Google AI Studio (aistudio.google.com).');
-          }
-
-          // Se for 404 (modelo não encontrado), continua tentando o próximo candidato
-          if (response.status === 404 || message.includes('not found') || message.includes('not supported')) {
-            lastError = new Error(`Falha na comunicação com o Gemini: ${message}`);
-            continue;
-          }
-
-          throw new Error(`Falha na comunicação com o Gemini: ${message}`);
-        } catch (err: any) {
-          if (err.message && (err.message.includes('not found') || err.message.includes('not supported'))) {
-            lastError = err;
-            continue;
-          }
-          throw err;
+          return await response.json();
         }
+
+        const errorData = await response.json().catch(() => ({}));
+        const rawJsonError = JSON.stringify(errorData, null, 2);
+        const apiErrorMessage = errorData?.error?.message || response.statusText || 'Erro desconhecido';
+
+        // 1. HTTP 429 Too Many Requests -> Interrompe imediatamente para não consumir quota em loop
+        if (response.status === 429) {
+          throw new Error(
+            `[HTTP 429 Too Many Requests] Limite de requisições excedido na sua chave do Google AI Studio.\n` +
+            `Detalhes da API: ${apiErrorMessage}\n\n` +
+            `Dica: A camada gratuita do Gemini tem limites por minuto (RPM) e dia (RPD). ` +
+            `Aguarde cerca de 30-60 segundos antes de enviar outra mensagem, ou alterne para a aba '🖥️ Ollama (Local Offline)' para jogar sem limites de taxa.`
+          );
+        }
+
+        // 2. HTTP 400 Bad Request -> Exibe o status e o JSON completo retornado para depuração
+        if (response.status === 400) {
+          if (apiErrorMessage.includes('API_KEY_INVALID')) {
+            throw new Error(`[HTTP 400 Bad Request] Chave de API inválida. Verifique sua chave no Google AI Studio (aistudio.google.com).`);
+          }
+          throw new Error(
+            `[HTTP 400 Bad Request] Parâmetros de requisição inválidos na Gemini API:\n` +
+            `Status: 400 Bad Request\n` +
+            `Mensagem: ${apiErrorMessage}\n` +
+            `JSON da API:\n${rawJsonError}`
+          );
+        }
+
+        // 3. HTTP 401 / 403 Unauthorized / Forbidden
+        if (response.status === 401 || response.status === 403) {
+          throw new Error(
+            `[HTTP ${response.status}] Acesso negado pela Gemini API. ` +
+            `Verifique se a chave de API está correta e com a 'Generative Language API' habilitada.\n` +
+            `JSON da API:\n${rawJsonError}`
+          );
+        }
+
+        // 4. HTTP 404 Not Found -> Tenta o próximo modelo do fallback
+        if (response.status === 404 || apiErrorMessage.includes('not found') || apiErrorMessage.includes('is not supported')) {
+          console.warn(`[Gemini API] Modelo '${currentModel}' retornou 404. Tentando fallback...`);
+          lastError = new Error(
+            `[HTTP 404 Not Found] O modelo '${currentModel}' não foi encontrado ou não está disponível para esta chave.\n` +
+            `JSON da API:\n${rawJsonError}`
+          );
+          continue; // Tenta o próximo modelo
+        }
+
+        // Outros erros HTTP (500, 503, etc.)
+        throw new Error(
+          `[HTTP ${response.status} ${response.statusText}] Falha na comunicação com a Gemini API:\n` +
+          `JSON da API:\n${rawJsonError}`
+        );
+
+      } catch (err: any) {
+        if (err.message && err.message.includes('[HTTP 404') && i < candidateModels.length - 1) {
+          continue;
+        }
+        throw err;
       }
     }
 
-    if (detectedModels.length === 0) {
-      throw new Error(
-        `Nenhum modelo do Gemini foi encontrado para esta chave de API. ` +
-        `Isso costuma ocorrer se a chave foi criada no Google Cloud sem a API 'Generative Language API' ativada, ` +
-        `ou se for uma conta corporativa/Google Workspace. Crie uma chave gratuita em https://aistudio.google.com/ com uma conta pessoal @gmail.com.`
-      );
-    }
-
-    throw lastError || new Error('Nenhum modelo do Gemini disponível para esta chave de API.');
+    throw lastError || new Error(`[HTTP 404] Nenhum dos modelos configurados (${candidateModels.join(', ')}) está disponível para sua chave.`);
   }
 
   static async sendMessage(
@@ -266,26 +413,29 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
   ): Promise<AiNarrativeResult> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new Error('Chave de API do Gemini não configurada. Por favor, insira sua chave do Google AI Studio.');
+      throw new Error('Chave de API do Gemini não configurada. Por favor, insira sua chave do Google AI Studio ou defina GEMINI_API_KEY no arquivo .env.');
     }
 
     const model = this.getModel();
     const systemInstructionText = this.generateSystemInstruction(characters, enemies, customDossier);
 
-    // Formata o histórico no padrão da Gemini API
-    const contents: any[] = history.map(msg => ({
-      role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.text }]
-    }));
+    // Formata o histórico filtrando mensagens vazias para evitar HTTP 400
+    const contents: any[] = history
+      .filter(msg => msg.text && msg.text.trim())
+      .map(msg => ({
+        role: msg.role === 'model' ? 'model' : 'user',
+        parts: [{ text: msg.text.trim() }]
+      }));
 
     // Adiciona a nova mensagem do usuário
     contents.push({
       role: 'user',
-      parts: [{ text: userPrompt }]
+      parts: [{ text: userPrompt.trim() }]
     });
 
+    // Formatação 100% compatível com a especificação REST v1beta da Gemini API
     const requestBody: any = {
-      system_instruction: {
+      systemInstruction: {
         parts: [{ text: systemInstructionText }]
       },
       tools: [GEMINI_TOOLS_DECLARATION],
@@ -310,13 +460,13 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
     if (functionCalls.length > 0) {
       for (const callPart of functionCalls) {
         const { name, args } = callPart.functionCall;
-        const result = ToolExecutor.execute(name, args, currentCharacters, currentEnemies);
+        const result = ToolExecutor.execute(name, args || {}, currentCharacters, currentEnemies);
         executedTools.push(result);
         if (result.updatedCharacters) currentCharacters = result.updatedCharacters;
         if (result.updatedEnemies) currentEnemies = result.updatedEnemies;
       }
 
-      // Constrói a segunda rodada (Function Response) para o Gemini continuar a narração baseada no resultado
+      // Constrói a segunda rodada (Function Response) no padrão v1beta (role: 'user')
       const secondContents = [
         ...contents,
         {
@@ -324,13 +474,12 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
           parts: functionCalls
         },
         {
-          role: 'function',
+          role: 'user',
           parts: functionCalls.map((fc: any, idx: number) => ({
             functionResponse: {
               name: fc.functionCall.name,
               response: {
-                name: fc.functionCall.name,
-                content: executedTools[idx]?.summary || 'Ação resolvida.'
+                result: executedTools[idx]?.summary || 'Ação resolvida com sucesso.'
               }
             }
           }))
@@ -339,7 +488,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
 
       try {
         const secondRequestBody = {
-          system_instruction: {
+          systemInstruction: {
             parts: [{ text: systemInstructionText }]
           },
           contents: secondContents,
@@ -361,7 +510,7 @@ Responda em Português do Brasil com riqueza dramática, mantendo o formato acim
           };
         }
       } catch (err) {
-        // Se a segunda chamada falhar, prossegue com os resultados das ferramentas
+        console.warn('[Gemini API] Falha na segunda rodada de Function Response:', err);
       }
     }
 
