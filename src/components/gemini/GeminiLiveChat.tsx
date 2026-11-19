@@ -41,7 +41,12 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   onEnemiesUpdated
 }) => {
   // Provedor ativo: 'ollama' (offline) ou 'gemini' (nuvem)
-  const [provider, setProvider] = useState<AiProvider>(() => OllamaApiService.getProvider());
+  const [provider, setProvider] = useState<AiProvider>(() => {
+    const saved = localStorage.getItem('dungeons_ai_provider') as AiProvider;
+    if (saved) return saved;
+    const hasKey = Boolean(GeminiApiService.getApiKey());
+    return hasKey ? 'gemini' : 'ollama';
+  });
   
   // Gemini State
   const [apiKey, setApiKey] = useState<string>(() => GeminiApiService.getApiKey());
@@ -59,7 +64,11 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
 
   // Painéis
   const [isConfigOpen, setIsConfigOpen] = useState<boolean>(false);
-  const [configTab, setConfigTab] = useState<AiProvider>(() => OllamaApiService.getProvider());
+  const [configTab, setConfigTab] = useState<AiProvider>(() => {
+    const saved = localStorage.getItem('dungeons_ai_provider') as AiProvider;
+    if (saved) return saved;
+    return GeminiApiService.getApiKey() ? 'gemini' : 'ollama';
+  });
   const [isDossierOpen, setIsDossierOpen] = useState<boolean>(false);
 
   // Dossiê de Campanha
@@ -152,12 +161,14 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
         // Persiste imediatamente a chave testada e validada
         GeminiApiService.setApiKey(cleanKey);
         setApiKey(cleanKey);
+        setProvider('gemini');
+        OllamaApiService.setProvider('gemini');
 
         const isFallback = health.model !== geminiModel;
         setTestResult({
           success: true,
           message: isFallback
-            ? `✓ Conexão bem-sucedida (HTTP 200)! O modelo '${geminiModel}' retornou 404 (indisponível no Google AI Studio), fallback ativado automaticamente para '${health.model}'.`
+            ? `✓ Conexão bem-sucedida (HTTP 200)! Modelo ativo: '${health.model}'.`
             : `✓ Conexão bem-sucedida (HTTP 200)! Modelo '${health.model}' validado e respondendo.`,
           models: discovered
         });
@@ -183,6 +194,8 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
 
   const handleSaveConfig = (e: React.FormEvent) => {
     e.preventDefault();
+    setProvider(configTab);
+    OllamaApiService.setProvider(configTab);
     if (configTab === 'gemini') {
       GeminiApiService.setApiKey(apiKey);
       GeminiApiService.setModel(geminiModel);
@@ -691,10 +704,11 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                       ))
                     ) : (
                       <>
-                        <option value="gemini-3.8-flash">Gemini 3.8 Flash (Padrão Recomendado)</option>
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fallback Estável)</option>
+                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Rápido / Recomendado)</option>
                         <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                        <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
                       </>
                     )}
                   </select>

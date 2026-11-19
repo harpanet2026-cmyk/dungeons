@@ -1,12 +1,12 @@
 ﻿<#
 .SYNOPSIS
   Script de Validação e Healthcheck da Google Gemini API no Windows
-  Testa o endpoint v1beta com modelo padrão e cascata de fallback automática
+  Testa o endpoint v1beta com modelo estável e cascata de fallback automática
 #>
 
 param(
   [string]$ApiKey = $env:GEMINI_API_KEY,
-  [string]$Model = "gemini-3.8-flash"
+  [string]$Model = "gemini-1.5-flash"
 )
 
 # Carrega do .env se existir e ApiKey não estiver no ambiente
@@ -25,13 +25,13 @@ if (-not $ApiKey -and (Test-Path ".env")) {
 Write-Host "====================================================" -ForegroundColor Cyan
 Write-Host "   TESTE DE VALIDAÇÃO DA GOOGLE GEMINI API" -ForegroundColor Yellow
 Write-Host "====================================================" -ForegroundColor Cyan
-Write-Host "• Modelo Solicitado: $Model"
+Write-Host "• Modelo Inicial: $Model"
 Write-Host "• Endpoint Base: /v1beta/models/{MODEL}:generateContent"
 
 if (-not $ApiKey) {
   Write-Host "• Chave: NÃO ENCONTRADA" -ForegroundColor Red
   Write-Host "`n[AVISO] Configure GEMINI_API_KEY no arquivo .env ou execute:" -ForegroundColor Yellow
-  Write-Host "  .\test-gemini.ps1 -ApiKey SUA_CHAVE_AQUI`n" -ForegroundColor White
+  Write-Host "  .\test-gemini.bat -ApiKey SUA_CHAVE_AQUI`n" -ForegroundColor White
   exit 0
 }
 
@@ -42,10 +42,11 @@ Write-Host "----------------------------------------------------"
 # Lista de modelos a testar em cascata
 $modelsToTest = @(
   $Model.Replace("models/", "").Trim(),
-  "gemini-2.5-flash",
-  "gemini-2.0-flash",
   "gemini-1.5-flash",
-  "gemini-1.5-pro"
+  "gemini-2.0-flash",
+  "gemini-1.5-pro",
+  "gemini-2.5-flash",
+  "gemini-3.8-flash"
 ) | Select-Object -Unique
 
 $success = $false
@@ -75,14 +76,10 @@ foreach ($currentModel in $modelsToTest) {
     $text = $response.candidates[0].content.parts[0].text.Trim()
 
     Write-Host "`n✓ Retorno da API: HTTP 200 OK" -ForegroundColor Green
-    Write-Host "✓ Modelo respondendo: $currentModel" -ForegroundColor Green
+    Write-Host "✓ Modelo ativo: $currentModel" -ForegroundColor Green
     Write-Host "✓ Resposta obtida: `"$text`"" -ForegroundColor Cyan
 
-    if ($currentModel -ne $Model) {
-      Write-Host "`n[INFO] O modelo inicial '$Model' retornou 404 (indisponível no Google AI Studio), mas o fallback para '$currentModel' funcionou perfeitamente!" -ForegroundColor Yellow
-    } else {
-      Write-Host "`n[SUCESSO] A integração com o modelo $currentModel está 100% operacional!" -ForegroundColor Green
-    }
+    Write-Host "`n[SUCESSO] A integração com o modelo $currentModel está 100% operacional!`n" -ForegroundColor Green
 
     $success = $true
     $workingModel = $currentModel
@@ -94,11 +91,11 @@ foreach ($currentModel in $modelsToTest) {
     }
 
     if ($statusCode -eq 404) {
-      Write-Host "  -> Modelo '$currentModel' retornou HTTP 404 (Não Encontrado). Tentando próximo da lista..." -ForegroundColor DarkYellow
+      Write-Host "  -> Modelo '$currentModel' não disponível (HTTP 404). Testando próximo..." -ForegroundColor DarkYellow
       continue
     } elseif ($statusCode -eq 429) {
       Write-Host "`n✗ Erro retornado pela Gemini API: HTTP 429 Too Many Requests" -ForegroundColor Red
-      Write-Host "Limite de requisições excedido na chave gratuita. Aguarde cerca de 30-60 segundos e tente novamente." -ForegroundColor Yellow
+      Write-Host "Limite de requisições excedido na chave gratuita. Aguarde cerca de 30-60 segundos." -ForegroundColor Yellow
       exit 1
     } elseif ($statusCode -eq 400) {
       Write-Host "`n✗ Erro retornado pela Gemini API: HTTP 400 Bad Request" -ForegroundColor Red
@@ -112,23 +109,13 @@ foreach ($currentModel in $modelsToTest) {
       }
       exit 1
     } else {
-      Write-Host "  -> Falha no modelo '$currentModel': HTTP $statusCode ($($_.Exception.Message))" -ForegroundColor Red
+      Write-Host "  -> Falha no modelo '$currentModel': HTTP $statusCode" -ForegroundColor Red
     }
   }
 }
 
 if (-not $success) {
-  Write-Host "`n[ERRO] Nenhum dos modelos testados ($($modelsToTest -join ', ')) respondeu com sucesso." -ForegroundColor Red
-  Write-Host "Consultando modelos disponíveis para a sua chave..." -ForegroundColor Yellow
-  try {
-    $listUrl = "https://generativelanguage.googleapis.com/v1beta/models?key=$ApiKey"
-    $listResp = Invoke-RestMethod -Uri $listUrl -Method Get -ErrorAction Stop
-    $available = $listResp.models | Where-Object { $_.supportedGenerationMethods -contains "generateContent" } | ForEach-Object { $_.name.Replace("models/", "") }
-    Write-Host "Modelos suportados por esta chave:" -ForegroundColor Cyan
-    $available | ForEach-Object { Write-Host "  - $_" -ForegroundColor Green }
-  } catch {
-    Write-Host "Não foi possível listar modelos: $($_.Exception.Message)" -ForegroundColor Red
-  }
+  Write-Host "`n[ERRO] Nenhum dos modelos respondeu com sucesso." -ForegroundColor Red
   exit 1
 }
 

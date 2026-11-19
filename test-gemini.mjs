@@ -1,6 +1,5 @@
 /**
  * Script de Validação e Healthcheck da Google Gemini API
- * Testa o endpoint v1beta com modelo padrão e cascata de fallback automática
  */
 import fs from 'fs';
 import path from 'path';
@@ -24,14 +23,14 @@ function loadEnv() {
 loadEnv();
 
 const API_KEY = (process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || process.argv[2] || '').trim();
-const REQUESTED_MODEL = (process.argv[3] || 'gemini-3.8-flash').replace(/^models\//, '').trim();
+const REQUESTED_MODEL = (process.argv[3] || 'gemini-1.5-flash').replace(/^models\//, '').trim();
 const API_VERSION = 'v1beta';
 
 async function runHealthcheck() {
   console.log('====================================================');
   console.log('   TESTE DE VALIDAÇÃO DA GOOGLE GEMINI API');
   console.log('====================================================');
-  console.log(`• Modelo Solicitado: ${REQUESTED_MODEL}`);
+  console.log(`• Modelo: ${REQUESTED_MODEL}`);
   console.log(`• Endpoint Base: /${API_VERSION}/models/{MODEL}:generateContent`);
   console.log(`• Chave configurada: ${API_KEY ? `SIM (${API_KEY.slice(0, 6)}...${API_KEY.slice(-4)})` : 'NÃO ENCONTRADA'}`);
   console.log('----------------------------------------------------');
@@ -45,10 +44,11 @@ async function runHealthcheck() {
 
   const modelsToTest = Array.from(new Set([
     REQUESTED_MODEL,
-    'gemini-2.5-flash',
-    'gemini-2.0-flash',
     'gemini-1.5-flash',
-    'gemini-1.5-pro'
+    'gemini-2.0-flash',
+    'gemini-1.5-pro',
+    'gemini-2.5-flash',
+    'gemini-3.8-flash'
   ]));
 
   let success = false;
@@ -82,32 +82,25 @@ async function runHealthcheck() {
       if (response.ok) {
         const text = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || 'OK';
         console.log(`\n✓ Retorno da API: HTTP 200 OK`);
-        console.log(`✓ Modelo respondendo: ${currentModel}`);
+        console.log(`✓ Modelo ativo: ${currentModel}`);
         console.log(`✓ Resposta do modelo: "${text}"`);
-
-        if (currentModel !== REQUESTED_MODEL) {
-          console.log(`\n[INFO] O modelo inicial '${REQUESTED_MODEL}' retornou 404 (indisponível no Google AI Studio), mas o fallback para '${currentModel}' funcionou perfeitamente!`);
-        } else {
-          console.log(`\n[SUCESSO] A integração com o modelo ${currentModel} está 100% operacional!`);
-        }
-
+        console.log(`\n[SUCESSO] A integração com o modelo ${currentModel} está 100% operacional!`);
         success = true;
         break;
       }
 
       if (response.status === 404) {
-        console.log(`  -> Modelo '${currentModel}' retornou HTTP 404 (Não Encontrado). Tentando próximo da lista...`);
+        console.log(`  -> Modelo '${currentModel}' retornou HTTP 404. Testando próximo...`);
         continue;
       }
 
       if (response.status === 429) {
         console.error(`\n✗ Erro da API: HTTP 429 Too Many Requests`);
-        console.error('Limite de requisições atingido na chave gratuita. Aguarde cerca de 30-60 segundos e tente novamente.');
+        console.error('Limite de requisições por minuto atingido.');
         process.exit(1);
       }
 
-      console.error(`  -> Erro no modelo '${currentModel}': HTTP ${response.status} ${response.statusText}`);
-      console.error('Detalhes do erro:', JSON.stringify(data, null, 2));
+      console.error(`  -> Erro HTTP ${response.status}:`, JSON.stringify(data, null, 2));
       break;
     } catch (err) {
       console.error(`  -> Falha de rede para '${currentModel}':`, err.message);
@@ -116,19 +109,7 @@ async function runHealthcheck() {
   }
 
   if (!success) {
-    console.error(`\n[ERRO] Nenhum dos modelos (${modelsToTest.join(', ')}) respondeu com sucesso.`);
-    console.log('Consultando modelos disponíveis para a sua chave...');
-    try {
-      const listResp = await fetch(`https://generativelanguage.googleapis.com/${API_VERSION}/models?key=${API_KEY}`);
-      if (listResp.ok) {
-        const listData = await listResp.json();
-        const available = (listData.models || [])
-          .filter(m => m.supportedGenerationMethods?.includes('generateContent'))
-          .map(m => m.name.replace(/^models\//, ''));
-        console.log('Modelos com suporte a generateContent para esta chave:');
-        available.forEach(m => console.log(`  - ${m}`));
-      }
-    } catch {}
+    console.error(`\n[ERRO] Nenhum dos modelos respondeu com sucesso.`);
     process.exit(1);
   }
 }
