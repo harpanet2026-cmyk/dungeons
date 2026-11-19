@@ -687,7 +687,7 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                     type="password"
                     value={apiKey}
                     onChange={e => setApiKey(e.target.value)}
-                    placeholder="Cole sua API Key (ex: AIzaSy...)"
+                    placeholder="Cole sua API Key (ex: AQ.Ab... ou AIzaSy...)"
                     className="w-full bg-[#090b10] border border-[#262f44] focus:border-sky-500 rounded-lg px-3 py-2 text-stone-100 font-mono text-xs outline-none"
                   />
                 </div>
@@ -704,11 +704,9 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                       ))
                     ) : (
                       <>
-                        <option value="gemini-1.5-flash">Gemini 1.5 Flash (Ultra Rápido / Recomendado)</option>
-                        <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                        <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                        <option value="gemini-3.8-flash">Gemini 3.8 Flash</option>
+                        <option value="gemini-3.5-flash-lite">Gemini 3.5 Flash Lite (Ultrarrápido / Recomendado)</option>
+                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (Gratuito e Equilibrado)</option>
+                        <option value="gemini-3.8-flash">Gemini 3.8 Flash (Modelo Avançado com Raciocínio)</option>
                       </>
                     )}
                   </select>

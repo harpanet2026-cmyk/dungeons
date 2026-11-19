@@ -6,17 +6,18 @@ const STORAGE_API_KEY = 'dungeons_gemini_api_key';
 const STORAGE_LEGACY_KEY = 'gemini_api_key';
 const STORAGE_MODEL_KEY = 'dungeons_gemini_model';
 
-export const DEFAULT_GEMINI_MODEL = 'gemini-1.5-flash';
-export const FALLBACK_GEMINI_MODEL = 'gemini-1.5-flash';
+export const DEFAULT_GEMINI_MODEL = 'gemini-3.5-flash-lite';
+export const FALLBACK_GEMINI_MODEL = 'gemini-3.5-flash-lite';
 export const GEMINI_API_VERSION = 'v1beta';
 
 // Lista de modelos suportados em ordem de preferência
 export const SUPPORTED_GEMINI_MODELS = [
-  'gemini-1.5-flash',
-  'gemini-2.0-flash',
-  'gemini-1.5-pro',
+  'gemini-3.5-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-3.8-flash',
   'gemini-2.5-flash',
-  'gemini-3.8-flash'
+  'gemini-2.0-flash',
+  'gemini-1.5-flash'
 ];
 
 export interface ChatMessage {
@@ -106,7 +107,7 @@ export class GeminiApiService {
         const saved = localStorage.getItem(STORAGE_MODEL_KEY);
         if (saved) {
           const clean = this.cleanModelName(saved);
-          if (clean && !['gemini-1.0-pro', 'gemini-pro'].includes(clean)) {
+          if (clean && !['gemini-1.0-pro', 'gemini-pro', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'].includes(clean)) {
             return clean;
           }
         }
@@ -176,9 +177,12 @@ ${enemiesSummary}
     // Lista de fallback: tenta o solicitado e em seguida os modelos oficiais estáveis da API
     const fallbackChain = Array.from(new Set([
       cleanRequested,
-      'gemini-1.5-flash',
+      'gemini-3.5-flash-lite',
+      'gemini-3.5-flash',
+      'gemini-3.8-flash',
+      'gemini-2.5-flash',
       'gemini-2.0-flash',
-      'gemini-1.5-pro'
+      'gemini-1.5-flash'
     ]));
 
     let lastError: Error | null = null;
