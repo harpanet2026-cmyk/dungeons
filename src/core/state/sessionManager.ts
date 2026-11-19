@@ -143,13 +143,13 @@ export class SessionManager {
             const cls = (c.class || '').toLowerCase();
             const isFem = (c.gender || '').toLowerCase().includes('fem') || (c.gender || '').toLowerCase() === 'f';
             const suffix = isFem ? '_f.jpeg' : '.jpeg';
-            if (cls.includes('mago')) c.avatarUrl = `/artes/mago${suffix}`;
-            else if (cls.includes('guerreiro')) c.avatarUrl = `/artes/guerreiro${suffix}`;
+            if (cls.includes('paladino')) c.avatarUrl = `/artes/paladino${suffix}`;
             else if (cls.includes('ladino')) c.avatarUrl = `/artes/ladino${suffix}`;
+            else if (cls.includes('mago')) c.avatarUrl = `/artes/mago${suffix}`;
+            else if (cls.includes('guerreiro')) c.avatarUrl = `/artes/guerreiro${suffix}`;
             else if (cls.includes('clérigo') || cls.includes('clerigo')) c.avatarUrl = `/artes/clerigo${suffix}`;
             else if (cls.includes('bárbaro') || cls.includes('barbaro')) c.avatarUrl = `/artes/barbaro${suffix}`;
             else if (cls.includes('bardo')) c.avatarUrl = `/artes/bardo${suffix}`;
-            else if (cls.includes('paladino')) c.avatarUrl = `/artes/paladino${suffix}`;
             else if (cls.includes('patrulheiro')) c.avatarUrl = `/artes/patrulheiro${suffix}`;
             else if (cls.includes('druida')) c.avatarUrl = `/artes/druida${suffix}`;
             else if (cls.includes('monge')) c.avatarUrl = `/artes/monge${suffix}`;

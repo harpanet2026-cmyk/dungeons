@@ -18,13 +18,13 @@ export const getClassPortrait = (className: string, gender: string = 'masculino'
   const c = (className || '').toLowerCase().trim();
   const isFem = (gender || '').toLowerCase().includes('fem') || (gender || '').toLowerCase() === 'f';
   const suffix = isFem ? '_f.jpeg' : '.jpeg';
+  if (c.includes('paladino')) return `/artes/paladino${suffix}`;
+  if (c.includes('ladino')) return `/artes/ladino${suffix}`;
   if (c.includes('mago')) return `/artes/mago${suffix}`;
   if (c.includes('guerreiro')) return `/artes/guerreiro${suffix}`;
-  if (c.includes('ladino')) return `/artes/ladino${suffix}`;
   if (c.includes('clérigo') || c.includes('clerigo')) return `/artes/clerigo${suffix}`;
   if (c.includes('bárbaro') || c.includes('barbaro')) return `/artes/barbaro${suffix}`;
   if (c.includes('bardo')) return `/artes/bardo${suffix}`;
-  if (c.includes('paladino')) return `/artes/paladino${suffix}`;
   if (c.includes('patrulheiro') || c.includes('ranger')) return `/artes/patrulheiro${suffix}`;
   if (c.includes('druida')) return `/artes/druida${suffix}`;
   if (c.includes('monge')) return `/artes/monge${suffix}`;

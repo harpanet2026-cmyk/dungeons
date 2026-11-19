@@ -88,13 +88,13 @@ const getArtIndexForCharacter = (char: Character): number => {
   const isFem = (char.gender || '').toLowerCase().includes('fem') || (char.gender || '').toLowerCase() === 'f';
   const suffix = isFem ? '_f' : '';
   const cls = (char.class || '').toLowerCase();
+  if (cls.includes('paladino')) return ART_OPTIONS.findIndex(a => a.id === `art_paladino${suffix}`);
+  if (cls.includes('ladino')) return ART_OPTIONS.findIndex(a => a.id === `art_ladino${suffix}`);
   if (cls.includes('mago')) return ART_OPTIONS.findIndex(a => a.id === `art_mago${suffix}`);
   if (cls.includes('guerreiro')) return ART_OPTIONS.findIndex(a => a.id === `art_guerreiro${suffix}`);
-  if (cls.includes('ladino')) return ART_OPTIONS.findIndex(a => a.id === `art_ladino${suffix}`);
   if (cls.includes('clérigo') || cls.includes('clerigo')) return ART_OPTIONS.findIndex(a => a.id === `art_clerigo${suffix}`);
   if (cls.includes('bárbaro') || cls.includes('barbaro')) return ART_OPTIONS.findIndex(a => a.id === `art_barbaro${suffix}`);
   if (cls.includes('bardo')) return ART_OPTIONS.findIndex(a => a.id === `art_bardo${suffix}`);
-  if (cls.includes('paladino')) return ART_OPTIONS.findIndex(a => a.id === `art_paladino${suffix}`);
   if (cls.includes('patrulheiro') || cls.includes('ranger')) return ART_OPTIONS.findIndex(a => a.id === `art_patrulheiro${suffix}`);
   if (cls.includes('druida')) return ART_OPTIONS.findIndex(a => a.id === `art_druida${suffix}`);
   if (cls.includes('monge')) return ART_OPTIONS.findIndex(a => a.id === `art_monge${suffix}`);
