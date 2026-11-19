@@ -78,6 +78,47 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
   const [isGeneratingDossier, setIsGeneratingDossier] = useState<boolean>(false);
   const [dossierFeedback, setDossierFeedback] = useState<string | null>(null);
 
+  // Tamanho de Fonte do Chat (P, M, G, GG)
+  const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg' | 'xl'>(() => {
+    return (localStorage.getItem('dungeons_chat_font_size') as any) || 'lg';
+  });
+
+  const handleSetFontSize = (size: 'sm' | 'md' | 'lg' | 'xl') => {
+    setFontSize(size);
+    localStorage.setItem('dungeons_chat_font_size', size);
+  };
+
+  const fontSizeConfig = {
+    sm: {
+      bubble: 'text-sm leading-relaxed',
+      badge: 'text-xs',
+      sub: 'text-xs',
+      input: 'text-sm',
+      label: 'P'
+    },
+    md: {
+      bubble: 'text-base leading-relaxed',
+      badge: 'text-sm',
+      sub: 'text-xs sm:text-sm',
+      input: 'text-base',
+      label: 'M'
+    },
+    lg: {
+      bubble: 'text-lg leading-relaxed',
+      badge: 'text-base',
+      sub: 'text-sm',
+      input: 'text-base sm:text-lg',
+      label: 'G'
+    },
+    xl: {
+      bubble: 'text-xl leading-relaxed',
+      badge: 'text-lg',
+      sub: 'text-base',
+      input: 'text-lg sm:text-xl',
+      label: 'GG'
+    }
+  }[fontSize];
+
   // Chat
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
     return [
@@ -432,6 +473,39 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
             >
               <Globe className="w-3 h-3" />
               <span>Gemini</span>
+            </button>
+          </div>
+
+          {/* Controle de Tamanho da Fonte */}
+          <div className="flex items-center bg-[#101420] border border-[#2b334a] rounded-lg p-0.5 text-xs" title="Ajustar tamanho da fonte do Mestre IA (P, M, G, GG)">
+            <button
+              type="button"
+              onClick={() => {
+                const sizes: Array<'sm' | 'md' | 'lg' | 'xl'> = ['sm', 'md', 'lg', 'xl'];
+                const cur = sizes.indexOf(fontSize);
+                if (cur > 0) handleSetFontSize(sizes[cur - 1]);
+              }}
+              disabled={fontSize === 'sm'}
+              className="px-2 py-1 rounded font-bold text-stone-400 hover:text-stone-100 disabled:opacity-30 disabled:hover:text-stone-400 transition-colors"
+              title="Diminuir fonte (A-)"
+            >
+              A-
+            </button>
+            <span className="px-1.5 font-mono text-xs text-amber-300 font-bold select-none">
+              {fontSizeConfig.label}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const sizes: Array<'sm' | 'md' | 'lg' | 'xl'> = ['sm', 'md', 'lg', 'xl'];
+                const cur = sizes.indexOf(fontSize);
+                if (cur < sizes.length - 1) handleSetFontSize(sizes[cur + 1]);
+              }}
+              disabled={fontSize === 'xl'}
+              className="px-2 py-1 rounded font-bold text-stone-400 hover:text-stone-100 disabled:opacity-30 disabled:hover:text-stone-400 transition-colors"
+              title="Aumentar fonte (A+)"
+            >
+              A+
             </button>
           </div>
 
@@ -937,12 +1011,12 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                 </div>
               )}
 
-              <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs leading-relaxed shadow-lg ${
+              <div className={`max-w-[85%] rounded-2xl p-4 shadow-lg ${
                 isUser
                   ? 'bg-[#182033] border border-[#2b3a5c] text-stone-100 rounded-tr-none'
-                  : 'bg-[#12141e] border border-[#231b14] text-stone-200 rounded-tl-none space-y-1.5'
+                  : 'bg-[#12141e] border border-[#231b14] text-stone-200 rounded-tl-none space-y-2'
               }`}>
-                <div className="flex items-center justify-between gap-3 text-[10px] text-stone-400 mb-1 border-b border-stone-800/50 pb-1">
+                <div className={`flex items-center justify-between gap-3 ${fontSizeConfig.sub} text-stone-400 mb-1.5 border-b border-stone-800/50 pb-1.5`}>
                   <span className={`font-bold uppercase tracking-wider ${
                     isUser
                       ? 'text-sky-300'
@@ -965,7 +1039,7 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                     {msg.toolResults.map((t, idx) => (
                       <div
                         key={idx}
-                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 text-xs shadow-md transition-all animate-in fade-in ${
+                        className={`p-2.5 rounded-xl border flex items-center justify-between gap-2.5 ${fontSizeConfig.badge} shadow-md transition-all animate-in fade-in ${
                           t.badge.success === true
                             ? 'bg-emerald-950/70 border-emerald-700/80 text-emerald-200'
                             : t.badge.success === false
@@ -977,7 +1051,7 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                           <span className="text-lg shrink-0">{t.badge.icon}</span>
                           <div>
                             <span className="font-bold block leading-tight">{t.badge.title}</span>
-                            <span className="text-[10px] opacity-85 block">{t.badge.description}</span>
+                            <span className={`${fontSizeConfig.sub} opacity-85 block`}>{t.badge.description}</span>
                           </div>
                         </div>
                         <span className="text-[9px] uppercase tracking-wider font-mono font-bold px-2 py-0.5 rounded bg-black/50 border border-white/10 shrink-0 text-amber-300">
@@ -988,7 +1062,7 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                   </div>
                 )}
 
-                <div className="whitespace-pre-wrap font-sans">
+                <div className={`whitespace-pre-wrap font-sans ${fontSizeConfig.bubble}`}>
                   {msg.text}
                 </div>
               </div>
@@ -1004,8 +1078,8 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
 
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex gap-3 justify-start items-center text-xs text-amber-300/80 animate-pulse">
-            <div className={`w-8 h-8 rounded-full border flex items-center justify-center shadow ${
+          <div className={`flex gap-3 justify-start items-center ${fontSizeConfig.bubble} text-amber-300/80 animate-pulse`}>
+            <div className={`w-8 h-8 rounded-full border flex items-center justify-center shadow shrink-0 ${
               provider === 'ollama' ? 'border-emerald-600 bg-[#0d1e15]' : 'border-[#a17036] bg-[#141824]'
             }`}>
               {provider === 'ollama' ? (
@@ -1014,8 +1088,8 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
                 <Bot className="w-4 h-4 text-[#f5ba42] animate-spin" />
               )}
             </div>
-            <div className="bg-[#12141e] border border-[#231b14] px-4 py-2.5 rounded-2xl rounded-tl-none flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-[#f5ba42]" />
+            <div className="bg-[#12141e] border border-[#231b14] px-4 py-2.5 rounded-2xl rounded-tl-none flex items-center gap-2 shadow">
+              <Sparkles className="w-4 h-4 text-[#f5ba42] shrink-0" />
               <span>
                 {provider === 'ollama'
                   ? `O Mestre Ollama (${ollamaModel}) está processando a narrativa offline...`
@@ -1077,20 +1151,20 @@ export const GeminiLiveChat: React.FC<GeminiLiveChatProps> = ({
 
       {/* Caixa de Entrada de Texto */}
       <div className="p-3.5 border-t border-[#231b14] bg-[#0c0e15]">
-        <div className="flex items-end gap-2 bg-[#121520] border border-[#2b334a] focus-within:border-[#f5ba42] rounded-xl p-2 transition-colors">
+        <div className="flex items-end gap-2 bg-[#121520] border border-[#2b334a] focus-within:border-[#f5ba42] rounded-xl p-2.5 transition-colors shadow-inner">
           <textarea
             rows={2}
             value={inputPrompt}
             onChange={e => setInputPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={`Declare a ação dos heróis para o Mestre (${provider === 'ollama' ? 'Ollama Offline' : 'Gemini Pro'})...`}
-            className="w-full bg-transparent text-xs text-stone-100 outline-none resize-none placeholder-stone-500"
+            className={`w-full bg-transparent ${fontSizeConfig.input} text-stone-100 outline-none resize-none placeholder-stone-500 leading-normal`}
           />
 
           <button
             onClick={() => handleSendMessage()}
             disabled={!inputPrompt.trim() || isLoading}
-            className="bronze-btn p-2 rounded-lg text-[#f5ba42] disabled:opacity-40 disabled:cursor-not-allowed shadow transition-all shrink-0"
+            className="bronze-btn p-2.5 rounded-lg text-[#f5ba42] disabled:opacity-40 disabled:cursor-not-allowed shadow transition-all shrink-0"
             title="Enviar ação (Enter)"
           >
             <Send className="w-4 h-4" />

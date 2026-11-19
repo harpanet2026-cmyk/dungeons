@@ -297,11 +297,11 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
           </div>
 
           {/* Janela de Mensagens */}
-          <div className="bg-[#090b10] border border-[#231b14] rounded-xl p-4 h-[350px] overflow-y-auto space-y-3 text-xs">
+          <div className="bg-[#090b10] border border-[#231b14] rounded-xl p-4 h-[380px] overflow-y-auto space-y-3 text-sm sm:text-base">
             {chatMessages.map((msg, i) => (
               <div
                 key={i}
-                className={`p-3 rounded-lg leading-relaxed ${
+                className={`p-3.5 rounded-lg leading-relaxed ${
                   msg.role === 'user'
                     ? 'bg-[#182033] border border-[#2b3a5c] text-stone-100 ml-8'
                     : msg.role === 'model'
@@ -309,8 +309,8 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
                     : 'bg-amber-950/40 border border-amber-800/40 text-amber-200'
                 }`}
               >
-                <div className="flex items-center gap-1.5 font-bold mb-1 opacity-80 text-[10px] uppercase">
-                  {msg.role === 'user' ? <User className="w-3 h-3 text-sky-400" /> : <Bot className="w-3 h-3 text-[#f5ba42]" />}
+                <div className="flex items-center gap-1.5 font-bold mb-1 opacity-80 text-xs uppercase">
+                  {msg.role === 'user' ? <User className="w-3.5 h-3.5 text-sky-400" /> : <Bot className="w-3.5 h-3.5 text-[#f5ba42]" />}
                   {msg.role === 'user'
                     ? 'Jogador / Ação'
                     : msg.role === 'model'
@@ -321,8 +321,8 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
               </div>
             ))}
             {isAiLoading && (
-              <div className="flex items-center gap-2 text-xs text-amber-300/80 p-2 italic animate-pulse">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#f5ba42]" />
+              <div className="flex items-center gap-2 text-sm sm:text-base text-amber-300/80 p-2 italic animate-pulse">
+                <RefreshCw className="w-4 h-4 animate-spin text-[#f5ba42]" />
                 {hubProvider === 'ollama'
                   ? 'O Mestre Ollama está processando a narrativa offline...'
                   : 'O Mestre Gemini Pro está narrando a cena...'}
@@ -338,7 +338,7 @@ export const GeminiHub: React.FC<GeminiHubProps> = ({
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
-              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500"
+              className="flex-1 bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm sm:text-base text-slate-100 focus:outline-none focus:border-amber-500"
             />
             <button
               onClick={handleSendChat}
