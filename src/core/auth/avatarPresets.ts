@@ -107,6 +107,97 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/Troll.jpeg'
   },
   {
+    id: 'avatar_beholder_art',
+    name: 'Beholder Observador',
+    category: 'monstro',
+    iconName: 'Eye',
+    image: '/artes/beholder.jpeg'
+  },
+  {
+    id: 'avatar_lich_art',
+    name: 'Lich Arquimago',
+    category: 'monstro',
+    iconName: 'Skull',
+    image: '/artes/lich_arquimago.jpeg'
+  },
+  {
+    id: 'avatar_dragon_red_art',
+    name: 'Dragão Vermelho Jovem',
+    category: 'monstro',
+    iconName: 'Flame',
+    image: '/artes/dragao_vermelho.jpeg'
+  },
+  {
+    id: 'avatar_dragon_ancient_art',
+    name: 'Dragão Vermelho Ancião',
+    category: 'monstro',
+    iconName: 'Flame',
+    image: '/artes/dragao_vermelho_anciao.jpeg'
+  },
+  {
+    id: 'avatar_hydra_art',
+    name: 'Hidra Monstruosa',
+    category: 'monstro',
+    iconName: 'Zap',
+    image: '/artes/hidra.jpeg'
+  },
+  {
+    id: 'avatar_medusa_art',
+    name: 'Medusa',
+    category: 'monstro',
+    iconName: 'Eye',
+    image: '/artes/medusa.jpeg'
+  },
+  {
+    id: 'avatar_manticore_art',
+    name: 'Manticora',
+    category: 'monstro',
+    iconName: 'Shield',
+    image: '/artes/manticora.jpeg'
+  },
+  {
+    id: 'avatar_owlbear_art',
+    name: 'Urso-Coruja',
+    category: 'monstro',
+    iconName: 'Shield',
+    image: '/artes/urso_coruja.jpeg'
+  },
+  {
+    id: 'avatar_mimic_art',
+    name: 'Mímico',
+    category: 'monstro',
+    iconName: 'Sparkles',
+    image: '/artes/mimico.jpeg'
+  },
+  {
+    id: 'avatar_cube_art',
+    name: 'Cubo Gelatinoso',
+    category: 'monstro',
+    iconName: 'Shield',
+    image: '/artes/cubo_gelatinoso.jpeg'
+  },
+  {
+    id: 'avatar_carnical_art',
+    name: 'Carniçal',
+    category: 'monstro',
+    iconName: 'Skull',
+    image: '/artes/carnical.jpeg'
+  },
+  {
+    id: 'avatar_bandit_art',
+    name: 'Bandido Salteador',
+    category: 'monstro',
+    iconName: 'Skull',
+    image: '/artes/bandido_salteador.jpeg'
+  },
+  {
+    id: 'avatar_wolf_art',
+    name: 'Lobo Selvagem',
+    category: 'monstro',
+    iconName: 'Compass',
+    image: '/artes/lobo_selvagem.jpeg'
+  },
+  {
     id: 'avatar_dm_tome',
     name: 'Mestre da Masmorra',
     category: 'mestre',

@@ -52,21 +52,23 @@ export const getMonsterFallbackImage = (name: string, type?: string): string => 
   if (n.includes('vampiro') || n.includes('vampire')) return '/artes/vampiro.jpeg';
   if (n.includes('zumbi') || n.includes('zombie')) return '/artes/zumbi.jpeg';
   if (n.includes('mente') || n.includes('mind') || n.includes('flayer') || n.includes('ilithid')) return '/monsters/mind_flayer.jpg';
-  if (n.includes('beholder') || n.includes('observador')) return '/monsters/beholder.jpg';
+  if (n.includes('beholder') || n.includes('observador')) return '/artes/beholder.jpeg';
   if (n.includes('gnoll')) return '/monsters/gnoll.jpg';
   if (n.includes('ogro') || n.includes('ogre')) return '/monsters/ogre.jpg';
-  if (n.includes('lobo') || n.includes('wolf')) return '/monsters/wolf.jpg';
-  if (n.includes('dragão') || n.includes('dragao') || n.includes('dragon')) return '/monsters/dragon.jpg';
-  if (n.includes('bruxa') || n.includes('hag') || n.includes('medusa')) return '/monsters/hag.jpg';
+  if (n.includes('lobo') || n.includes('wolf')) return '/artes/lobo_selvagem.jpeg';
+  if (n.includes('dragão ancião') || n.includes('dragao anciao') || n.includes('colossal') || n.includes('ancient dragon')) return '/artes/dragao_vermelho_anciao.jpeg';
+  if (n.includes('dragão') || n.includes('dragao') || n.includes('dragon')) return '/artes/dragao_vermelho.jpeg';
+  if (n.includes('medusa')) return '/artes/medusa.jpeg';
+  if (n.includes('bruxa') || n.includes('hag')) return '/monsters/hag.jpg';
   if (n.includes('yuan') || n.includes('serpente')) return '/monsters/yuan_ti.jpg';
-  if (n.includes('lich')) return '/monsters/lich.jpg';
-  if (n.includes('urso') || n.includes('owlbear')) return '/monsters/owlbear.jpg';
-  if (n.includes('mímico') || n.includes('mimic')) return '/monsters/mimic.jpg';
-  if (n.includes('bandido') || n.includes('bandit')) return '/monsters/bandit.jpg';
-  if (n.includes('hidra') || n.includes('hydra')) return '/monsters/hydra.jpg';
-  if (n.includes('manticora') || n.includes('manticore')) return '/monsters/manticore.jpg';
-  if (n.includes('cubo') || n.includes('gelatinoso')) return '/monsters/gelatinous_cube.jpg';
-  if (n.includes('carniçal') || n.includes('ghoul')) return '/monsters/gnoll.jpg';
+  if (n.includes('lich')) return '/artes/lich_arquimago.jpeg';
+  if (n.includes('urso') || n.includes('owlbear')) return '/artes/urso_coruja.jpeg';
+  if (n.includes('mímico') || n.includes('mimic')) return '/artes/mimico.jpeg';
+  if (n.includes('bandido') || n.includes('bandit') || n.includes('salteador')) return '/artes/bandido_salteador.jpeg';
+  if (n.includes('hidra') || n.includes('hydra')) return '/artes/hidra.jpeg';
+  if (n.includes('manticora') || n.includes('manticore')) return '/artes/manticora.jpeg';
+  if (n.includes('cubo') || n.includes('gelatinoso')) return '/artes/cubo_gelatinoso.jpeg';
+  if (n.includes('carniçal') || n.includes('carnical') || n.includes('ghoul')) return '/artes/carnical.jpeg';
   return '/artes/orc.jpeg';
 };
 
@@ -164,6 +166,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Lobo: {
     name: 'Lobo Selvagem',
     type: 'Fera',
+    imageUrl: '/artes/lobo_selvagem.jpeg',
     cr: '1/4',
     xp: 50,
     ac: 13,
@@ -190,6 +193,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Bandido: {
     name: 'Bandido Salteador',
     type: 'Humanoide',
+    imageUrl: '/artes/bandido_salteador.jpeg',
     cr: '1/8',
     xp: 25,
     ac: 12,
@@ -261,6 +265,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Carnical: {
     name: 'Carniçal (Ghoul)',
     type: 'Morto-vivo',
+    imageUrl: '/artes/carnical.jpeg',
     cr: '1',
     xp: 200,
     ac: 12,
@@ -288,6 +293,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Mimico: {
     name: 'Mímico (Mimic)',
     type: 'Monstruosidade (Metamorfo)',
+    imageUrl: '/artes/mimico.jpeg',
     cr: '2',
     xp: 450,
     ac: 12,
@@ -305,6 +311,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   UrsoCoruja: {
     name: 'Urso-Coruja (Owlbear)',
     type: 'Monstruosidade',
+    imageUrl: '/artes/urso_coruja.jpeg',
     cr: '3',
     xp: 700,
     ac: 13,
@@ -338,6 +345,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   CuboGelatinoso: {
     name: 'Cubo Gelatinoso',
     type: 'Limo',
+    imageUrl: '/artes/cubo_gelatinoso.jpeg',
     cr: '2',
     xp: 450,
     ac: 6,
@@ -384,6 +392,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Medusa: {
     name: 'Medusa',
     type: 'Monstruosidade',
+    imageUrl: '/artes/medusa.jpeg',
     cr: '6',
     xp: 2300,
     ac: 15,
@@ -410,6 +419,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Manticora: {
     name: 'Manticora',
     type: 'Monstruosidade',
+    imageUrl: '/artes/manticora.jpeg',
     cr: '3',
     xp: 700,
     ac: 14,
@@ -457,6 +467,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   DragaoVermelhoJovem: {
     name: 'Dragão Vermelho Jovem',
     type: 'Dragão',
+    imageUrl: '/artes/dragao_vermelho.jpeg',
     cr: '10',
     xp: 5900,
     ac: 18,
@@ -485,6 +496,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Hidra: {
     name: 'Hidra de Muitas Cabeças',
     type: 'Monstruosidade',
+    imageUrl: '/artes/hidra.jpeg',
     cr: '8',
     xp: 3900,
     ac: 15,
@@ -503,6 +515,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Beholder: {
     name: 'Beholder (Observador)',
     type: 'Aberração',
+    imageUrl: '/artes/beholder.jpeg',
     cr: '13',
     xp: 10000,
     ac: 18,
@@ -530,6 +543,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   Lich: {
     name: 'Lich Arquimago',
     type: 'Morto-vivo',
+    imageUrl: '/artes/lich_arquimago.jpeg',
     cr: '21',
     xp: 33000,
     ac: 17,
@@ -548,6 +562,7 @@ export const BESTIARY_SRD: Record<string, Omit<Enemy, 'id' | 'currentHp' | 'cond
   DragaoVermelhoAnciao: {
     name: 'Dragão Vermelho Ancião (Colossal)',
     type: 'Dragão',
+    imageUrl: '/artes/dragao_vermelho_anciao.jpeg',
     cr: '24',
     xp: 62000,
     ac: 22,
