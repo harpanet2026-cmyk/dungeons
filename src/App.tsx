@@ -19,6 +19,7 @@ import { CampaignJournal } from './components/campaign/CampaignJournal';
 import { SpellCompendiumModal } from './components/compendium/SpellCompendiumModal';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
 import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
+import { generateRandomHero } from './core/rules/characterGenerator';
 import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords, BookOpen, Compass } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -177,6 +178,17 @@ export const App: React.FC = () => {
     setSelectedCharacterId(newChar.id);
     setActiveTab('sheet');
     showNotification(`Personagem '${newChar.name}' adicionado com sucesso!`);
+  };
+
+  const handleGenerateRandomHero = () => {
+    const newHero = generateRandomHero();
+    setCharacters(prev => [...prev, newHero]);
+    if (currentUser.role === 'player') {
+      AuthManager.linkCharacter(currentUser.id, newHero.id);
+      setCurrentUser(AuthManager.getCurrentUser());
+    }
+    setSelectedCharacterId(newHero.id);
+    showNotification(`🎲 Herói Gerado: ${newHero.name} (${newHero.race} ${newHero.class}) adicionado com sucesso!`);
   };
 
   const handleLongRest = () => {
@@ -677,18 +689,25 @@ export const App: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
-                  onClick={() => scrollToContent('combat')}
-                  className="glass-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
+                  onClick={handleGenerateRandomHero}
+                  className="bg-gradient-to-r from-[#d9be7e] via-[#f7e6b5] to-[#c59e53] text-[#2c1a04] rounded-lg px-3.5 py-2 text-xs font-black flex items-center gap-1.5 shadow-md hover:scale-105 transition-transform"
+                  title="Gera um herói 100% equilibrado com atributos, armas, magias e histórico em 1 clique"
                 >
-                  <Swords className="w-3.5 h-3.5 text-rose-400" /> Ver Arena de Inimigos ({enemies.length})
+                  <Sparkles className="w-3.5 h-3.5 text-[#8b0000]" /> 🎲 Gerar Herói Aleatório
                 </button>
                 <button
                   onClick={() => scrollToContent('parchment')}
                   className="glass-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
                 >
-                  📜 Ficha Estilo Kelanyah
+                  📜 Ficha Oficial D&D 5e
+                </button>
+                <button
+                  onClick={() => scrollToContent('combat')}
+                  className="glass-btn rounded-lg px-4 py-2 text-xs flex items-center gap-1.5 shadow"
+                >
+                  <Swords className="w-3.5 h-3.5 text-rose-400" /> Arena ({enemies.length})
                 </button>
                 <button
                   onClick={() => setActiveTab('create')}
@@ -706,12 +725,20 @@ export const App: React.FC = () => {
                 <p className="text-xs text-stone-400 max-w-md mx-auto">
                   Crie aventureiros baseados nas regras oficiais do SRD 5e para iniciar a campanha narrada pelo Gemini Pro.
                 </p>
-                <button
-                  onClick={() => setActiveTab('create')}
-                  className="bronze-btn rounded-full px-6 py-2.5 text-xs inline-flex items-center gap-2 shadow"
-                >
-                  <UserPlus className="w-4 h-4" /> Criar Primeiro Personagem
-                </button>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <button
+                    onClick={handleGenerateRandomHero}
+                    className="bronze-btn rounded-full px-6 py-2.5 text-xs inline-flex items-center gap-2 shadow hover:scale-105 transition-transform"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#f5ba42]" /> 🎲 Gerar Herói Instantâneo
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('create')}
+                    className="glass-btn rounded-full px-6 py-2.5 text-xs inline-flex items-center gap-2 shadow"
+                  >
+                    <UserPlus className="w-4 h-4" /> Criar Manualmente
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -757,9 +784,18 @@ export const App: React.FC = () => {
               onToggleInspiration={handleToggleInspiration}
               onRollCheck={handleRollCheck}
               onBackToMesa={() => setActiveTab('sheet')}
+              onGenerateRandomHero={handleGenerateRandomHero}
             />
           ) : (
-            <div className="text-center py-12 text-stone-400">Nenhum herói cadastrado.</div>
+            <div className="text-center py-12 text-stone-400 space-y-3">
+              <p>Nenhum herói cadastrado no momento.</p>
+              <button
+                onClick={handleGenerateRandomHero}
+                className="bronze-btn rounded-full px-6 py-2.5 text-xs inline-flex items-center gap-2 shadow"
+              >
+                <Sparkles className="w-4 h-4 text-[#f5ba42]" /> 🎲 Gerar Herói Instantâneo
+              </button>
+            </div>
           )
         )}
 

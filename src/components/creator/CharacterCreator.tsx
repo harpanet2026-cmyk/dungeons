@@ -25,6 +25,7 @@ import {
   formatModifier
 } from '../../core/rules/calculations';
 import { COMMON_ARMORS, COMMON_WEAPONS, getClassPortrait } from '../../core/rules/srdData';
+import { generateRandomHero } from '../../core/rules/characterGenerator';
 
 // Subcomponentes dos passos
 import { StepRace } from './steps/StepRace';
@@ -556,6 +557,49 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
     onAddCharacter(newChar);
   };
 
+  // Preencher todas as etapas automaticamente com herói aleatório
+  const handleAutoFillRandom = () => {
+    const hero = generateRandomHero();
+    setSelectedRace(hero.race);
+    if (hero.subrace) {
+      const rDef = PHB_RACES[hero.race];
+      const sDef = rDef?.subraces?.find(s => s.name === hero.subrace);
+      if (sDef) setSelectedSubrace(sDef.id);
+    } else {
+      setSelectedSubrace('');
+    }
+    setSelectedClass(hero.class);
+    if (hero.subclass) {
+      const cDomain = CLERIC_DOMAINS.find(d => d.name === hero.subclass);
+      const sOrigin = SORCERER_ORIGINS.find(o => o.name === hero.subclass);
+      const wPatron = WARLOCK_PATRONS.find(p => p.name === hero.subclass);
+      setSelectedSubclass(cDomain?.id || sOrigin?.id || wPatron?.id || hero.subclass);
+    } else {
+      setSelectedSubclass('');
+    }
+    setName(hero.name);
+    setGender((hero.gender as any) || 'masculino');
+    setAlignment(hero.alignment);
+    setSelectedBackground(hero.background);
+    setBaseAbilities({ ...hero.baseAbilities });
+    setPersonalityTraits(hero.personality.traits.join(' '));
+    setIdeals(hero.personality.ideals);
+    setBonds(hero.personality.bonds);
+    setFlaws(hero.personality.flaws);
+    if (hero.skillProficiencies.length > 0) {
+      setSelectedClassSkills(hero.skillProficiencies.slice(0, 2));
+    }
+    if (hero.spells.length > 0) {
+      setSelectedCantripIds(hero.spells.filter(s => s.level === 0).map(s => s.id));
+      setSelectedSpellIds(hero.spells.filter(s => s.level === 1).map(s => s.id));
+    }
+  };
+
+  const handleInstantCreateRandom = () => {
+    const hero = generateRandomHero();
+    onAddCharacter(hero);
+  };
+
   // ==========================================
   // CONFIGURAÇÃO DOS PASSOS DO WIZARD
   // ==========================================
@@ -591,12 +635,34 @@ export const CharacterCreator: React.FC<CharacterCreatorProps> = ({ onAddCharact
           </div>
         </div>
 
-        <button
-          onClick={onCancel}
-          className="text-xs text-stone-400 hover:text-[#f5ba42] transition-colors font-semibold uppercase tracking-wider px-3.5 py-2 rounded-xl border border-transparent hover:border-[#2b354f] flex items-center gap-1.5"
-        >
-          <X className="w-4 h-4" /> Cancelar Criação
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={handleAutoFillRandom}
+            className="bg-[#241a10] hover:bg-[#382818] text-[#f5ba42] border border-[#a17036] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition-all hover:scale-105"
+            title="Preenche todas as etapas do assistente com um herói gerado automaticamente para você revisar e ajustar"
+          >
+            <Dices className="w-4 h-4 text-[#ffd470]" />
+            <span>🎲 Preencher Aleatório</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleInstantCreateRandom}
+            className="bg-gradient-to-r from-[#d9be7e] via-[#f7e6b5] to-[#c59e53] text-[#2c1a04] px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 shadow-lg transition-all hover:scale-105"
+            title="Gera e salva o herói imediatamente no reino em 1 clique"
+          >
+            <Sparkles className="w-4 h-4 text-[#8b0000]" />
+            <span>⚡ Criar Imediatamente</span>
+          </button>
+
+          <button
+            onClick={onCancel}
+            className="text-xs text-stone-400 hover:text-[#f5ba42] transition-colors font-semibold uppercase tracking-wider px-3.5 py-2 rounded-xl border border-transparent hover:border-[#2b354f] flex items-center gap-1.5"
+          >
+            <X className="w-4 h-4" /> Cancelar
+          </button>
+        </div>
       </div>
 
       {/* 2. STEPPER PROGRESS BAR (NAVEGAÇÃO POR ABAS) */}

@@ -45,6 +45,7 @@ interface ParchmentCharacterSheetProps {
   onToggleInspiration: (id: string) => void;
   onRollCheck: (char: Character, name: string, mode: 'normal' | 'vantagem' | 'desvantagem') => void;
   onBackToMesa: () => void;
+  onGenerateRandomHero?: () => void;
 }
 
 // 12 Classes Oficiais de RPG e Monstros
@@ -134,7 +135,8 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
   onToggleCondition,
   onToggleInspiration,
   onRollCheck,
-  onBackToMesa
+  onBackToMesa,
+  onGenerateRandomHero
 }) => {
   // Controle de Página: 'front' (Frente / Drizzt) ou 'back' (Verso / Erelynn Mochila)
   const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
@@ -335,6 +337,16 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
               {c.name.split(' ')[0]}
             </button>
           ))}
+          {onGenerateRandomHero && (
+            <button
+              onClick={onGenerateRandomHero}
+              className="px-2.5 py-1 rounded-full text-[11px] font-black uppercase transition-all whitespace-nowrap bg-gradient-to-r from-[#d9be7e] to-[#aa8337] text-[#2c1a04] shadow hover:scale-105 flex items-center gap-1"
+              title="Gerar Herói Lendário Aleatório Instantaneamente"
+            >
+              <Sparkles className="w-3 h-3 text-[#8b0000]" />
+              <span>+ Gerar Herói</span>
+            </button>
+          )}
         </div>
 
         {/* Alternador de Arte do Retrato */}
