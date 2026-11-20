@@ -19,6 +19,7 @@ export const SpellCompendiumModal: React.FC<SpellCompendiumModalProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedLevel, setSelectedLevel] = useState<number | 'all'>('all');
   const [selectedSchool, setSelectedSchool] = useState<string>('all');
+  const [selectedClass, setSelectedClass] = useState<string>('all');
   const [selectedTargetCharId, setSelectedTargetCharId] = useState<string>(characters[0]?.id || '');
   const [addedSpells, setAddedSpells] = useState<string[]>([]);
 
@@ -29,7 +30,8 @@ export const SpellCompendiumModal: React.FC<SpellCompendiumModalProps> = ({
       spell.description.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesLevel = selectedLevel === 'all' || spell.level === selectedLevel;
     const matchesSchool = selectedSchool === 'all' || spell.school === selectedSchool;
-    return matchesSearch && matchesLevel && matchesSchool;
+    const matchesClass = selectedClass === 'all' || (spell.classes && spell.classes.includes(selectedClass));
+    return matchesSearch && matchesLevel && matchesSchool && matchesClass;
   });
 
   const handleAdd = (spell: CompendiumSpell) => {
@@ -66,10 +68,10 @@ export const SpellCompendiumModal: React.FC<SpellCompendiumModalProps> = ({
             </div>
             <div>
               <h2 className="font-cinzel text-lg sm:text-xl font-bold gold-gradient-text tracking-[0.15em] flex items-center gap-2">
-                GRIMÓRIO & COMPÊNDIO ARCANO (SRD 5e)
+                GRIMÓRIO & COMPÊNDIO OFICIAL (PHB 5e)
               </h2>
               <p className="text-xs text-stone-400 font-sans">
-                Consulte magias oficiais e adicione diretamente ao livro de magias dos heróis
+                {SPELL_COMPENDIUM.length} magias oficiais do Livro do Jogador (Truques ao 9º Círculo) • Adicione à ficha dos heróis
               </p>
             </div>
           </div>
@@ -84,13 +86,13 @@ export const SpellCompendiumModal: React.FC<SpellCompendiumModalProps> = ({
 
         {/* Barra de Filtros & Destino do Herói */}
         <div className="p-4 bg-[#12141f] border-b border-[#231b14] space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+          <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center">
             {/* Campo de Busca */}
-            <div className="sm:col-span-5 relative">
+            <div className="sm:col-span-4 relative">
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
               <input
                 type="text"
-                placeholder="Buscar magia por nome ou efeito..."
+                placeholder="Buscar magia ou efeito..."
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
                 className="w-full bg-[#090b10] border border-[#2b334a] focus:border-[#f5ba42] rounded-lg pl-9 pr-3 py-2 text-xs text-stone-100 outline-none"
@@ -98,35 +100,97 @@ export const SpellCompendiumModal: React.FC<SpellCompendiumModalProps> = ({
             </div>
 
             {/* Filtro de Círculo */}
-            <div className="sm:col-span-3">
+            <div className="sm:col-span-2">
               <select
                 value={selectedLevel}
                 onChange={e => setSelectedLevel(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                className="w-full bg-[#090b10] border border-[#2b334a] focus:border-[#f5ba42] rounded-lg px-2.5 py-2 text-xs text-stone-200 outline-none"
+                className="w-full bg-[#090b10] border border-[#2b334a] focus:border-[#f5ba42] rounded-lg px-2 py-2 text-xs text-stone-200 outline-none"
               >
-                <option value="all">Todos os Círculos</option>
-                <option value="0">Truques (Nível 0)</option>
+                <option value="all">Círculo: Todos</option>
+                <option value="0">Truques (0)</option>
                 <option value="1">1º Círculo</option>
                 <option value="2">2º Círculo</option>
                 <option value="3">3º Círculo</option>
+                <option value="4">4º Círculo</option>
+                <option value="5">5º Círculo</option>
+                <option value="6">6º Círculo</option>
+                <option value="7">7º Círculo</option>
+                <option value="8">8º Círculo</option>
+                <option value="9">9º Círculo</option>
+              </select>
+            </div>
+
+            {/* Filtro de Classe */}
+            <div className="sm:col-span-2">
+              <select
+                value={selectedClass}
+                onChange={e => setSelectedClass(e.target.value)}
+                className="w-full bg-[#090b10] border border-[#2b334a] focus:border-[#f5ba42] rounded-lg px-2 py-2 text-xs text-stone-200 outline-none"
+              >
+                <option value="all">Classe: Todas</option>
+                <option value="Bardo">Bardo</option>
+                <option value="Bruxo">Bruxo</option>
+                <option value="Clérigo">Clérigo</option>
+                <option value="Druida">Druida</option>
+                <option value="Feiticeiro">Feiticeiro</option>
+                <option value="Mago">Mago</option>
+                <option value="Paladino">Paladino</option>
+                <option value="Patrulheiro">Patrulheiro</option>
+              </select>
+            </div>
+
+            {/* Filtro de Escola */}
+            <div className="sm:col-span-2">
+              <select
+                value={selectedSchool}
+                onChange={e => setSelectedSchool(e.target.value)}
+                className="w-full bg-[#090b10] border border-[#2b334a] focus:border-[#f5ba42] rounded-lg px-2 py-2 text-xs text-stone-200 outline-none"
+              >
+                <option value="all">Escola: Todas</option>
+                <option value="Abjuração">Abjuração</option>
+                <option value="Adivinhação">Adivinhação</option>
+                <option value="Conjuração">Conjuração</option>
+                <option value="Encantamento">Encantamento</option>
+                <option value="Evocação">Evocação</option>
+                <option value="Ilusão">Ilusão</option>
+                <option value="Necromancia">Necromancia</option>
+                <option value="Transmutação">Transmutação</option>
               </select>
             </div>
 
             {/* Destino: Para qual herói enviar */}
-            <div className="sm:col-span-4 flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold text-stone-400 shrink-0">Aprender em:</span>
+            <div className="sm:col-span-2 flex items-center gap-1.5">
               <select
                 value={selectedTargetCharId}
                 onChange={e => setSelectedTargetCharId(e.target.value)}
-                className="w-full bg-[#182033] border border-amber-600/60 focus:border-[#f5ba42] rounded-lg px-2.5 py-2 text-xs font-bold text-[#f5ba42] outline-none"
+                className="w-full bg-[#182033] border border-amber-600/60 focus:border-[#f5ba42] rounded-lg px-2 py-2 text-xs font-bold text-[#f5ba42] outline-none truncate"
+                title="Herói que aprenderá a magia"
               >
                 {characters.map(c => (
                   <option key={c.id} value={c.id}>
-                    {c.name} ({c.class})
+                    + {c.name} ({c.class})
                   </option>
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="flex items-center justify-between text-[11px] text-stone-400 pt-1">
+            <span>Exibindo <b>{filteredSpells.length}</b> de <b>{SPELL_COMPENDIUM.length}</b> magias</span>
+            {(selectedLevel !== 'all' || selectedClass !== 'all' || selectedSchool !== 'all' || searchTerm) && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedLevel('all');
+                  setSelectedClass('all');
+                  setSelectedSchool('all');
+                  setSearchTerm('');
+                }}
+                className="text-amber-400 hover:text-amber-300 underline font-semibold"
+              >
+                Limpar filtros
+              </button>
+            )}
           </div>
         </div>
 
@@ -162,6 +226,16 @@ export const SpellCompendiumModal: React.FC<SpellCompendiumModalProps> = ({
                         <span>• Comp: {spell.components}</span>
                         <span>• Dur: {spell.duration}</span>
                       </div>
+                      {spell.classes && spell.classes.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-1 mt-1.5">
+                          <span className="text-[9px] uppercase tracking-wider text-stone-500 font-bold">Classes:</span>
+                          {spell.classes.map(cls => (
+                            <span key={cls} className="text-[9px] bg-[#101420] text-amber-300/90 border border-[#262f44] px-1.5 py-0.5 rounded font-medium">
+                              {cls}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     <button
