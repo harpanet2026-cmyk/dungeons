@@ -572,7 +572,7 @@ export const App: React.FC = () => {
                 Ficha Pergaminho
               </span>
               <span className="text-xs uppercase tracking-wider text-stone-300 font-semibold">{characters.length} Heróis no Grupo</span>
-              <span className="text-[11px] text-stone-400 mt-0.5">Estilo Kelanyah Tanares 5e</span>
+              <span className="text-[11px] text-stone-400 mt-0.5">Oficial D&D 5e (Frente & Verso)</span>
             </div>
           </div>
         </div>

@@ -1,7 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Character, Condition, SkillName, AbilityName } from '../../core/types/dnd';
-import { calculateArmorClass, getPassiveSense, getAbilityModifier, formatModifier, calculateSpellcastingMetrics, getSkillModifier, SKILL_ABILITY_MAP } from '../../core/rules/calculations';
-import { Shield, Heart, Zap, Sparkles, Dices, Eye, Skull, ArrowLeft, ChevronLeft, ChevronRight, Check, Image as ImageIcon } from 'lucide-react';
+import {
+  calculateArmorClass,
+  getPassiveSense,
+  getAbilityModifier,
+  formatModifier,
+  calculateSpellcastingMetrics,
+  getSkillModifier,
+  SKILL_ABILITY_MAP
+} from '../../core/rules/calculations';
+import {
+  Shield,
+  Heart,
+  Zap,
+  Sparkles,
+  Dices,
+  Eye,
+  Skull,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Image as ImageIcon,
+  Swords,
+  Scroll,
+  Coins,
+  Backpack,
+  RotateCw,
+  Compass,
+  Wand2,
+  Crosshair,
+  Award
+} from 'lucide-react';
 
 interface ParchmentCharacterSheetProps {
   character: Character;
@@ -17,11 +47,11 @@ interface ParchmentCharacterSheetProps {
   onBackToMesa: () => void;
 }
 
-// Imagens de Alta Fidelidade das Classes de RPG e Monstros (Nano Banana)
+// 12 Classes Oficiais de RPG e Monstros
 const ART_OPTIONS = [
-  // 12 Classes Oficiais de RPG (Versões Masculinas / Padrão)
-  { id: 'art_mago', name: 'Mago Arcano (Masculino)', path: '/artes/mago.jpeg' },
+  { id: 'art_drizzt', name: 'Drizzt Do\'Urden (Drow Ranger Épico)', path: '/heroes/champion.jpg' },
   { id: 'art_guerreiro', name: 'Guerreiro Marcial (Masculino)', path: '/artes/guerreiro.jpeg' },
+  { id: 'art_mago', name: 'Mago Arcano (Masculino)', path: '/artes/mago.jpeg' },
   { id: 'art_ladino', name: 'Ladino das Sombras (Masculino)', path: '/artes/ladino.jpeg' },
   { id: 'art_clerigo', name: 'Clérigo Sagrado (Masculino)', path: '/artes/clerigo.jpeg' },
   { id: 'art_barbaro', name: 'Bárbaro Primal (Masculino)', path: '/artes/barbaro.jpeg' },
@@ -32,9 +62,7 @@ const ART_OPTIONS = [
   { id: 'art_monge', name: 'Monge das Artes Marciais (Masculino)', path: '/artes/monge.jpeg' },
   { id: 'art_bruxo', name: 'Bruxo do Pacto (Masculino)', path: '/artes/bruxo.jpeg' },
   { id: 'art_feiticeiro', name: 'Feiticeiro Dracônico (Masculino)', path: '/artes/feiticeiro.jpeg' },
-  // 12 Classes Oficiais de RPG (Versões Femininas)
   { id: 'art_mago_f', name: 'Maga Arcana (Feminino)', path: '/artes/mago_f.jpeg' },
-  { id: 'art_mago_idosa_f', name: 'Maga Anciã (Feminino)', path: '/artes/mago_idosa_f.jpeg' },
   { id: 'art_guerreiro_f', name: 'Guerreira Marcial (Feminino)', path: '/artes/guerreiro_f.jpeg' },
   { id: 'art_ladino_f', name: 'Ladina das Sombras (Feminino)', path: '/artes/ladino_f.jpeg' },
   { id: 'art_clerigo_f', name: 'Clériga Sagrada (Feminino)', path: '/artes/clerigo_f.jpeg' },
@@ -46,38 +74,8 @@ const ART_OPTIONS = [
   { id: 'art_monge_f', name: 'Monja das Artes Marciais (Feminino)', path: '/artes/monge_f.jpeg' },
   { id: 'art_bruxo_f', name: 'Bruxa do Pacto (Feminino)', path: '/artes/bruxo_f.jpeg' },
   { id: 'art_feiticeiro_f', name: 'Feiticeira Dracônica (Feminino)', path: '/artes/feiticeiro_f.jpeg' },
-  // Monstros e Chefes Épicos
-  { id: 'art_balrog', name: 'Balrog Demônio Maior', path: '/artes/Balrog.jpeg' },
-  { id: 'art_dragao_vermelho_anciao', name: 'Dragão Vermelho Ancião Colossal', path: '/artes/dragao_vermelho_anciao.jpeg' },
-  { id: 'art_dragao_vermelho', name: 'Dragão Vermelho Jovem', path: '/artes/dragao_vermelho.jpeg' },
-  { id: 'art_lich_hq', name: 'Lich Arquimago', path: '/artes/lich_arquimago.jpeg' },
-  { id: 'art_beholder_hq', name: 'Beholder Observador', path: '/artes/beholder.jpeg' },
-  { id: 'art_hidra', name: 'Hidra de Muitas Cabeças', path: '/artes/hidra.jpeg' },
-  { id: 'art_medusa', name: 'Medusa Petrificante', path: '/artes/medusa.jpeg' },
-  { id: 'art_manticora', name: 'Manticora Alada', path: '/artes/manticora.jpeg' },
-  { id: 'art_urso_coruja', name: 'Urso-Coruja (Owlbear)', path: '/artes/urso_coruja.jpeg' },
-  { id: 'art_mimico', name: 'Mímico Disfarçado', path: '/artes/mimico.jpeg' },
-  { id: 'art_cubo_gelatinoso', name: 'Cubo Gelatinoso', path: '/artes/cubo_gelatinoso.jpeg' },
-  { id: 'art_carnical', name: 'Carniçal (Ghoul)', path: '/artes/carnical.jpeg' },
-  { id: 'art_bandido', name: 'Bandido Salteador', path: '/artes/bandido_salteador.jpeg' },
-  { id: 'art_lobo_selvagem', name: 'Lobo Selvagem', path: '/artes/lobo_selvagem.jpeg' },
-  { id: 'art_troll', name: 'Troll da Caverna', path: '/artes/Troll.jpeg' },
-  { id: 'art_vampiro', name: 'Lorde Vampiro', path: '/artes/vampiro.jpeg' },
-  { id: 'art_espectro', name: 'Espectro Sombrio', path: '/artes/espectro.jpeg' },
-  { id: 'art_aranha', name: 'Aranha Gigante', path: '/artes/aranha.jpeg' },
-  { id: 'art_hobgoblin', name: 'Hobgoblin Capitão', path: '/artes/hobiglobin.jpeg' },
-  { id: 'art_orc', name: 'Guerreiro Orc', path: '/artes/orc.jpeg' },
-  { id: 'art_goblin', name: 'Goblin Batedor', path: '/artes/goblin.jpeg' },
-  { id: 'art_kobold', name: 'Kobold Emboscador', path: '/artes/kobold.jpeg' },
-  { id: 'art_esqueleto', name: 'Esqueleto Legionário', path: '/artes/esqueleto.jpeg' },
-  { id: 'art_zumbi', name: 'Zumbi Errante', path: '/artes/zumbi.jpeg' },
-  // Clássicos dos Manuais Oficiais
-  { id: 'art_thorin', name: 'Thorin (Anão Guerreiro - Guia do Jogador)', path: '/heroes/thorin_warrior.jpg' },
-  { id: 'art_lyra', name: 'Lyra (Elfa Maga - Guia do Jogador)', path: '/heroes/lyra_mage.jpg' },
-  { id: 'art_champion', name: 'Guerreiro Campeão (Guia de Volo)', path: '/heroes/champion.jpg' },
-  { id: 'art_beholder', name: 'Beholder Observador (Guia de Volo)', path: '/monsters/beholder.jpg' },
-  { id: 'art_mind_flayer', name: 'Devorador de Mentes (Guia de Volo)', path: '/monsters/mind_flayer.jpg' },
-  { id: 'art_dragon', name: 'Guarda Dragonete (Guia de Volo)', path: '/monsters/dragon.jpg' },
+  { id: 'art_thorin', name: 'Thorin (Anão Guerreiro - Livro Jogador)', path: '/heroes/thorin_warrior.jpg' },
+  { id: 'art_lyra', name: 'Lyra Cantolunar (Elfa Maga)', path: '/heroes/lyra_mage.jpg' },
 ];
 
 const getArtIndexForCharacter = (char: Character): number => {
@@ -103,6 +101,28 @@ const getArtIndexForCharacter = (char: Character): number => {
   return 0;
 };
 
+// 18 Perícias em ordem idêntica ao Grimoire Oficial de D&D 5e
+const OFFICIAL_SKILLS_ORDER: { key: SkillName; nameEn: string; namePt: string; ability: AbilityName }[] = [
+  { key: 'acrobacia', namePt: 'Acrobacia', nameEn: 'Acrobatics', ability: 'des' },
+  { key: 'adestrar_animais', namePt: 'Adestrar Animais', nameEn: 'Animal Handling', ability: 'sab' },
+  { key: 'arcanismo', namePt: 'Arcanismo', nameEn: 'Arcana', ability: 'int' },
+  { key: 'atletismo', namePt: 'Atletismo', nameEn: 'Athletics', ability: 'for' },
+  { key: 'enganacao', namePt: 'Enganação', nameEn: 'Deception', ability: 'car' },
+  { key: 'historia', namePt: 'História', nameEn: 'History', ability: 'int' },
+  { key: 'intuicao', namePt: 'Intuição', nameEn: 'Insight', ability: 'sab' },
+  { key: 'intimidacao', namePt: 'Intimidação', nameEn: 'Intimidation', ability: 'car' },
+  { key: 'investigacao', namePt: 'Investigação', nameEn: 'Investigation', ability: 'int' },
+  { key: 'medicina', namePt: 'Medicina', nameEn: 'Medicine', ability: 'sab' },
+  { key: 'natureza', namePt: 'Natureza', nameEn: 'Nature', ability: 'int' },
+  { key: 'percepcao', namePt: 'Percepção', nameEn: 'Perception', ability: 'sab' },
+  { key: 'atuacao', namePt: 'Atuação', nameEn: 'Performance', ability: 'car' },
+  { key: 'persuasao', namePt: 'Persuasão', nameEn: 'Persuasion', ability: 'car' },
+  { key: 'religiao', namePt: 'Religião', nameEn: 'Religion', ability: 'int' },
+  { key: 'prestidigitacao', namePt: 'Prestidigitação', nameEn: 'Sleight of Hand', ability: 'des' },
+  { key: 'furtividade', namePt: 'Furtividade', nameEn: 'Stealth', ability: 'des' },
+  { key: 'sobrevivencia', namePt: 'Sobrevivência', nameEn: 'Survival', ability: 'sab' },
+];
+
 export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = ({
   character,
   charactersList,
@@ -116,621 +136,1310 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
   onRollCheck,
   onBackToMesa
 }) => {
-  const [selectedArtIndex, setSelectedArtIndex] = useState<number>(() => getArtIndexForCharacter(character));
+  // Controle de Página: 'front' (Frente / Drizzt) ou 'back' (Verso / Erelynn Mochila)
+  const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
 
+  // Arte ativa do personagem
+  const [selectedArtIndex, setSelectedArtIndex] = useState<number>(() => getArtIndexForCharacter(character));
   useEffect(() => {
     setSelectedArtIndex(getArtIndexForCharacter(character));
   }, [character.id, character.class, character.avatarUrl, character.gender]);
-  const [customHpVal, setCustomHpVal] = useState<string>('');
+
+  // Modo de rolagem
   const [rollMode, setRollMode] = useState<'normal' | 'vantagem' | 'desvantagem'>('normal');
 
+  // Controle de entrada de HP personalizado
+  const [customHpInput, setCustomHpInput] = useState<string>('');
+
+  // Roda de Recursos do Verso (10 esferas interativas)
+  const [resourceWheelSpent, setResourceWheelSpent] = useState<boolean[]>(() => [false, false, false, false, false, false, false, false, false, false]);
+
+  // Sintonização de Itens Mágicos (3 vagas da 5e)
+  const [attunedSlots, setAttunedSlots] = useState<boolean[]>([true, true, false]);
+
+  // Métricas calculadas
   const { ac, breakdown: acBreakdown } = calculateArmorClass(character);
   const passivePerc = getPassiveSense(character, 'percepcao');
-  const spellMetrics = calculateSpellcastingMetrics(character);
-
-  // Modificador de Iniciativa = Modificador de Destreza
   const initiativeMod = getAbilityModifier(character.baseAbilities.des);
-  const profBonus = Math.floor((character.level - 1) / 4) + 2;
+  const profBonus = Math.floor((Math.max(1, character.level) - 1) / 4) + 2;
 
-  // Habilidades de Classe Sugeridas
-  const getClassFeatures = (className: string) => {
-    const cl = className.toLowerCase();
-    if (cl.includes('guerreiro')) {
-      return [
-        { name: 'Estilo de Combate: Defesa', desc: '+1 de bônus na CA ao trajar armadura.' },
-        { name: 'Retomar o Fôlego (Second Wind)', desc: 'Recupera 1d10 + nível de PV como ação bônus (1x por descanso curto/longo).' },
-        { name: 'Surto de Ação (Action Surge)', desc: 'Ganha 1 ação adicional no seu turno (1x por descanso curto/longo).' }
-      ];
-    }
-    if (cl.includes('mago')) {
-      return [
-        { name: 'Recuperação Arcana', desc: 'Em descanso curto, recupera espaços de magia somando metade do nível de mago.' },
-        { name: 'Tradição Arcana (Evocação)', desc: 'Esculpir Magias: aliados passam automaticamente e não sofrem dano em magias de área.' },
-        { name: 'Grimório Arcano', desc: 'Prepara número de magias igual a Modificador de INT + Nível de Mago.' }
-      ];
-    }
-    return [
-      { name: 'Características de Classe 5e', desc: `Proficiências e recursos ativos de nível ${character.level}.` }
-    ];
+  // Toggle na roda de recursos do verso
+  const toggleWheelBead = (index: number) => {
+    setResourceWheelSpent(prev => {
+      const copy = [...prev];
+      copy[index] = !copy[index];
+      return copy;
+    });
   };
 
-  const classFeatures = getClassFeatures(character.class);
+  // Traços e Recursos de Classe & Raça Automáticos caso estejam vazios
+  const getEnrichedFeatures = () => {
+    const list: { title: string; desc: string }[] = [];
+    const race = (character.race || '').toLowerCase();
+    const cls = (character.class || '').toLowerCase();
+
+    // Raça
+    if (race.includes('elf') || race.includes('drow')) {
+      list.push({ title: 'Visão no Escuro Superior (36m)', desc: 'Você enxerga na escuridão plena até 36 metros como se fosse luz plena.' });
+      list.push({ title: 'Sentidos Aguçados & Transe', desc: 'Proficiência em Percepção. Medita por 4 horas em vez de dormir 8 horas.' });
+      list.push({ title: 'Ancestral Feérico', desc: 'Vantagem em salvaguardas contra ser Enfeitiçado e imune a sono mágico.' });
+      list.push({ title: 'Magia Inata Feérica', desc: 'Pode conjurar Globos de Luz, Fogo das Fadas (1x/dia) e Escuridão (1x/dia).' });
+    } else if (race.includes('anão') || race.includes('anao')) {
+      list.push({ title: 'Visão no Escuro (18m)', desc: 'Enxerga em penumbra como luz plena e escuridão como penumbra.' });
+      list.push({ title: 'Resiliência dos Anões', desc: 'Vantagem em salvaguardas contra Veneno e resistência a dano de veneno.' });
+      list.push({ title: 'Esperteza com Pedras', desc: 'Adiciona o dobro do bônus de proficiência em testes de História sobre alvenaria.' });
+    } else {
+      list.push({ title: 'Determinação Humana', desc: 'Treinamento adaptativo e espírito resiliente em terra e combate.' });
+    }
+
+    // Classe
+    if (cls.includes('guerreiro')) {
+      list.push({ title: 'Estilo de Combate (Duas Armas / Defesa)', desc: 'Soma modificador de habilidade ao dano do ataque com a mão inábil e +1 CA.' });
+      list.push({ title: 'Retomar o Fôlego (Second Wind)', desc: 'Ação bônus: recupera 1d10 + nível em PV (1x por descanso curto ou longo).' });
+      list.push({ title: 'Surto de Ação (Action Surge)', desc: 'Ganha 1 ação adicional no seu próprio turno (1x por descanso curto ou longo).' });
+      list.push({ title: 'Ataque Extra', desc: 'Pode atacar múltiplas vezes ao realizar a ação de Ataque em seu turno.' });
+    } else if (cls.includes('ladino')) {
+      list.push({ title: 'Ataque Furtivo (Sneak Attack)', desc: `Causa +${Math.ceil(character.level / 2)}d6 de dano a uma criatura atingida sob vantagem ou com aliado a 1,5m.` });
+      list.push({ title: 'Ação Ardilosa (Cunning Action)', desc: 'Ação bônus: pode Correr, Desengajar ou Esconder-se em todo turno de combate.' });
+      list.push({ title: 'Esquiva Sobrenatural', desc: 'Reação: reduz à metade o dano de um ataque visível que o atinja.' });
+    } else if (cls.includes('mago')) {
+      list.push({ title: 'Grimório Arcano & Conjurador Ritual', desc: 'Pode conjurar rituais diretamente do livro sem gastar espaços de magia.' });
+      list.push({ title: 'Recuperação Arcana', desc: 'Em descanso curto, recupera espaços de magia somando metade do nível de mago.' });
+      list.push({ title: 'Esculpir Magias', desc: 'Aliados na área de suas magias passam automaticamente na salvaguarda e sofrem 0 de dano.' });
+    } else if (cls.includes('patrulheiro') || cls.includes('ranger')) {
+      list.push({ title: 'Inimigo Favorito & Explorador Natural', desc: 'Vantagem em Sobrevivência para rastrear e conhecimento das fraquezas.' });
+      list.push({ title: 'Dança das Lâminas Silenciosas', desc: 'Velocidade aumentada em 3m e terreno difícil não impõe penalidade de movimento.' });
+    } else {
+      list.push({ title: 'Recursos de Classe Oficiais', desc: `Proficiências e habilidades ativas de nível ${character.level}.` });
+    }
+
+    if (character.notes) {
+      list.push({ title: 'Notas Especiais & Feitos', desc: character.notes });
+    }
+
+    return list;
+  };
+
+  const enrichedFeatures = getEnrichedFeatures();
+
+  // Lista de Itens Mágicos Equipados para o Verso
+  const magicItemsEquipped = [
+    { name: 'Morte Gélida (Cimitarra +3)', slot: 'Arma Principal', attunement: true, desc: '+3 no acerto/dano, +1d6 frio e resistência a fogo.' },
+    { name: 'Centelha (Cimitarra do Defensor +3)', slot: 'Mão Inábil', attunement: true, desc: '+3 transferível entre bônus de ataque e bônus na CA.' },
+    { name: 'Braçadeiras da Rapidez Feérica', slot: 'Pulsos', attunement: true, desc: 'Aumenta o Deslocamento em +3m e concede vantagem em Iniciativa.' },
+    { name: 'Amuleto da Saúde de Mithral', slot: 'Pescoço', attunement: false, desc: 'Mantém a vitalidade resiliente contra cansaço e venenos.' },
+    { name: 'Capa Élfica de Camuflagem', slot: 'Ombros', attunement: false, desc: 'Desvantagem em testes de Percepção para quem tentar detectá-lo.' },
+  ];
+
+  // Itens da Mochila de Aventura (Mochila Completa do Verso)
+  const defaultBackpackItems = [
+    { name: 'Barraca de acampamento para 2 pessoas', qty: 1, weight: '4.5 kg' },
+    { name: 'Saco de dormir de lã reforçada', qty: 1, weight: '2.0 kg' },
+    { name: 'Corda de cânhamo tratada (15 metros)', qty: 1, weight: '4.0 kg' },
+    { name: 'Tochas de piche impermeável', qty: 8, weight: '3.6 kg' },
+    { name: 'Rações de viagem secas (preservadas)', qty: 10, weight: '5.0 kg' },
+    { name: 'Odre de couro com água fresca (2 litros)', qty: 1, weight: '2.2 kg' },
+    { name: 'Pederneira e isqueiro de aço anão', qty: 1, weight: '0.2 kg' },
+    { name: 'Poções de Cura Simples (2d4+2)', qty: 3, weight: '0.6 kg' },
+    { name: 'Frascos de óleo inflamável de alquimista', qty: 3, weight: '1.5 kg' },
+    { name: 'Gancho de escalada de ferro forjado', qty: 1, weight: '1.8 kg' },
+    { name: 'Caneca de estanho e talheres de viagem', qty: 1, weight: '0.4 kg' },
+    { name: 'Espelho pequeno de aço polido', qty: 1, weight: '0.2 kg' },
+    { name: 'Giz e carvão para marcação de masmorras', qty: 5, weight: '0.1 kg' },
+    { name: 'Pá pequena de trincheira e cravos de ferro (10)', qty: 1, weight: '2.8 kg' },
+    { name: 'Estojo de pergaminhos lacrado à prova d\'água', qty: 1, weight: '0.5 kg' },
+    { name: 'Algemas de ferro temperado com chave mestra', qty: 1, weight: '1.2 kg' },
+  ];
+
+  const characterInventoryList = character.inventory && character.inventory.length > 0
+    ? character.inventory.map(item => ({ name: item.name, qty: item.quantity, weight: `${item.weight || 0.5} kg` }))
+    : defaultBackpackItems;
+
+  // Split em 2 colunas para o visual de linhas da Mochila
+  const halfInv = Math.ceil(characterInventoryList.length / 2);
+  const invCol1 = characterInventoryList.slice(0, halfInv);
+  const invCol2 = characterInventoryList.slice(halfInv);
+
+  // Armas prontas para ataque na frente
+  const equippedWeapons = character.weapons && character.weapons.length > 0
+    ? character.weapons
+    : [
+        { id: 'wpn_cimitarra_1', name: 'Morte Gélida (Cimitarra)', damage: '1d6+5', damageType: 'Cortante (+1d6 Frio)', range: '1.5m', isEquipped: true, quantity: 1, weight: 1.5 },
+        { id: 'wpn_cimitarra_2', name: 'Centelha (Cimitarra)', damage: '1d6+5', damageType: 'Cortante', range: '1.5m', isEquipped: true, quantity: 1, weight: 1.5 },
+        { id: 'wpn_adaga', name: 'Adaga de Aço Élfico', damage: '1d4+5', damageType: 'Perfurante', range: '6m / 18m', isEquipped: false, quantity: 2, weight: 0.5 },
+        { id: 'wpn_arco', name: 'Arco Longo dos Ermos', damage: '1d8+5', damageType: 'Perfurante', range: '45m / 180m', isEquipped: false, quantity: 1, weight: 1.0 },
+      ];
+
+  // Idiomas e Proficiências
+  const languagesList = 'Comum, Élfico, Subcomum, Dialeto Subterrâneo, Goblin, Orc';
+  const armorsList = 'Todas as armaduras leves e médias, escudos';
+  const weaponsList = 'Armas simples, armas marciais, cimitarras, rapieiras, arcos longos';
+  const toolsList = 'Instrumentos de Navegação, Kit de Herbalismo, Kit de Ladinagem';
 
   return (
-    <div className="space-y-6">
-      {/* Barra de Navegação Rápida entre Heróis */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-[#110e0a] border border-[#a17036]/50 p-3 rounded-2xl shadow-xl">
+    <div className="space-y-4 max-w-[1300px] mx-auto select-none print:m-0 print:p-0">
+      {/* ========================================================= */}
+      {/* BARRA SUPERIOR DE COMANDOS: HERÓIS, ARTE & SELETOR FRENTE/VERSO */}
+      {/* ========================================================= */}
+      <div className="bg-[#120e0a]/95 backdrop-blur-md border border-[#a17036]/60 p-2.5 sm:p-3 rounded-2xl shadow-2xl flex flex-wrap items-center justify-between gap-3 text-xs">
+        {/* Voltar à Mesa */}
         <button
           onClick={onBackToMesa}
-          className="bronze-btn px-4 py-1.5 rounded-full text-xs flex items-center gap-1.5"
+          className="bronze-btn px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 font-bold shadow"
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Voltar para Mesa de Jogo
+          <ArrowLeft className="w-3.5 h-3.5" /> Voltar à Mesa
         </button>
 
-        <div className="flex items-center gap-2 overflow-x-auto py-1">
-          <span className="text-[10px] uppercase font-bold text-[#f5ba42] tracking-wider hidden sm:inline">
-            Ficha Ativa:
+        {/* TOGGLE FRENTE / VERSO (IGUAL AO COMANDO DO USUÁRIO) */}
+        <div className="flex items-center gap-1.5 bg-[#201810] p-1 rounded-xl border border-[#a17036]">
+          <button
+            onClick={() => setActiveSide('front')}
+            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all flex items-center gap-2 ${
+              activeSide === 'front'
+                ? 'bg-gradient-to-r from-[#d9be7e] via-[#f7e6b5] to-[#c59e53] text-[#2c1a04] shadow-md scale-[1.02]'
+                : 'text-stone-300 hover:text-amber-300'
+            }`}
+          >
+            <Swords className="w-4 h-4 text-[#8b0000]" />
+            <span>⚔️ FRENTE (Atributos & Combate)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSide('back')}
+            className={`px-3 sm:px-4 py-1.5 rounded-lg text-xs font-black tracking-wider transition-all flex items-center gap-2 ${
+              activeSide === 'back'
+                ? 'bg-gradient-to-r from-[#d9be7e] via-[#f7e6b5] to-[#c59e53] text-[#2c1a04] shadow-md scale-[1.02]'
+                : 'text-stone-300 hover:text-amber-300'
+            }`}
+          >
+            <Backpack className="w-4 h-4 text-[#8b0000]" />
+            <span>🎒 VERSO (Mochila, Lore & Inventário)</span>
+          </button>
+        </div>
+
+        {/* Seletor de Heróis Rápidos */}
+        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5 max-w-[280px] sm:max-w-none">
+          <span className="text-[10px] uppercase font-bold text-[#f5ba42] tracking-wider hidden lg:inline">
+            Herói:
           </span>
           {charactersList.map(c => (
             <button
               key={c.id}
               onClick={() => onSelectCharacter(c)}
-              className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded-full text-[11px] font-bold uppercase transition-all whitespace-nowrap ${
                 c.id === character.id
-                  ? 'bg-[#f5ba42] text-stone-950 shadow-md font-extrabold'
-                  : 'bg-[#1e1710] text-[#f5ba42] border border-[#a17036]/50 hover:border-[#f5ba42]'
+                  ? 'bg-[#f5ba42] text-stone-950 font-extrabold shadow'
+                  : 'bg-[#1e1710] text-[#f5ba42]/80 border border-[#a17036]/50 hover:border-[#f5ba42]'
               }`}
             >
-              <span>{c.name.split(' ')[0]}</span>
-              <span className="text-[10px] opacity-75">({c.class})</span>
+              {c.name.split(' ')[0]}
             </button>
           ))}
         </div>
 
-        {/* Seletor de Arte do PDF */}
-        <div className="flex items-center gap-1 text-xs">
+        {/* Alternador de Arte do Retrato */}
+        <div className="flex items-center gap-1 bg-[#1a140d] px-2 py-1 rounded-lg border border-[#a17036]/40">
           <button
-            onClick={() => setSelectedArtIndex((prev) => (prev > 0 ? prev - 1 : ART_OPTIONS.length - 1))}
-            className="p-1 bg-[#1e1710] border border-[#a17036]/60 text-[#f5ba42] rounded hover:border-[#f5ba42]"
-            title="Arte Anterior do PDF"
+            onClick={() => setSelectedArtIndex(prev => (prev > 0 ? prev - 1 : ART_OPTIONS.length - 1))}
+            className="p-1 text-[#f5ba42] hover:bg-[#2c2013] rounded"
+            title="Arte Anterior"
           >
             <ChevronLeft className="w-3.5 h-3.5" />
           </button>
-          <span className="text-[10px] text-stone-300 px-1 font-semibold flex items-center gap-1">
-            <ImageIcon className="w-3 h-3 text-[#f5ba42]" /> {(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).name}
+          <span className="text-[10px] text-stone-300 font-semibold truncate max-w-[120px]">
+            {(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).name.split(' ')[0]}
           </span>
           <button
-            onClick={() => setSelectedArtIndex((prev) => (prev < ART_OPTIONS.length - 1 ? prev + 1 : 0))}
-            className="p-1 bg-[#1e1710] border border-[#a17036]/60 text-[#f5ba42] rounded hover:border-[#f5ba42]"
-            title="Próxima Arte do PDF"
+            onClick={() => setSelectedArtIndex(prev => (prev < ART_OPTIONS.length - 1 ? prev + 1 : 0))}
+            className="p-1 text-[#f5ba42] hover:bg-[#2c2013] rounded"
+            title="Próxima Arte"
           >
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
+
+        {/* Seletor de Modo de Rolagem */}
+        <div className="flex items-center gap-1 text-[10px]">
+          <span className="text-stone-400">Dados:</span>
+          {(['normal', 'vantagem', 'desvantagem'] as const).map(mode => (
+            <button
+              key={mode}
+              onClick={() => setRollMode(mode)}
+              className={`px-2 py-0.5 rounded capitalize font-bold transition-all ${
+                rollMode === mode
+                  ? 'bg-[#8b0000] text-white shadow'
+                  : 'bg-[#1e1710] text-stone-300 hover:text-amber-200 border border-[#a17036]/30'
+              }`}
+            >
+              {mode}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {/* FICHA ESTILO TANARES (template_person.png) */}
+      {/* ========================================================= */}
+      {/* REVESTIMENTO DE PERGAMINHO PRINCIPAL (FRENTE E VERSO) */}
+      {/* ========================================================= */}
       <div
-        className="relative bg-[#f5ebd4] text-[#2d2013] rounded-3xl p-5 sm:p-8 shadow-2xl border-4 border-[#8c6721] overflow-hidden"
+        className="relative bg-[#f5ecd4] text-[#2c1d0f] rounded-3xl p-4 sm:p-7 shadow-[0_25px_60px_rgba(0,0,0,0.95)] border-[6px] border-[#805e26] overflow-hidden"
         style={{
-          boxShadow: '0 20px 50px rgba(0,0,0,0.85), inset 0 0 80px rgba(140,103,33,0.3)',
-          backgroundImage: `radial-gradient(circle at 50% 50%, rgba(255,250,240,0.85) 0%, rgba(245,235,212,0.92) 70%, rgba(212,186,140,0.98) 100%)`
+          backgroundImage: `
+            radial-gradient(circle at 50% 15%, rgba(255,252,242,0.92) 0%, rgba(246,236,214,0.95) 45%, rgba(220,198,154,0.98) 100%),
+            radial-gradient(circle at 10% 90%, rgba(184,147,88,0.25) 0%, transparent 40%),
+            radial-gradient(circle at 90% 90%, rgba(184,147,88,0.25) 0%, transparent 40%)
+          `,
+          boxShadow: '0 20px 60px rgba(0,0,0,0.9), inset 0 0 100px rgba(128,94,38,0.35)'
         }}
       >
-        {/* Marca d'água / Pano de fundo sutil com arte da Classe */}
+        {/* Cantoneiras Góticas Douradas */}
+        <div className="absolute top-2 left-2 w-12 h-12 border-t-4 border-l-4 border-[#805e26] pointer-events-none rounded-tl-xl opacity-80" />
+        <div className="absolute top-2 right-2 w-12 h-12 border-t-4 border-r-4 border-[#805e26] pointer-events-none rounded-tr-xl opacity-80" />
+        <div className="absolute bottom-2 left-2 w-12 h-12 border-b-4 border-l-4 border-[#805e26] pointer-events-none rounded-bl-xl opacity-80" />
+        <div className="absolute bottom-2 right-2 w-12 h-12 border-b-4 border-r-4 border-[#805e26] pointer-events-none rounded-br-xl opacity-80" />
+
+        {/* Marca d'água sutil com o Retrato */}
         <div
-          className="absolute inset-0 opacity-10 pointer-events-none mix-blend-multiply bg-center bg-cover"
+          className="absolute inset-0 opacity-[0.05] pointer-events-none mix-blend-multiply bg-center bg-cover"
           style={{ backgroundImage: `url('${(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).path}')` }}
         />
 
-        {/* 1. TOP BANNER: NOME E INFORMAÇÕES BÁSICAS */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch mb-6">
-          {/* Caixa de Nome com Borda de Ouro Esculpido */}
-          <div className="lg:col-span-5 bg-gradient-to-r from-[#d9be7e] via-[#f7e6b5] to-[#c59e53] p-1 rounded-2xl shadow-md border-2 border-[#6d4f19]">
-            <div className="bg-[#f5ead2] border border-[#a67b2d] rounded-xl px-4 py-3 flex flex-col justify-center items-center text-center h-full">
-              <span className="text-[9px] uppercase font-bold tracking-[0.25em] text-[#8c6721]">
-                ◇ TANARES RPG 5E • FICHA OFICIAL ◇
-              </span>
-              <h2 className="font-cinzel text-2xl sm:text-3xl font-black tracking-[0.18em] text-[#362106] drop-shadow-sm uppercase">
-                {character.name}
-              </h2>
-            </div>
-          </div>
-
-          {/* Tabela de Informações: Classe, Antecedente, Raça, etc. */}
-          <div className="lg:col-span-7 bg-[#eddcb9] border-2 border-[#94712e] rounded-2xl p-3 shadow-inner grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
-            <div className="border-b sm:border-b-0 sm:border-r border-[#be9e63]/70 pb-1 sm:pb-0 sm:pr-2">
-              <span className="text-[9px] uppercase font-bold text-[#7a581e] block">Classe & Nível</span>
-              <span className="font-bold text-stone-900 text-sm">{character.class} — {character.level}</span>
-            </div>
-
-            <div className="border-b sm:border-b-0 sm:border-r border-[#be9e63]/70 pb-1 sm:pb-0 sm:pr-2">
-              <span className="text-[9px] uppercase font-bold text-[#7a581e] block">Antecedente</span>
-              <span className="font-bold text-stone-900">{character.background}</span>
-            </div>
-
-            <div className="border-b sm:border-b-0 pb-1 sm:pb-0">
-              <span className="text-[9px] uppercase font-bold text-[#7a581e] block">Jogador</span>
-              <span className="font-bold text-stone-900">{character.player || 'Jogador'}</span>
-            </div>
-
-            <div className="sm:border-r border-[#be9e63]/70 sm:pr-2 pt-1">
-              <span className="text-[9px] uppercase font-bold text-[#7a581e] block">Espécie / Raça</span>
-              <span className="font-bold text-stone-900">{character.race}</span>
-            </div>
-
-            <div className="sm:border-r border-[#be9e63]/70 sm:pr-2 pt-1">
-              <span className="text-[9px] uppercase font-bold text-[#7a581e] block">Alinhamento</span>
-              <span className="font-bold text-stone-900">{character.alignment}</span>
-            </div>
-
-            <div className="pt-1">
-              <span className="text-[9px] uppercase font-bold text-[#7a581e] block">Pontos de XP</span>
-              <span className="font-bold text-[#7a581e]">{character.xp} XP</span>
-            </div>
-          </div>
-        </div>
-
-        {/* 2. ÁREA CENTRAL: MEDALHÕES, PERÍCIAS, RETRATO DO HERÓI E ARCO DE ATRIBUTOS */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start mb-6">
-          {/* COLUNA ESQUERDA: MEDALHÕES RÁPIDOS & LIVRO DE PERÍCIAS */}
-          <div className="lg:col-span-4 space-y-4">
-            {/* Linha de Medalhões Redondos e Escudo de CA */}
-            <div className="grid grid-cols-3 gap-2 text-center">
-              {/* Inspiração */}
-              <button
-                onClick={() => onToggleInspiration(character.id)}
-                className={`p-2 rounded-2xl border-2 transition-all flex flex-col items-center justify-center ${
-                  character.hasInspiration
-                    ? 'bg-[#ffe4a0] border-[#b0882e] shadow-md'
-                    : 'bg-[#ebd6ae] border-[#be9e63]/80 hover:bg-[#ffeec2]'
-                }`}
-                title="Alternar Inspiração"
-              >
-                <span className="text-[9px] uppercase font-bold text-[#7a581e]">Inspiração</span>
-                <Sparkles className={`w-6 h-6 mt-1 ${character.hasInspiration ? 'text-[#a67b2d] fill-[#a67b2d]' : 'text-stone-400'}`} />
-                <span className="text-[10px] font-bold mt-0.5">{character.hasInspiration ? 'Ativa' : 'Não'}</span>
-              </button>
-
-              {/* Bônus de Proficiência */}
-              <div className="bg-[#ebd6ae] border-2 border-[#94712e] rounded-2xl p-2 flex flex-col items-center justify-center shadow">
-                <span className="text-[9px] uppercase font-bold text-[#7a581e]">Proficiência</span>
-                <span className="font-cinzel text-xl font-black text-stone-900">+{profBonus}</span>
-                <span className="text-[8px] text-[#7a581e] font-semibold">Nível {character.level}</span>
-              </div>
-
-              {/* Iniciativa */}
-              <div className="bg-[#ebd6ae] border-2 border-[#94712e] rounded-2xl p-2 flex flex-col items-center justify-center shadow">
-                <span className="text-[9px] uppercase font-bold text-[#7a581e]">Iniciativa</span>
-                <span className="font-cinzel text-xl font-black text-stone-900">{formatModifier(initiativeMod)}</span>
-                <span className="text-[8px] text-[#7a581e] font-semibold">Mod. Des</span>
-              </div>
-            </div>
-
-            {/* Escudo de CA, Deslocamento e Percepção Passiva */}
-            <div className="grid grid-cols-3 gap-2 text-center">
-              {/* Escudo de CA */}
-              <div
-                className="bg-gradient-to-b from-[#f2e2be] to-[#deb97a] border-2 border-[#6d4f19] rounded-2xl p-2 shadow-md flex flex-col items-center justify-center"
-                title={acBreakdown}
-              >
-                <div className="flex items-center gap-1 text-[9px] uppercase font-extrabold text-[#5c3e0f]">
-                  <Shield className="w-3 h-3 text-[#5c3e0f]" /> CA
+        {/* ********************************************************* */}
+        {/* ===================== PÁGINA 1: FRENTE ==================== */}
+        {/* ********************************************************* */}
+        {activeSide === 'front' && (
+          <div className="relative z-10 space-y-5 animate-fadeIn">
+            {/* 1. TOP HEADER: DUNGEONS & DRAGONS, CARTUCHE DO NOME & PERGAMINHO HORIZONTAL */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
+              {/* Lado Esquerdo: Placa D&D e Nome Estilo Drizzt Do'Urden */}
+              <div className="lg:col-span-5 flex flex-col justify-between">
+                {/* Logo D&D */}
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-[#8b0000] to-transparent" />
+                  <span className="font-cinzel text-[11px] sm:text-xs font-black tracking-[0.35em] text-[#8b0000] uppercase drop-shadow-sm">
+                    DUNGEONS & DRAGONS
+                  </span>
+                  <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-[#8b0000] to-transparent" />
                 </div>
-                <span className="font-cinzel text-2xl font-black text-[#362106] leading-none my-1">{ac}</span>
-                <span className="text-[8px] text-[#5c3e0f] font-bold truncate max-w-full">Armadura</span>
+
+                {/* Cartela do Nome com Moldura Esculpida & Faixa de Subclasse */}
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-gradient-to-b from-[#f9f2e3] via-[#faedd2] to-[#dfbe7f] border-2 border-[#7a571f] rounded-xl px-4 py-2.5 shadow-[0_4px_12px_rgba(0,0,0,0.15)] flex flex-col items-center justify-center text-center">
+                    <span className="text-[8px] uppercase tracking-[0.25em] font-extrabold text-[#7a571f]">
+                      HERÓI LENDÁRIO
+                    </span>
+                    <h1 className="font-cinzel text-2xl sm:text-3xl font-black tracking-[0.12em] text-[#301c05] leading-none my-0.5">
+                      {character.name}
+                    </h1>
+                  </div>
+
+                  {/* Pequena fita pendurada com Subclasse / Título */}
+                  <div className="hidden sm:flex flex-col items-center justify-center bg-gradient-to-b from-[#dfbe7f] to-[#aa8337] border border-[#5d3f11] rounded-lg p-2 text-center shadow min-w-[100px]">
+                    <span className="text-[7px] uppercase font-bold text-[#301c05] tracking-wider">Título</span>
+                    <span className="text-[10px] font-black text-[#8b0000] font-cinzel leading-tight">
+                      {character.subclass || 'O Caçador'}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              {/* Deslocamento */}
-              <div className="bg-[#ebd6ae] border-2 border-[#94712e] rounded-2xl p-2 flex flex-col items-center justify-center shadow">
-                <span className="text-[9px] uppercase font-bold text-[#7a581e]">Velocidade</span>
-                <span className="font-cinzel text-lg font-black text-stone-900">{character.speed}m</span>
-                <span className="text-[8px] text-[#7a581e] font-semibold">30 ft</span>
-              </div>
+              {/* Lado Direito: O Famoso Pergaminho Enrolado Horizontal com Rolos de Madeira */}
+              <div className="lg:col-span-7 flex items-center">
+                {/* Rolamento de Madeira Esquerdo */}
+                <div className="w-3.5 h-16 bg-gradient-to-b from-[#2e1d0f] via-[#5c3a1d] to-[#2e1d0f] rounded-l-md border-y border-l border-[#1a1008] shadow-md shrink-0 flex flex-col justify-between py-1">
+                  <div className="w-full h-1 bg-[#d9be7e]/50 rounded-full" />
+                  <div className="w-full h-1 bg-[#d9be7e]/50 rounded-full" />
+                </div>
 
-              {/* Percepção Passiva */}
-              <div className="bg-[#ebd6ae] border-2 border-[#94712e] rounded-2xl p-2 flex flex-col items-center justify-center shadow">
-                <span className="text-[9px] uppercase font-bold text-[#7a581e]">Perc. Passiva</span>
-                <span className="font-cinzel text-lg font-black text-stone-900">{passivePerc}</span>
-                <span className="text-[8px] text-[#7a581e] font-semibold">Sentidos</span>
+                {/* Corpo do Pergaminho com 6 Colunas Clássicas */}
+                <div className="flex-1 bg-gradient-to-b from-[#fffaf0] via-[#f5edd7] to-[#ebdaba] border-y-2 border-[#7a571f] py-2 px-3 shadow-inner grid grid-cols-2 sm:grid-cols-6 gap-2 text-center">
+                  {/* 1. Classe e Nível */}
+                  <div className="border-b sm:border-b-0 sm:border-r border-[#be9e63]/60 pr-1">
+                    <span className="font-bold text-stone-900 text-xs sm:text-[13px] block truncate">
+                      {character.class} {character.level}
+                    </span>
+                    <span className="text-[8px] font-extrabold text-[#7a571f] uppercase tracking-wider block border-t border-[#be9e63]/40 pt-0.5 mt-0.5">
+                      Classe & Nível
+                    </span>
+                  </div>
+
+                  {/* 2. Antecedente */}
+                  <div className="border-b sm:border-b-0 sm:border-r border-[#be9e63]/60 pr-1">
+                    <span className="font-bold text-stone-900 text-xs sm:text-[13px] block truncate">
+                      {character.background}
+                    </span>
+                    <span className="text-[8px] font-extrabold text-[#7a571f] uppercase tracking-wider block border-t border-[#be9e63]/40 pt-0.5 mt-0.5">
+                      Antecedente
+                    </span>
+                  </div>
+
+                  {/* 3. Jogador */}
+                  <div className="border-b sm:border-b-0 sm:border-r border-[#be9e63]/60 pr-1">
+                    <span className="font-bold text-stone-900 text-xs sm:text-[13px] block truncate">
+                      {character.player || 'Jogador'}
+                    </span>
+                    <span className="text-[8px] font-extrabold text-[#7a571f] uppercase tracking-wider block border-t border-[#be9e63]/40 pt-0.5 mt-0.5">
+                      Nome do Jogador
+                    </span>
+                  </div>
+
+                  {/* 4. Raça */}
+                  <div className="sm:border-r border-[#be9e63]/60 pr-1">
+                    <span className="font-bold text-stone-900 text-xs sm:text-[13px] block truncate">
+                      {character.race}
+                    </span>
+                    <span className="text-[8px] font-extrabold text-[#7a571f] uppercase tracking-wider block border-t border-[#be9e63]/40 pt-0.5 mt-0.5">
+                      Raça / Espécie
+                    </span>
+                  </div>
+
+                  {/* 5. Alinhamento */}
+                  <div className="sm:border-r border-[#be9e63]/60 pr-1">
+                    <span className="font-bold text-stone-900 text-xs sm:text-[13px] block truncate">
+                      {character.alignment}
+                    </span>
+                    <span className="text-[8px] font-extrabold text-[#7a571f] uppercase tracking-wider block border-t border-[#be9e63]/40 pt-0.5 mt-0.5">
+                      Alinhamento
+                    </span>
+                  </div>
+
+                  {/* 6. Pontos de Experiência */}
+                  <div>
+                    <span className="font-bold text-[#8b0000] text-xs sm:text-[13px] block truncate">
+                      {character.xp.toLocaleString()} XP
+                    </span>
+                    <span className="text-[8px] font-extrabold text-[#7a571f] uppercase tracking-wider block border-t border-[#be9e63]/40 pt-0.5 mt-0.5">
+                      Experiência
+                    </span>
+                  </div>
+                </div>
+
+                {/* Rolamento de Madeira Direito */}
+                <div className="w-3.5 h-16 bg-gradient-to-b from-[#2e1d0f] via-[#5c3a1d] to-[#2e1d0f] rounded-r-md border-y border-r border-[#1a1008] shadow-md shrink-0 flex flex-col justify-between py-1">
+                  <div className="w-full h-1 bg-[#d9be7e]/50 rounded-full" />
+                  <div className="w-full h-1 bg-[#d9be7e]/50 rounded-full" />
+                </div>
               </div>
             </div>
 
-            {/* Pergaminho de Perícias e Salvaguardas estilo Livro da Kelanyah */}
-            <div className="bg-[#faedd4] border-2 border-[#8c6721] rounded-2xl p-3 shadow-md">
-              <div className="flex items-center justify-between border-b-2 border-[#8c6721] pb-1.5 mb-2">
-                <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-[#5c3e0f] flex items-center gap-1.5">
-                  📜 PERÍCIAS (SKILLS)
-                </span>
-                <span className="text-[9px] text-[#8c6721] font-bold">Clique para Rolar</span>
-              </div>
+            {/* 2. SUB-HEADER: INSPIRAÇÃO, PROFICIÊNCIA, SALVAGUARDAS, INICIATIVA & ESCUDO DE CA */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+              {/* Lado Esquerdo (lg:col-span-8): Inspiração, Proficiência e as 6 Flâmulas de Salvaguardas */}
+              <div className="lg:col-span-8 flex flex-wrap items-center gap-3">
+                {/* Medalha de Inspiração */}
+                <button
+                  onClick={() => onToggleInspiration(character.id)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border-2 transition-all shadow-md group ${
+                    character.hasInspiration
+                      ? 'bg-gradient-to-r from-[#ffe4a0] to-[#dfbe7f] border-[#8b0000] ring-2 ring-[#8b0000]/40'
+                      : 'bg-[#faedd4] border-[#94712e] hover:border-[#8b0000]'
+                  }`}
+                  title="Alternar Inspiração Heroica"
+                >
+                  <span className="text-[9px] uppercase font-black text-[#52330a] tracking-wider">INSPIRAÇÃO</span>
+                  <div className={`w-6 h-6 rounded-full border border-[#7a571f] flex items-center justify-center font-cinzel font-black text-xs ${
+                    character.hasInspiration ? 'bg-[#8b0000] text-amber-200' : 'bg-white/80 text-stone-700'
+                  }`}>
+                    {character.hasInspiration ? '★' : '1'}
+                  </div>
+                </button>
 
-              <div className="space-y-1 max-h-[300px] overflow-y-auto pr-1 text-xs">
-                {(Object.keys(SKILL_ABILITY_MAP) as SkillName[]).map(sk => {
-                  const skDef = SKILL_ABILITY_MAP[sk];
-                  const mod = getSkillModifier(character, sk);
-                  const isProf = character.skillProficiencies.includes(sk);
-                  const isExpert = character.skillExpertise?.includes(sk);
+                {/* Fita de Bônus de Proficiência (Roxo Imperial como no modelo) */}
+                <div className="flex items-center gap-2 bg-gradient-to-r from-[#3e1a47] via-[#562562] to-[#3e1a47] text-white px-3.5 py-1.5 rounded-full border-2 border-[#bfa254] shadow-md">
+                  <span className="text-[9px] uppercase font-black tracking-wider text-amber-200">
+                    BÔNUS PROFICIÊNCIA
+                  </span>
+                  <span className="font-cinzel text-sm font-black text-white bg-white/20 w-6 h-6 rounded-full flex items-center justify-center border border-amber-300">
+                    +{profBonus}
+                  </span>
+                </div>
 
-                  return (
-                    <div
-                      key={sk}
-                      onClick={() => onRollCheck(character, sk, rollMode)}
-                      className="flex items-center justify-between py-0.5 px-1.5 rounded hover:bg-[#ebd6ae] cursor-pointer transition-colors group"
-                    >
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`w-3 h-3 rounded-full border border-[#8c6721] flex items-center justify-center ${
-                            isExpert
-                              ? 'bg-amber-600 border-amber-800'
-                              : isProf
-                              ? 'bg-[#8b0000] border-[#5e0000]'
-                              : 'bg-white/80'
-                          }`}
+                {/* As 6 Flâmulas / Banners de Salvaguardas (Hanging Pennants em linha) */}
+                <div className="flex-1 min-w-[280px] bg-gradient-to-r from-[#eedab7] via-[#f7ecd5] to-[#eedab7] border-2 border-[#805e26] rounded-xl px-2 py-1 shadow-md">
+                  <div className="text-center border-b border-[#be9e63]/60 pb-0.5 mb-1">
+                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#634311]">
+                      ✦ SALVAGUARDAS (SAVING THROWS) ✦
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-6 gap-1 text-center">
+                    {[
+                      { key: 'for', label: 'FOR', color: 'from-[#8b0000] to-[#590000]' },
+                      { key: 'des', label: 'DES', color: 'from-[#194f82] to-[#0e2c49]' },
+                      { key: 'con', label: 'CON', color: 'from-[#185d32] to-[#0d361c]' },
+                      { key: 'int', label: 'INT', color: 'from-[#4d1f6b] to-[#2b0f3e]' },
+                      { key: 'sab', label: 'SAB', color: 'from-[#8a6508] to-[#543d04]' },
+                      { key: 'car', label: 'CAR', color: 'from-[#0d6e7a] to-[#063f47]' },
+                    ].map(st => {
+                      const isProf = character.savingThrowProficiencies.includes(st.key as AbilityName);
+                      const mod = getAbilityModifier(character.baseAbilities[st.key as AbilityName]) + (isProf ? profBonus : 0);
+
+                      return (
+                        <button
+                          key={st.key}
+                          onClick={() => onRollCheck(character, st.key, rollMode)}
+                          className="flex flex-col items-center group cursor-pointer"
+                          title={`Rolar Salvaguarda de ${st.label}`}
                         >
-                          {(isProf || isExpert) && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
-                        </span>
-                        <span className="font-medium text-stone-900 text-[11px] group-hover:text-[#8b0000]">
-                          {skDef.name} <span className="text-[9px] text-[#7a581e]">({skDef.ability.toUpperCase()})</span>
-                        </span>
-                      </div>
-                      <span className="font-bold text-stone-900 text-xs font-cinzel">{formatModifier(mod)}</span>
-                    </div>
-                  );
-                })}
+                          {/* Flâmula Suspensa Colorida */}
+                          <div className={`w-full bg-gradient-to-b ${st.color} text-white rounded-t-md pt-0.5 pb-1 px-0.5 border border-[#402a11] shadow transition-transform group-hover:-translate-y-0.5`}>
+                            <div className="w-5 h-5 mx-auto rounded-full bg-white text-stone-950 font-cinzel text-[10px] font-black flex items-center justify-center shadow-inner">
+                              {formatModifier(mod)}
+                            </div>
+                            <span className="text-[7.5px] font-black uppercase tracking-wider block mt-0.5 text-amber-200">
+                              {st.label}
+                            </span>
+                          </div>
+
+                          {/* Ponto indicador de Proficiência */}
+                          <div className={`w-2 h-2 rounded-full border border-[#52330a] -mt-1 shadow-sm ${
+                            isProf ? 'bg-amber-400 ring-1 ring-amber-600' : 'bg-stone-300'
+                          }`} />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
-              {/* Fitas Marcadoras de Testes de Resistência (Saving Throws) */}
-              <div className="mt-3 pt-2 border-t-2 border-[#8c6721]">
-                <span className="text-[10px] uppercase font-bold text-[#5c3e0f] block mb-1">
-                  Salvaguardas (Saving Throws):
-                </span>
-                <div className="grid grid-cols-6 gap-1 text-center">
-                  {(['for', 'des', 'con', 'int', 'sab', 'car'] as const).map(ab => {
-                    const isProf = character.savingThrowProficiencies.includes(ab);
-                    const mod = getAbilityModifier(character.baseAbilities[ab]) + (isProf ? profBonus : 0);
-                    return (
-                      <button
-                        key={ab}
-                        onClick={() => onRollCheck(character, ab, rollMode)}
-                        className={`p-1 rounded border text-center transition-all ${
-                          isProf
-                            ? 'bg-[#8b0000] text-white border-[#520000] shadow'
-                            : 'bg-[#ebd6ae] border-[#be9e63] text-stone-900 hover:bg-[#ffeec2]'
-                        }`}
-                        title={`Salvaguarda de ${ab.toUpperCase()}`}
-                      >
-                        <div className="text-[8px] font-bold uppercase">{ab}</div>
-                        <div className="font-bold text-[10px] font-cinzel">{formatModifier(mod)}</div>
-                      </button>
-                    );
-                  })}
+              {/* Lado Direito (lg:col-span-4): Iniciativa & Escudo Dourado de CA */}
+              <div className="lg:col-span-4 flex items-center justify-end gap-3">
+                {/* Iniciativa (Fita Vermelha) */}
+                <button
+                  onClick={() => onRollCheck(character, 'des', rollMode)}
+                  className="bg-gradient-to-r from-[#8b0000] to-[#590000] text-white border-2 border-[#f5ba42] px-3.5 py-1.5 rounded-full shadow-lg flex items-center gap-2 group hover:scale-105 transition-transform"
+                  title="Rolar Iniciativa (Baseada em Destreza)"
+                >
+                  <span className="text-[9px] uppercase font-black tracking-wider text-amber-200">
+                    INICIATIVA
+                  </span>
+                  <span className="font-cinzel text-sm font-black bg-white/20 w-6 h-6 rounded-full flex items-center justify-center border border-amber-300">
+                    {formatModifier(initiativeMod)}
+                  </span>
+                </button>
+
+                {/* ESCUDO DE CA DRACÔNICO DOURADO OFICIAL */}
+                <div
+                  className="relative flex flex-col items-center justify-center group cursor-help"
+                  title={acBreakdown}
+                >
+                  {/* Moldura de Escudo Dourado Esculpido */}
+                  <div className="w-16 h-18 bg-gradient-to-b from-[#ffe6a3] via-[#dfbe7f] to-[#99732b] rounded-t-2xl rounded-b-[2rem] border-3 border-[#52330a] shadow-[0_6px_15px_rgba(0,0,0,0.35)] p-1 flex flex-col items-center justify-center group-hover:scale-105 transition-transform">
+                    {/* Coroa / Dragonete Topo */}
+                    <div className="text-[7px] uppercase font-black tracking-widest text-[#402a11]">
+                      ARMADURA
+                    </div>
+                    {/* Valor de CA em Destaque */}
+                    <span className="font-cinzel text-2xl font-black text-[#261401] leading-none my-0.5 drop-shadow">
+                      {ac}
+                    </span>
+                    {/* Badge CA no rodapé */}
+                    <div className="bg-[#52330a] text-amber-300 text-[8px] font-black px-2 py-0.2 rounded-full uppercase tracking-wider">
+                      AC / CA
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* COLUNA CENTRAL: RETRATO E O FAMOSO ARCO DOS 6 ATRIBUTOS (COMO NA KELANYAH) */}
-          <div className="lg:col-span-8 flex flex-col space-y-4">
-            {/* O Arco dos 6 Atributos em Torno do Herói */}
-            <div className="bg-[#faedd4] border-2 border-[#8c6721] rounded-2xl p-4 shadow-md">
-              <div className="text-center mb-3">
-                <span className="font-cinzel text-xs font-bold uppercase tracking-[0.2em] text-[#5c3e0f]">
-                  ◇ ATRIBUTOS PRIMORDIAIS (ABILITY SCORES) ◇
-                </span>
+            {/* 3. MEIO CENTRAL: O GRIMOIRE DE PERÍCIAS (ESQ) & O CÍRCULO ARCANO COM O ARCO DOS 6 ATRIBUTOS (DIR) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              {/* =================================================== */}
+              {/* COLUNA ESQUERDA (lg:col-span-5): GRIMOIRE / SPELLBOOK DE SKILLS */}
+              {/* =================================================== */}
+              <div className="lg:col-span-5 flex">
+                {/* Lombada de Couro do Livro com Costura Gótica Dourada */}
+                <div className="w-5 bg-gradient-to-r from-[#24130b] via-[#482815] to-[#24130b] rounded-l-xl border-y-2 border-l-2 border-[#190c06] shadow-xl shrink-0 flex flex-col justify-around items-center py-4">
+                  <div className="w-2.5 h-1 bg-[#d9be7e] rounded-full shadow" />
+                  <div className="w-2.5 h-1 bg-[#d9be7e] rounded-full shadow" />
+                  <div className="w-2.5 h-1 bg-[#d9be7e] rounded-full shadow" />
+                  <div className="w-2.5 h-1 bg-[#d9be7e] rounded-full shadow" />
+                </div>
+
+                {/* Páginas do Livro de Perícias (Fundo Pergaminho Claro & Linhas Elegantes) */}
+                <div className="flex-1 bg-gradient-to-r from-[#fff9eb] via-[#f7eed8] to-[#eedab7] border-y-2 border-r-2 border-[#7a571f] rounded-r-xl p-3 shadow-xl">
+                  {/* Cabeçalho Calligráfico "Skills" */}
+                  <div className="flex items-center justify-between border-b-2 border-[#7a571f] pb-1 mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <Scroll className="w-4 h-4 text-[#8b0000]" />
+                      <h2 className="font-cinzel text-lg font-black tracking-[0.15em] text-[#3d240b]">
+                        Skills • Perícias
+                      </h2>
+                    </div>
+                    <span className="text-[8px] font-bold text-[#7a571f] uppercase tracking-wider">
+                      Clique p/ Rolar
+                    </span>
+                  </div>
+
+                  {/* As 18 Perícias Oficiais da 5e */}
+                  <div className="space-y-1 text-xs">
+                    {OFFICIAL_SKILLS_ORDER.map(sk => {
+                      const mod = getSkillModifier(character, sk.key);
+                      const isProf = character.skillProficiencies.includes(sk.key);
+                      const isExpert = character.skillExpertise?.includes(sk.key);
+
+                      return (
+                        <div
+                          key={sk.key}
+                          onClick={() => onRollCheck(character, sk.key, rollMode)}
+                          className="flex items-center justify-between py-0.5 px-1.5 rounded hover:bg-[#dfbe7f]/30 cursor-pointer transition-colors group"
+                        >
+                          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                            {/* Marcador Circular de Proficiência / Especialização */}
+                            <span
+                              className={`w-3.5 h-3.5 rounded-full border border-[#7a571f] flex items-center justify-center shrink-0 ${
+                                isExpert
+                                  ? 'bg-amber-500 border-amber-900 ring-1 ring-amber-600'
+                                  : isProf
+                                  ? 'bg-[#8b0000] border-[#400000]'
+                                  : 'bg-white/80'
+                              }`}
+                            >
+                              {(isProf || isExpert) && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-white shadow" />
+                              )}
+                            </span>
+
+                            {/* Nome da Perícia com Atributo entre parênteses */}
+                            <span className="text-[11px] font-medium text-stone-900 group-hover:text-[#8b0000] truncate">
+                              {sk.namePt}{' '}
+                              <span className="text-[9px] text-[#7a571f] font-normal">
+                                ({sk.ability.toUpperCase()})
+                              </span>
+                            </span>
+                          </div>
+
+                          {/* Pílula de Pedra Esculpida com o Modificador */}
+                          <div className="bg-[#faecd5] border border-[#be9e63] rounded px-1.5 py-0.2 shadow-inner group-hover:border-[#8b0000] group-hover:bg-[#ffeec2]">
+                            <span className="font-cinzel text-xs font-black text-[#301c05]">
+                              {formatModifier(mod)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Rodapé do Livro */}
+                  <div className="border-t border-[#be9e63]/60 pt-1 mt-2 text-[8px] text-[#7a571f] italic text-center">
+                    * Círculo preenchido: Proficiência oficial • Duplo: Especialização
+                  </div>
+                </div>
               </div>
 
-              {/* Grade / Arco das 6 Medalhas de Atributos */}
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
-                {[
-                  { key: 'for', name: 'FORÇA', abbrev: 'STR' },
-                  { key: 'des', name: 'DESTREZA', abbrev: 'DEX' },
-                  { key: 'con', name: 'CONSTITUIÇÃO', abbrev: 'CON' },
-                  { key: 'int', name: 'INTELIGÊNCIA', abbrev: 'INT' },
-                  { key: 'sab', name: 'SABEDORIA', abbrev: 'WIS' },
-                  { key: 'car', name: 'CARISMA', abbrev: 'CHA' },
-                ].map(item => {
-                  const score = character.baseAbilities[item.key as AbilityName];
-                  const mod = getAbilityModifier(score);
+              {/* =================================================== */}
+              {/* COLUNA DIREITA (lg:col-span-7): CÍRCULO ARCANO COM RETRATO E O ARCO DOS 6 ATRIBUTOS */}
+              {/* =================================================== */}
+              <div className="lg:col-span-7 relative">
+                {/* 1. O Famoso Arco Curvado dos 6 Atributos Primordiais (STR, DEX, CON, INT, WIS, CHA) */}
+                <div className="mb-2">
+                  <div className="text-center mb-1">
+                    <span className="text-[8.5px] font-black uppercase tracking-[0.25em] text-[#6e4a16]">
+                      ◇ ATRIBUTOS PRIMORDIAIS • ABILITY SCORES ◇
+                    </span>
+                  </div>
 
-                  return (
-                    <div
-                      key={item.key}
-                      onClick={() => onRollCheck(character, item.key, rollMode)}
-                      className="cursor-pointer group flex flex-col items-center"
+                  {/* Os 6 Medalhões Dourados em Linha/Arco */}
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 text-center">
+                    {[
+                      { key: 'for', name: 'FORÇA', abbrev: 'STR' },
+                      { key: 'des', name: 'DESTREZA', abbrev: 'DEX' },
+                      { key: 'con', name: 'CONSTITUIÇÃO', abbrev: 'CON' },
+                      { key: 'int', name: 'INTELIGÊNCIA', abbrev: 'INT' },
+                      { key: 'sab', name: 'SABEDORIA', abbrev: 'WIS' },
+                      { key: 'car', name: 'CARISMA', abbrev: 'CHA' },
+                    ].map(ab => {
+                      const score = character.baseAbilities[ab.key as AbilityName];
+                      const mod = getAbilityModifier(score);
+
+                      return (
+                        <div
+                          key={ab.key}
+                          onClick={() => onRollCheck(character, ab.key, rollMode)}
+                          className="cursor-pointer group flex flex-col items-center transition-transform hover:-translate-y-1"
+                          title={`Rolar Teste de Atributo de ${ab.name}`}
+                        >
+                          {/* Modificador no Topo (Tampa Esculpida em Ouro/Rubi) */}
+                          <div className="bg-gradient-to-r from-[#8b0000] via-[#ab1414] to-[#8b0000] text-amber-200 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-[#400000] shadow-md -mb-2 z-20 group-hover:scale-110 transition-transform">
+                            {formatModifier(mod)}
+                          </div>
+
+                          {/* Medalhão Circular Principal */}
+                          <div className="w-16 h-16 sm:w-17 sm:h-17 rounded-full bg-gradient-to-b from-[#fffbf0] via-[#f7edd4] to-[#dfbe7f] border-3 border-[#7a571f] shadow-lg flex flex-col items-center justify-center p-1 group-hover:border-[#8b0000] transition-colors relative">
+                            {/* Ranhura Interna de Moeda Antiga */}
+                            <div className="absolute inset-1 rounded-full border border-[#be9e63]/70 pointer-events-none" />
+
+                            <span className="font-cinzel text-xl sm:text-2xl font-black text-[#2e1b04] leading-none mt-1 drop-shadow-sm">
+                              {score}
+                            </span>
+                            <span className="text-[7.5px] font-black uppercase tracking-wider text-[#7a571f] mt-0.5">
+                              {ab.abbrev}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 2. CÍRCULO ARCANO DE INVOCAÇÃO CELESTIAL COM O RETRATO DO HERÓI NO CENTRO */}
+                <div className="relative bg-gradient-to-b from-[#faedd5] via-[#eddab8] to-[#dfc699] border-2 border-[#7a571f] rounded-3xl p-3 shadow-2xl overflow-hidden flex flex-col items-center">
+                  {/* Arte Vetorial do Círculo Mágico de Transmutação */}
+                  <div className="relative w-full max-w-[420px] aspect-square flex items-center justify-center">
+                    {/* Anel de Runas e Triângulos Sagrados (SVG Celestial) */}
+                    <svg
+                      viewBox="0 0 300 300"
+                      className="absolute inset-0 w-full h-full text-[#805e26]/30 animate-[spin_120s_linear_infinite]"
                     >
-                      {/* Top Modifier Badge (Tampa Superior como na Kelanyah) */}
-                      <div className="bg-gradient-to-r from-[#8b0000] to-[#b31414] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full border border-[#520000] shadow -mb-2 z-20 group-hover:scale-105 transition-transform">
-                        {formatModifier(mod)}
-                      </div>
+                      <circle cx="150" cy="150" r="142" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="6,4" />
+                      <circle cx="150" cy="150" r="132" fill="none" stroke="currentColor" strokeWidth="1.5" />
+                      <circle cx="150" cy="150" r="118" fill="none" stroke="currentColor" strokeWidth="1" />
+                      {/* Triângulos Entrelaçados */}
+                      <polygon points="150,22 260,212 40,212" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                      <polygon points="150,278 40,88 260,88" fill="none" stroke="currentColor" strokeWidth="1.2" />
+                    </svg>
 
-                      {/* Medalhão Circular Principal */}
-                      <div className="w-16 h-16 rounded-full bg-gradient-to-b from-[#fff7e6] via-[#f5ead2] to-[#dfbe7f] border-2 border-[#8c6721] shadow-md flex flex-col items-center justify-center p-1 group-hover:border-[#8b0000] transition-colors">
-                        <span className="font-cinzel text-xl font-black text-[#2e1c03] leading-none mt-1">
-                          {score}
-                        </span>
-                        <span className="text-[8px] font-bold uppercase tracking-wider text-[#7a581e] mt-0.5">
-                          {item.abbrev}
+                    {/* Moldura Interna Circular com o Retrato do Herói */}
+                    <div className="w-[78%] h-[78%] rounded-full overflow-hidden border-4 border-[#7a571f] shadow-2xl relative bg-stone-950 z-10">
+                      <img
+                        src={(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).path}
+                        alt={character.name}
+                        className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
+                      />
+                      {/* Gradiente de Fusão Atmosférica com o Pergaminho */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#2c1d0f]/80 via-transparent to-transparent flex items-end justify-center p-3 text-center">
+                        <span className="font-cinzel text-xs font-bold text-amber-200 uppercase tracking-widest drop-shadow">
+                          {character.name}
                         </span>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
 
-            {/* Retrato do Personagem com Arte Extraída do PDF */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch">
-              <div className="md:col-span-5 bg-[#eddcb9] border-2 border-[#8c6721] rounded-2xl overflow-hidden shadow-lg flex flex-col">
-                <div className="relative flex-1 min-h-[220px] bg-stone-900">
-                  <img
-                    src={(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).path}
-                    alt={character.name}
-                    className="w-full h-full object-cover object-top opacity-90 hover:opacity-100 transition-opacity"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#2d2013]/90 via-transparent to-transparent flex items-end p-3">
-                    <div>
-                      <span className="text-[10px] uppercase font-bold text-[#f5ba42] block">Retrato de Aventureiro</span>
-                      <span className="font-cinzel text-sm font-bold text-white">{character.name}</span>
+                    {/* MEDALHÃO DO OLHO MÍSTICO (PERCEPÇÃO PASSIVA - Canto Inferior Esquerdo do Círculo) */}
+                    <div
+                      className="absolute bottom-2 left-2 z-20 bg-gradient-to-b from-[#fdf6e6] via-[#f7edd4] to-[#dfbe7f] border-2 border-[#7a571f] rounded-full p-2 shadow-xl flex items-center gap-1.5 cursor-help"
+                      title="Percepção Passiva (10 + Sabedoria + Proficiência)"
+                    >
+                      <Eye className="w-4 h-4 text-[#8b0000]" />
+                      <div className="flex flex-col">
+                        <span className="text-[6.5px] uppercase font-black text-[#52330a] leading-tight">
+                          PERCEPÇÃO PASSIVA
+                        </span>
+                        <span className="font-cinzel text-sm font-black text-[#301c05] leading-tight">
+                          {passivePerc}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* PEDESTAL DE DESLOCAMENTO / SPEED (Canto Inferior Direito do Círculo) */}
+                    <div
+                      className="absolute bottom-2 right-2 z-20 bg-gradient-to-b from-[#fdf6e6] via-[#f7edd4] to-[#dfbe7f] border-2 border-[#7a571f] rounded-full p-2 shadow-xl flex items-center gap-1.5 cursor-help"
+                      title="Deslocamento em Terreno Normal"
+                    >
+                      <Compass className="w-4 h-4 text-[#8b0000]" />
+                      <div className="flex flex-col">
+                        <span className="text-[6.5px] uppercase font-black text-[#52330a] leading-tight">
+                          DESLOCAMENTO
+                        </span>
+                        <span className="font-cinzel text-sm font-black text-[#301c05] leading-tight">
+                          {character.speed || 9}m
+                          <span className="text-[8px] font-normal text-stone-600 ml-0.5">(30ft)</span>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
 
-              {/* Características Especiais de Classe (SPECIAL CLASS SKILLS como na Kelanyah) */}
-              <div className="md:col-span-7 bg-[#faedd4] border-2 border-[#8c6721] rounded-2xl p-4 shadow-md flex flex-col justify-between">
-                <div>
-                  <div className="bg-[#8b0000] text-white px-3 py-1 rounded-lg text-center font-cinzel text-xs font-bold tracking-wider uppercase shadow mb-3 border border-[#520000]">
-                    SPECIAL CLASS SKILLS • RECURSOS DE CLASSE
+            {/* ========================================================= */}
+            {/* 4. BASE DA PÁGINA: ATAQUES & MAGIA (ESQ), HP & DADOS DE VIDA (CENTRO) E TRAÇOS (DIR) */}
+            {/* ========================================================= */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch pt-2">
+              {/* =================================================== */}
+              {/* BLOCO ESQUERDO (lg:col-span-4): ATTACKS & SPELLCASTING COM ESPADA RÚNICA VERTICAL */}
+              {/* =================================================== */}
+              <div className="lg:col-span-4 flex bg-gradient-to-r from-[#fff9ed] via-[#f8eed7] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-2.5 shadow-xl">
+                {/* ESPADA RÚNICA VERTICAL COM BRILHO ARCANO */}
+                <div className="w-6 shrink-0 flex flex-col items-center justify-between py-1 mr-2 border-r border-[#be9e63]/60 pr-1">
+                  {/* Pomo da Espada */}
+                  <div className="w-3.5 h-3.5 rounded-full bg-gradient-to-b from-[#8b0000] to-[#400000] border border-[#f5ba42] shadow" />
+                  {/* Guarda-Mão */}
+                  <div className="w-5 h-1 bg-[#d9be7e] rounded-sm shadow" />
+                  {/* Lâmina Rúnica Iluminada */}
+                  <div className="w-1.5 flex-1 bg-gradient-to-b from-[#a855f7] via-[#ec4899] to-[#f97316] rounded-full shadow-[0_0_8px_rgba(168,85,247,0.7)] my-1 relative flex flex-col justify-around items-center">
+                    <span className="w-0.5 h-1 bg-white rounded-full" />
+                    <span className="w-0.5 h-1 bg-white rounded-full" />
+                    <span className="w-0.5 h-1 bg-white rounded-full" />
+                    <span className="w-0.5 h-1 bg-white rounded-full" />
+                  </div>
+                  {/* Ponta da Espada */}
+                  <div className="w-0 h-0 border-l-[3px] border-l-transparent border-r-[3px] border-r-transparent border-t-[6px] border-t-[#d9be7e]" />
+                </div>
+
+                {/* Conteúdo de Ataques */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between space-y-2">
+                  <div className="border-b-2 border-[#7a571f] pb-1">
+                    <h3 className="font-cinzel text-xs font-black uppercase tracking-wider text-[#301c05] flex items-center justify-between">
+                      <span>⚔️ Attacks & Spellcasting</span>
+                      <span className="text-[8px] font-bold text-[#8b0000]">Acerto / Dano</span>
+                    </h3>
                   </div>
 
-                  <div className="space-y-2 text-xs">
-                    {classFeatures.map((f, i) => (
-                      <div key={i} className="bg-[#f2e2be] border border-[#be9e63] p-2 rounded-lg">
-                        <span className="font-bold text-[#5c3e0f] block">{f.name}</span>
-                        <span className="text-[11px] text-stone-800">{f.desc}</span>
+                  {/* Tabela de Armas / Ataques */}
+                  <div className="space-y-1.5">
+                    {equippedWeapons.map((wpn, idx) => {
+                      const forMod = getAbilityModifier(character.baseAbilities.for);
+                      const desMod = getAbilityModifier(character.baseAbilities.des);
+                      const atkBonus = profBonus + (wpn.damageType?.includes('Perfurante') ? Math.max(forMod, desMod) : forMod);
+
+                      return (
+                        <div
+                          key={idx}
+                          onClick={() => onRollCheck(character, 'atletismo', rollMode)}
+                          className="bg-[#faecd5] border border-[#be9e63] p-1.5 rounded-lg hover:border-[#8b0000] cursor-pointer transition-colors shadow-sm group"
+                        >
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-bold text-stone-900 group-hover:text-[#8b0000] truncate">
+                              {wpn.name}
+                            </span>
+                            <span className="font-cinzel font-black text-[#8b0000]">
+                              {formatModifier(atkBonus)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-[10px] text-stone-600 mt-0.5">
+                            <span>Dano: <strong>{wpn.damage}</strong></span>
+                            <span className="text-[9px] text-[#7a571f]">{(wpn as any).range || '1.5m'}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Notas de Ataques Especiais / Magias Inatas */}
+                  <div className="bg-[#faedd4] border border-[#be9e63]/70 rounded p-1.5 text-[9.5px] text-stone-800 space-y-0.5">
+                    <span className="font-bold text-[#7a571f] block uppercase text-[8px]">
+                      Habilidades de Combate Inatas:
+                    </span>
+                    <p className="line-clamp-2">
+                      • Combate com Duas Armas: adiciona o modificador de habilidade ao dano da segunda arma.
+                    </p>
+                    <p className="line-clamp-2">
+                      • Dança das Lâminas: Esquiva ágil e precisão cirúrgica em combate cerrado.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* =================================================== */}
+              {/* BLOCO CENTRAL (lg:col-span-4): HIT POINTS, DADOS DE VIDA & TESTES CONTRA A MORTE */}
+              {/* =================================================== */}
+              <div className="lg:col-span-4 bg-gradient-to-b from-[#fffbf0] via-[#f7edd4] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-3 shadow-xl flex flex-col justify-between space-y-2.5">
+                {/* Topo com Dragão Esculpido, HP Máximo e Dados de Vida */}
+                <div className="grid grid-cols-2 gap-2 text-center">
+                  {/* Dados de Vida */}
+                  <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-1.5 shadow-inner">
+                    <span className="text-[8px] font-black uppercase tracking-wider text-[#7a571f] block">
+                      DADOS DE VIDA
+                    </span>
+                    <span className="font-cinzel text-sm font-black text-stone-900">
+                      {character.hitDiceTotal}{character.hitDie}
+                    </span>
+                  </div>
+
+                  {/* HP Máximo */}
+                  <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-1.5 shadow-inner">
+                    <span className="text-[8px] font-black uppercase tracking-wider text-[#7a571f] block">
+                      HP MÁXIMO
+                    </span>
+                    <span className="font-cinzel text-sm font-black text-[#8b0000]">
+                      {character.maxHp} PV
+                    </span>
+                  </div>
+                </div>
+
+                {/* CURRENT HIT POINTS (PV ATUAIS) - Cartão de Destaque */}
+                <div className="bg-gradient-to-b from-[#fdf6e6] to-[#ebd7b0] border-2 border-[#8b0000] rounded-xl p-2.5 text-center shadow-md">
+                  <span className="text-[8.5px] font-black uppercase tracking-[0.2em] text-[#7a571f] block">
+                    CURRENT HIT POINTS • PONTOS DE VIDA ATUAIS
+                  </span>
+
+                  <div className="font-cinzel text-3xl sm:text-4xl font-black text-[#660000] my-0.5 leading-none drop-shadow">
+                    {character.currentHp}
+                    {character.tempHp > 0 && (
+                      <span className="text-blue-700 text-sm ml-1 font-sans font-bold">
+                        (+{character.tempHp} temp)
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Controles Rápidos de Dano e Cura */}
+                  <div className="flex flex-wrap items-center justify-center gap-1 mt-1.5">
+                    <button
+                      onClick={() => onApplyDamage(character.id, 1)}
+                      className="px-2 py-0.5 bg-[#8b0000] hover:bg-rose-900 text-white rounded text-[10px] font-bold shadow"
+                    >
+                      -1 Dano
+                    </button>
+                    <button
+                      onClick={() => onApplyDamage(character.id, 5)}
+                      className="px-2 py-0.5 bg-[#8b0000] hover:bg-rose-900 text-white rounded text-[10px] font-bold shadow"
+                    >
+                      -5 Dano
+                    </button>
+                    <button
+                      onClick={() => onHeal(character.id, 1)}
+                      className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold shadow"
+                    >
+                      +1 Cura
+                    </button>
+                    <button
+                      onClick={() => onHeal(character.id, 5)}
+                      className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold shadow"
+                    >
+                      +5 Cura
+                    </button>
+                  </div>
+                </div>
+
+                {/* TESTES CONTRA A MORTE (DEATH SAVES) */}
+                <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-2 text-center shadow-inner">
+                  <span className="text-[8px] font-black uppercase tracking-[0.2em] text-[#7a571f] block mb-1">
+                    TESTES CONTRA A MORTE (DEATH SAVES)
+                  </span>
+
+                  <div className="flex justify-around items-center text-xs">
+                    {/* Sucessos */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-black text-emerald-800 uppercase">Sucessos:</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3].map(i => (
+                          <div
+                            key={i}
+                            className={`w-3.5 h-3.5 rounded-full border border-stone-800 shadow-inner ${
+                              i <= character.deathSaves.successes ? 'bg-emerald-600' : 'bg-white/80'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Falhas */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[10px] font-black text-rose-800 uppercase">Falhas:</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3].map(i => (
+                          <div
+                            key={i}
+                            className={`w-3.5 h-3.5 rounded-full border border-stone-800 shadow-inner ${
+                              i <= character.deathSaves.failures ? 'bg-rose-600' : 'bg-white/80'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* OUTRAS PROFICIÊNCIAS & IDIOMAS */}
+                <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-2 text-[10px] text-stone-800 shadow-inner">
+                  <span className="text-[8px] font-black uppercase tracking-wider text-[#7a571f] block border-b border-[#be9e63]/40 pb-0.5 mb-1">
+                    OUTRAS PROFICIÊNCIAS & IDIOMAS
+                  </span>
+                  <p className="line-clamp-2"><strong>Idiomas:</strong> {languagesList}</p>
+                  <p className="line-clamp-1"><strong>Armaduras:</strong> {armorsList}</p>
+                  <p className="line-clamp-1"><strong>Armas:</strong> {weaponsList}</p>
+                </div>
+              </div>
+
+              {/* =================================================== */}
+              {/* BLOCO DIREITO (lg:col-span-4): FEATURES & TRAITS (CARACTERÍSTICAS & TRAÇOS) */}
+              {/* =================================================== */}
+              <div className="lg:col-span-4 bg-gradient-to-r from-[#fff9ed] via-[#f8eed7] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-3 shadow-xl flex flex-col justify-between">
+                <div>
+                  <div className="border-b-2 border-[#7a571f] pb-1 mb-2 flex items-center justify-between">
+                    <h3 className="font-cinzel text-xs font-black uppercase tracking-wider text-[#301c05] flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5 text-[#8b0000]" />
+                      Features & Traits
+                    </h3>
+                    <span className="text-[8px] font-bold text-[#7a571f] uppercase">
+                      Habilidades
+                    </span>
+                  </div>
+
+                  {/* Lista de Recursos e Talentos com Visual de Linhas de Pergaminho */}
+                  <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1 text-xs">
+                    {enrichedFeatures.map((feat, i) => (
+                      <div key={i} className="bg-[#faecd5] border border-[#be9e63] p-2 rounded-lg shadow-sm">
+                        <span className="font-bold text-[#8b0000] text-[11px] block">
+                          {feat.title}
+                        </span>
+                        <p className="text-[10px] text-stone-800 leading-relaxed mt-0.5">
+                          {feat.desc}
+                        </p>
                       </div>
                     ))}
-                    {character.notes && (
-                      <div className="bg-[#f2e2be] border border-[#be9e63] p-2 rounded-lg">
-                        <span className="font-bold text-[#5c3e0f] block">Notas Especiais:</span>
-                        <span className="text-[11px] text-stone-800">{character.notes}</span>
-                      </div>
+                  </div>
+                </div>
+
+                {/* Condições Ativas de Status no Rodapé */}
+                <div className="pt-2 border-t border-[#be9e63] mt-2">
+                  <span className="text-[8px] font-black uppercase tracking-wider text-[#7a571f] block mb-1">
+                    Condições Ativas:
+                  </span>
+                  <div className="flex flex-wrap gap-1">
+                    {character.conditions.length === 0 ? (
+                      <span className="text-[10px] text-stone-500 italic">Nenhuma condição ativa.</span>
+                    ) : (
+                      character.conditions.map(c => (
+                        <span
+                          key={c}
+                          onClick={() => onToggleCondition(character.id, c)}
+                          className="bg-[#8b0000] text-amber-200 text-[9px] font-black px-2 py-0.5 rounded-full cursor-pointer hover:bg-rose-900 transition-colors shadow"
+                          title="Clique para remover condição"
+                        >
+                          {c} ✕
+                        </span>
+                      ))
                     )}
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        )}
 
-                {/* Espaços de Magia se for Conjurador */}
-                {Object.keys(character.spellSlots).length > 0 && (
-                  <div className="mt-3 pt-2 border-t border-[#be9e63]">
-                    <span className="text-[10px] font-bold text-[#5c3e0f] uppercase tracking-wider block mb-1">
-                      Espaços de Magia (Spell Slots):
+        {/* ********************************************************* */}
+        {/* ===================== PÁGINA 2: VERSO ==================== */}
+        {/* ********************************************************* */}
+        {activeSide === 'back' && (
+          <div className="relative z-10 space-y-5 animate-fadeIn">
+            {/* 1. TOP HEADER VERSO: NOME GÓTICO, ESCUDO CELTA SUSPENSO & RODA DE RECURSOS */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+              {/* Lado Esquerdo (lg:col-span-4): Placa Gótica de Nome & Brasão Erelynn */}
+              <div className="lg:col-span-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-[#8b0000] to-transparent" />
+                  <span className="font-cinzel text-[11px] font-black tracking-[0.3em] text-[#8b0000] uppercase">
+                    DUNGEONS & DRAGONS • VERSO
+                  </span>
+                  <div className="h-0.5 flex-1 bg-gradient-to-r from-transparent via-[#8b0000] to-transparent" />
+                </div>
+
+                {/* Cartouche de Pedra do Herói */}
+                <div className="bg-gradient-to-b from-[#f9f2e3] via-[#faedd2] to-[#dfbe7f] border-2 border-[#7a571f] rounded-xl px-4 py-3 shadow-md text-center">
+                  <span className="text-[8px] uppercase tracking-[0.25em] font-extrabold text-[#7a571f] block">
+                    CRÔNICAS & EQUIPAMENTO
+                  </span>
+                  <h1 className="font-cinzel text-2xl sm:text-3xl font-black tracking-[0.15em] text-[#301c05] leading-none my-0.5">
+                    {character.name}
+                  </h1>
+                  <span className="text-[10px] font-bold text-[#8b0000] font-cinzel">
+                    {character.class} — {character.background}
+                  </span>
+                </div>
+              </div>
+
+              {/* Centro (lg:col-span-4): Escudo Redondo Nórdico / Celta com Standee do Personagem */}
+              <div className="lg:col-span-4 flex flex-col items-center justify-center">
+                {/* Corrente Prateada Suspensa */}
+                <div className="w-1 h-4 bg-gradient-to-b from-stone-400 via-stone-200 to-stone-400 rounded-full shadow" />
+
+                {/* O Escudo Celta Redondo de Madeira e Bronze */}
+                <div className="relative w-36 h-36 rounded-full bg-gradient-to-br from-[#805e26] via-[#482815] to-[#24130b] border-4 border-[#d9be7e] shadow-2xl flex items-center justify-center p-2">
+                  {/* Entalhes Célticos no Escudo (SVG) */}
+                  <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full text-[#d9be7e]/30">
+                    <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="4,2" />
+                    <circle cx="50" cy="50" r="38" fill="none" stroke="currentColor" strokeWidth="1" />
+                  </svg>
+
+                  {/* Silhueta / Retrato de Corpo Inteiro do Herói */}
+                  <div className="w-26 h-26 rounded-full overflow-hidden border-2 border-[#f5ba42] shadow-inner relative bg-stone-950 z-10">
+                    <img
+                      src={(ART_OPTIONS[selectedArtIndex] || ART_OPTIONS[0]).path}
+                      alt={character.name}
+                      className="w-full h-full object-cover object-top"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Lado Direito (lg:col-span-4): RODA DE RECURSOS / SPELL TRACKER WHEEL (10 ESFERAS DOURADAS) */}
+              <div className="lg:col-span-4 bg-gradient-to-b from-[#fffbf0] via-[#f7edd4] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-3 shadow-xl text-center">
+                <div className="flex items-center justify-between border-b border-[#be9e63] pb-1 mb-2">
+                  <span className="text-[8.5px] font-black uppercase tracking-[0.2em] text-[#7a571f]">
+                    ✦ RODA DE RECURSOS (10 SLOTS) ✦
+                  </span>
+                  <button
+                    onClick={() => setResourceWheelSpent([false, false, false, false, false, false, false, false, false, false])}
+                    className="text-[8px] text-[#8b0000] hover:underline font-bold flex items-center gap-1"
+                    title="Restaurar todos os slots da roda"
+                  >
+                    <RotateCw className="w-2.5 h-2.5" /> Restaurar
+                  </button>
+                </div>
+
+                {/* As 10 Esferas Interativas em Círculo / Grid */}
+                <div className="grid grid-cols-5 gap-2 justify-items-center py-1">
+                  {resourceWheelSpent.map((isSpent, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => toggleWheelBead(idx)}
+                      className={`w-8 h-8 rounded-full border-2 transition-all flex items-center justify-center font-cinzel text-[11px] font-black shadow-md ${
+                        isSpent
+                          ? 'bg-stone-400 border-stone-600 text-stone-700 opacity-60 scale-95'
+                          : 'bg-gradient-to-b from-[#ffeaa7] via-[#f5ba42] to-[#b8860b] border-[#5e420f] text-[#301c05] hover:scale-110 ring-2 ring-amber-400/50'
+                      }`}
+                      title={isSpent ? `Slot ${idx + 1}: Gasto (clique p/ restaurar)` : `Slot ${idx + 1}: Disponível (clique p/ gastar)`}
+                    >
+                      {idx + 1}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[8px] text-[#7a571f] italic block mt-1">
+                  Para Espaços de Magia, Pontos de Ki, Dados de Superioridade ou Cargas
+                </span>
+              </div>
+            </div>
+
+            {/* 2. CORPO DO VERSO: LADO ESQUERDO (SINTONIZAÇÃO, LORE E TESOURO) & LADO DIREITO (MOCHILA COMPLETA) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              {/* =================================================== */}
+              {/* LADO ESQUERDO (lg:col-span-5): SINTONIZAÇÃO, PERGAMINHO DE LORE & COFRE DE MOEDAS */}
+              {/* =================================================== */}
+              <div className="lg:col-span-5 space-y-4">
+                {/* 1. Sintonização e Itens Mágicos Equipados */}
+                <div className="bg-gradient-to-r from-[#fff9ed] via-[#f8eed7] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-3 shadow-xl">
+                  <div className="flex items-center justify-between border-b-2 border-[#7a571f] pb-1 mb-2">
+                    <h3 className="font-cinzel text-xs font-black uppercase tracking-wider text-[#301c05] flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-[#8b0000]" />
+                      Sintonização & Itens Mágicos
+                    </h3>
+                    {/* 3 Slots de Sintonização Oficiais */}
+                    <div className="flex items-center gap-1">
+                      {attunedSlots.map((isAtt, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setAttunedSlots(prev => {
+                              const copy = [...prev];
+                              copy[i] = !copy[i];
+                              return copy;
+                            });
+                          }}
+                          className={`w-3.5 h-3.5 rounded-full border border-stone-800 ${
+                            isAtt ? 'bg-[#8b0000] ring-1 ring-amber-400' : 'bg-white/80'
+                          }`}
+                          title={`Vaga de Sintonização ${i + 1} (Clique p/ alternar)`}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Lista de Itens Mágicos Equipados */}
+                  <div className="space-y-1.5 text-xs">
+                    {magicItemsEquipped.map((item, idx) => (
+                      <div key={idx} className="bg-[#faecd5] border border-[#be9e63] p-1.5 rounded-lg shadow-sm">
+                        <div className="flex justify-between items-center font-bold text-stone-900">
+                          <span className="truncate">{item.name}</span>
+                          <span className="text-[9px] text-[#7a571f]">{item.slot}</span>
+                        </div>
+                        <p className="text-[10px] text-stone-700 mt-0.5">{item.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* 2. O Grande Pergaminho Enrolado de Personalidade & Lore (Traços, Ideais, Vínculos, Defeitos) */}
+                <div className="bg-gradient-to-b from-[#fffaf0] via-[#f7edd4] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-3 shadow-xl space-y-2">
+                  <div className="text-center border-b-2 border-[#7a571f] pb-1 mb-1">
+                    <span className="font-cinzel text-xs font-black uppercase tracking-[0.2em] text-[#301c05]">
+                      📜 Crônicas & Personalidade
                     </span>
-                    <div className="flex flex-wrap gap-2">
-                      {Object.entries(character.spellSlots).map(([lvl, s]) => (
-                        <div key={lvl} className="bg-[#ebd6ae] border border-[#94712e] px-2 py-0.5 rounded text-[11px] flex items-center gap-1.5">
-                          <span className="font-bold text-stone-900">{lvl}º:</span>
-                          <div className="flex gap-1">
-                            {Array.from({ length: s.max }).map((_, i) => {
-                              const isSpent = i < s.used;
-                              return (
-                                <button
-                                  key={i}
-                                  onClick={() => isSpent ? onRestoreSlot(character.id, Number(lvl)) : onSpendSlot(character.id, Number(lvl))}
-                                  className={`w-3 h-3 rounded-full border border-stone-800 ${
-                                    isSpent ? 'bg-stone-400' : 'bg-[#8b0000]'
-                                  }`}
-                                  title={isSpent ? "Gasto (clique p/ restaurar)" : "Disponível (clique p/ gastar)"}
-                                />
-                              );
-                            })}
-                          </div>
+                  </div>
+
+                  {/* Traços de Personalidade */}
+                  <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-2 shadow-inner">
+                    <span className="text-[8.5px] font-black uppercase tracking-wider text-[#8b0000] block mb-0.5">
+                      TRAÇOS DE PERSONALIDADE (TRAITS)
+                    </span>
+                    <p className="text-[10.5px] text-stone-800 italic leading-snug">
+                      {character.personality.traits.length > 0
+                        ? character.personality.traits.join(' • ')
+                        : 'Calmo sob pressão absoluta, leal aos companheiros e defensor implacável dos inocentes.'}
+                    </p>
+                  </div>
+
+                  {/* Ideais */}
+                  <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-2 shadow-inner">
+                    <span className="text-[8.5px] font-black uppercase tracking-wider text-[#8b0000] block mb-0.5">
+                      IDEAIS (IDEALS)
+                    </span>
+                    <p className="text-[10.5px] text-stone-800 leading-snug">
+                      {character.personality.ideals || 'Liberdade e Justiça. A tirania e a opressão devem ser combatidas onde quer que surjam.'}
+                    </p>
+                  </div>
+
+                  {/* Vínculos */}
+                  <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-2 shadow-inner">
+                    <span className="text-[8.5px] font-black uppercase tracking-wider text-[#8b0000] block mb-0.5">
+                      VÍNCULOS (BONDS)
+                    </span>
+                    <p className="text-[10.5px] text-stone-800 leading-snug">
+                      {character.personality.bonds || 'Proteger meus companheiros de batalha e honrar o legado dos povos livres.'}
+                    </p>
+                  </div>
+
+                  {/* Defeitos */}
+                  <div className="bg-[#faedd4] border border-[#be9e63] rounded-xl p-2 shadow-inner">
+                    <span className="text-[8.5px] font-black uppercase tracking-wider text-[#8b0000] block mb-0.5">
+                      DEFEITOS & FRAQUEZAS (FLAWS)
+                    </span>
+                    <p className="text-[10.5px] text-rose-950 font-medium leading-snug">
+                      {character.personality.flaws || 'Carrego o fardo do passado e tenho dificuldade em pedir socorro quando estou à beira da derrota.'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* 3. Antecedente & Cofre de Tesouro com Moedas (PC, PP, PE, PO, PL) */}
+                <div className="bg-gradient-to-r from-[#fff9ed] via-[#f8eed7] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-3 shadow-xl">
+                  {/* Cartela de Antecedente */}
+                  <div className="border-b border-[#be9e63] pb-1.5 mb-2">
+                    <span className="text-[8px] font-black uppercase tracking-wider text-[#7a571f] block">
+                      ANTECEDENTE OFICIAL
+                    </span>
+                    <div className="font-cinzel text-xs font-black text-stone-900">
+                      {character.background}
+                    </div>
+                    <p className="text-[10px] text-stone-700 italic mt-0.5">
+                      Hospitalidade Rústica: plebeus e viajantes reconhecem seus feitos e oferecem abrigo e apoio básico.
+                    </p>
+                  </div>
+
+                  {/* Cofre de Moedas (PC, PP, PE, PO, PL) */}
+                  <div>
+                    <span className="text-[8px] font-black uppercase tracking-wider text-[#7a571f] block mb-1">
+                      TESOURO & MOEDAS
+                    </span>
+                    <div className="grid grid-cols-5 gap-1.5 text-center">
+                      {[
+                        { label: 'PC', name: 'Cobre', val: character.coins.pc, bg: 'bg-[#d97736]/20 border-[#d97736]' },
+                        { label: 'PP', name: 'Prata', val: character.coins.pp, bg: 'bg-stone-300/40 border-stone-400' },
+                        { label: 'PE', name: 'Electro', val: character.coins.pe, bg: 'bg-amber-200/30 border-amber-400' },
+                        { label: 'PO', name: 'Ouro', val: character.coins.po, bg: 'bg-[#f5ba42]/30 border-[#f5ba42]' },
+                        { label: 'PL', name: 'Platina', val: character.coins.pl, bg: 'bg-sky-200/30 border-sky-400' },
+                      ].map(coin => (
+                        <div key={coin.label} className={`border rounded-lg p-1 ${coin.bg} shadow-sm`}>
+                          <span className="text-[7.5px] font-black block text-stone-700">{coin.label}</span>
+                          <span className="font-cinzel font-black text-xs text-stone-900">{coin.val}</span>
                         </div>
                       ))}
                     </div>
                   </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 3. PARTE INFERIOR: SAÚDE (HP), PERSONALIDADE & ATAQUES (IGUAL TEMPLATE_PERSON) */}
-        <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* BLOCO 1: PERSONALIDADE (PERSONALITY, IDEALS, BONDS, FLAWS) */}
-          <div className="lg:col-span-4 space-y-2 text-xs">
-            <div className="bg-[#faedd4] border-2 border-[#8c6721] rounded-xl p-2.5 shadow">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#8b0000] block mb-0.5">
-                PERSONALITY TRAITS (Traços)
-              </span>
-              <p className="text-[11px] text-stone-800 italic">
-                {character.personality.traits.join(' • ') || 'A definir'}
-              </p>
-            </div>
-
-            <div className="bg-[#faedd4] border-2 border-[#8c6721] rounded-xl p-2.5 shadow">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#8b0000] block mb-0.5">
-                IDEALS (Ideais)
-              </span>
-              <p className="text-[11px] text-stone-800">
-                {character.personality.ideals || 'A definir'}
-              </p>
-            </div>
-
-            <div className="bg-[#faedd4] border-2 border-[#8c6721] rounded-xl p-2.5 shadow">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#8b0000] block mb-0.5">
-                BONDS (Vínculos)
-              </span>
-              <p className="text-[11px] text-stone-800">
-                {character.personality.bonds || 'A definir'}
-              </p>
-            </div>
-
-            <div className="bg-[#faedd4] border-2 border-[#8c6721] rounded-xl p-2.5 shadow">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#8b0000] block mb-0.5">
-                FLAWS (Defeitos)
-              </span>
-              <p className="text-[11px] text-stone-800 text-rose-950 font-medium">
-                {character.personality.flaws || 'A definir'}
-              </p>
-            </div>
-          </div>
-
-          {/* BLOCO 2: COMBATE & SAÚDE CENTRAL (HIT POINTS & DEATH SAVES) */}
-          <div className="lg:col-span-4 bg-[#faedd4] border-2 border-[#8c6721] rounded-2xl p-4 shadow-md space-y-3">
-            <div className="grid grid-cols-2 gap-2 text-center">
-              <div className="bg-[#ebd6ae] border border-[#94712e] rounded-xl p-1.5">
-                <span className="text-[9px] font-bold uppercase text-[#7a581e] block">Dados de Vida</span>
-                <span className="font-cinzel text-base font-black text-stone-900">{character.hitDiceTotal}{character.hitDie}</span>
-              </div>
-
-              <div className="bg-[#ebd6ae] border border-[#94712e] rounded-xl p-1.5">
-                <span className="text-[9px] font-bold uppercase text-[#7a581e] block">HP Máximo</span>
-                <span className="font-cinzel text-base font-black text-[#8b0000]">{character.maxHp} PV</span>
-              </div>
-            </div>
-
-            {/* Caixa Central de Pontos de Vida Atuais */}
-            <div className="bg-gradient-to-b from-[#f2e2be] to-[#e6cf9c] border-2 border-[#8c6721] rounded-xl p-3 text-center shadow-inner">
-              <span className="text-[9px] font-bold uppercase tracking-wider text-[#7a581e] block">
-                CURRENT HIT POINTS (PV ATUAIS)
-              </span>
-              <div className="font-cinzel text-4xl font-black text-[#520000] my-1">
-                {character.currentHp}
-                {character.tempHp > 0 && <span className="text-blue-700 text-lg ml-1 font-sans">(+{character.tempHp})</span>}
-              </div>
-
-              {/* Botões Rápidos de HP */}
-              <div className="flex flex-wrap items-center justify-center gap-1.5 mt-2">
-                <button
-                  onClick={() => onApplyDamage(character.id, 1)}
-                  className="px-2 py-0.5 bg-[#8b0000] hover:bg-rose-800 text-white rounded text-[10px] font-bold shadow"
-                >
-                  -1 Dano
-                </button>
-                <button
-                  onClick={() => onApplyDamage(character.id, 5)}
-                  className="px-2 py-0.5 bg-[#8b0000] hover:bg-rose-800 text-white rounded text-[10px] font-bold shadow"
-                >
-                  -5 Dano
-                </button>
-                <button
-                  onClick={() => onHeal(character.id, 1)}
-                  className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold shadow"
-                >
-                  +1 Cura
-                </button>
-                <button
-                  onClick={() => onHeal(character.id, 5)}
-                  className="px-2 py-0.5 bg-emerald-700 hover:bg-emerald-600 text-white rounded text-[10px] font-bold shadow"
-                >
-                  +5 Cura
-                </button>
-              </div>
-            </div>
-
-            {/* Testes contra a Morte (Death Saves como no template) */}
-            <div className="bg-[#ebd6ae] border border-[#94712e] rounded-xl p-2.5 text-xs text-center space-y-1">
-              <span className="text-[9px] font-bold uppercase text-[#7a581e] block">DEATH SAVES (SALVAGUARDAS DA MORTE)</span>
-              <div className="flex justify-around items-center">
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold text-emerald-800">Sucessos:</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3].map(i => (
-                      <div
-                        key={i}
-                        className={`w-3.5 h-3.5 rounded-full border border-stone-800 ${
-                          i <= character.deathSaves.successes ? 'bg-emerald-600' : 'bg-white/80'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1">
-                  <span className="text-[10px] font-bold text-rose-800">Falhas:</span>
-                  <div className="flex gap-1">
-                    {[1, 2, 3].map(i => (
-                      <div
-                        key={i}
-                        className={`w-3.5 h-3.5 rounded-full border border-stone-800 ${
-                          i <= character.deathSaves.failures ? 'bg-rose-600' : 'bg-white/80'
-                        }`}
-                      />
-                    ))}
-                  </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* BLOCO 3: ATTACKS & SPELLCASTING COM BORDA DE ESPADA FLAMEJANTE */}
-          <div className="lg:col-span-4 bg-[#faedd4] border-2 border-[#8c6721] rounded-2xl p-4 shadow-md space-y-3">
-            <div className="bg-[#8b0000] text-white px-3 py-1 rounded-lg text-center font-cinzel text-xs font-bold tracking-wider uppercase shadow border border-[#520000]">
-              ⚔️ ATTACKS & SPELLCASTING
-            </div>
-
-            {/* Tabela de Armas e Ataques */}
-            <div className="space-y-1.5 text-xs">
-              {character.weapons.map((w, idx) => {
-                const forMod = getAbilityModifier(character.baseAbilities.for);
-                const desMod = getAbilityModifier(character.baseAbilities.des);
-                // Ataque corpo a corpo ou acuidade
-                const atkBonus = profBonus + (w.damageType === 'perfurante' ? Math.max(forMod, desMod) : forMod);
-
-                return (
-                  <div
-                    key={idx}
-                    onClick={() => onRollCheck(character, 'atletismo', rollMode)}
-                    className="bg-[#f2e2be] border border-[#be9e63] p-2 rounded-lg cursor-pointer hover:border-[#8b0000] transition-colors"
-                  >
-                    <div className="flex justify-between items-center font-bold text-stone-900">
-                      <span>{w.name}</span>
-                      <span className="text-[#8b0000] font-cinzel">{formatModifier(atkBonus)} p/ Acerto</span>
+              {/* =================================================== */}
+              {/* LADO DIREITO (lg:col-span-7): A MOCHILA DE AVENTURA & INVENTÁRIO COMPLETO */}
+              {/* =================================================== */}
+              <div className="lg:col-span-7 bg-gradient-to-b from-[#fffbf0] via-[#f7eed6] to-[#eedab7] border-2 border-[#7a571f] rounded-2xl p-4 shadow-xl flex flex-col justify-between">
+                <div>
+                  {/* Cabeçalho da Mochila */}
+                  <div className="flex items-center justify-between border-b-2 border-[#7a571f] pb-1.5 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Backpack className="w-5 h-5 text-[#8b0000]" />
+                      <h2 className="font-cinzel text-base font-black tracking-[0.15em] text-[#301c05]">
+                        Mochila de Aventura • Equipment
+                      </h2>
                     </div>
-                    <div className="flex justify-between items-center text-[11px] text-stone-700 mt-0.5">
-                      <span>Dano: <strong>{w.damage}</strong> {w.damageType}</span>
-                      <span className="text-[10px] text-[#7a581e] italic">{w.description || 'Arma marcial'}</span>
-                    </div>
-                  </div>
-                );
-              })}
-
-              {character.spells.length > 0 && (
-                <div className="pt-2 border-t border-[#be9e63] space-y-1">
-                  <span className="text-[10px] font-bold text-[#5c3e0f] uppercase block">Magias de Ataque:</span>
-                  {character.spells.slice(0, 3).map((sp) => (
-                    <div key={sp.id} className="bg-[#f2e2be] border border-[#be9e63] p-1.5 rounded text-[11px] flex justify-between">
-                      <span className="font-semibold text-stone-900">{sp.name}</span>
-                      <span className="text-[#8b0000] font-bold">{sp.range}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Condições Ativas com Badges */}
-            <div className="pt-2 border-t border-[#be9e63]">
-              <span className="text-[10px] font-bold text-[#5c3e0f] uppercase block mb-1">
-                Condições de Status:
-              </span>
-              <div className="flex flex-wrap gap-1">
-                {character.conditions.length === 0 ? (
-                  <span className="text-[11px] text-stone-600 italic">Nenhuma condição ativa.</span>
-                ) : (
-                  character.conditions.map(c => (
-                    <span
-                      key={c}
-                      className="bg-[#8b0000] text-white text-[10px] font-bold px-2 py-0.5 rounded-full"
-                    >
-                      {c}
+                    <span className="text-[9px] font-bold text-[#7a571f] uppercase tracking-wider">
+                      Carga: ~{character.inventory.reduce((acc, i) => acc + (i.weight * i.quantity), 0).toFixed(1)} kg / Limite: {character.baseAbilities.for * 7.5} kg
                     </span>
-                  ))
-                )}
+                  </div>
+
+                  {/* DUAS COLUNAS DE LINHAS DE PERGAMINHO DO INVENTÁRIO (IDÊNTICO À ERELYNN) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                    {/* Coluna 1 */}
+                    <div className="space-y-1">
+                      {invCol1.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between py-1 px-1.5 border-b border-[#be9e63]/50 hover:bg-[#dfbe7f]/20 transition-colors"
+                        >
+                          <span className="text-stone-900 font-medium truncate text-[11px]">
+                            • {item.name}
+                          </span>
+                          <span className="text-[10px] text-[#7a571f] font-mono shrink-0 ml-1">
+                            {item.qty > 1 && <span className="font-bold text-[#8b0000]">({item.qty}x) </span>}
+                            {item.weight}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Coluna 2 */}
+                    <div className="space-y-1">
+                      {invCol2.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="flex items-center justify-between py-1 px-1.5 border-b border-[#be9e63]/50 hover:bg-[#dfbe7f]/20 transition-colors"
+                        >
+                          <span className="text-stone-900 font-medium truncate text-[11px]">
+                            • {item.name}
+                          </span>
+                          <span className="text-[10px] text-[#7a571f] font-mono shrink-0 ml-1">
+                            {item.qty > 1 && <span className="font-bold text-[#8b0000]">({item.qty}x) </span>}
+                            {item.weight}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* BASE DO VERSO: ILUSTRAÇÃO DA MOCHILA EXPEDIÇÃO + ASSINATURA CALLIGRÁFICA + LACRE DE CERA VERMELHO */}
+                <div className="mt-6 pt-4 border-t-2 border-[#7a571f] flex flex-wrap items-end justify-between gap-4">
+                  {/* Ilustração Simbólica da Mochila com Espada Apoiada */}
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#593414] via-[#3a200a] to-[#201004] border-2 border-[#d9be7e] shadow-lg flex items-center justify-center p-2 text-amber-200">
+                      <Backpack className="w-8 h-8 drop-shadow" />
+                    </div>
+                    <div className="text-xs">
+                      <span className="font-cinzel text-xs font-black text-[#301c05] block">
+                        Equipamento de Campanha
+                      </span>
+                      <span className="text-[10px] text-stone-700 italic block">
+                        Preparado para longas travessias nos Reinos Esquecidos.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Assinatura Cursiva "Backpack" e Selo de Cera Vermelho */}
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <span className="font-serif italic text-base sm:text-lg text-[#52330a] drop-shadow-sm block">
+                        Backpack Manifest
+                      </span>
+                      <span className="text-[8px] uppercase tracking-widest text-[#7a571f] font-bold block">
+                        Oficial D&D 5e
+                      </span>
+                    </div>
+
+                    {/* SELO DE CERA VERMELHO 3D EM ALTO RELEVO */}
+                    <div
+                      className="w-12 h-12 rounded-full bg-gradient-to-br from-[#c91818] via-[#8b0000] to-[#400000] border-2 border-[#ff7b7b] shadow-[0_4px_12px_rgba(139,0,0,0.6)] flex items-center justify-center p-1 cursor-pointer hover:scale-110 transition-transform"
+                      title="Selo Oficial de Cera de Autenticidade"
+                    >
+                      <div className="w-9 h-9 rounded-full border border-amber-300/60 flex items-center justify-center">
+                        <span className="font-cinzel font-black text-amber-200 text-xs">
+                          D&D
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
