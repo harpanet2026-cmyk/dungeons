@@ -59,7 +59,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Costureiro',
     craftingDays: 1,
-    craftingCostPo: 2.5
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/items/armadura_couro.jpg'
   },
   {
     id: 'arm_couro',
@@ -78,7 +79,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: false,
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/armadura_couro.jpg'
   },
   {
     id: 'arm_couro_batido',
@@ -97,7 +99,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: false,
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 5,
-    craftingCostPo: 22.5
+    craftingCostPo: 22.5,
+    imageUrl: '/artes/items/armadura_couro.jpg'
   },
 
   // ==========================================
@@ -121,7 +124,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: false,
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/armadura_couro.jpg'
   },
   {
     id: 'arm_camisao_malha',
@@ -141,7 +145,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: false,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/cota_malha.jpg'
   },
   {
     id: 'arm_brunea',
@@ -161,7 +166,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/cota_malha.jpg'
   },
   {
     id: 'arm_peitoral_aco',
@@ -181,7 +187,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: false,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 40,
-    craftingCostPo: 200
+    craftingCostPo: 200,
+    imageUrl: '/artes/items/peitoral_aco.jpg'
   },
   {
     id: 'arm_meia_armadura',
@@ -201,7 +208,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 75,
-    craftingCostPo: 375
+    craftingCostPo: 375,
+    imageUrl: '/artes/items/peitoral_aco.jpg'
   },
 
   // ==========================================
@@ -224,7 +232,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
-    craftingCostPo: 15
+    craftingCostPo: 15,
+    imageUrl: '/artes/items/cota_malha.jpg'
   },
   {
     id: 'arm_cota_malha_pesada',
@@ -244,7 +253,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 8,
-    craftingCostPo: 37.5
+    craftingCostPo: 37.5,
+    imageUrl: '/artes/items/cota_malha.jpg'
   },
   {
     id: 'arm_cota_talas_pesada',
@@ -264,7 +274,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 20,
-    craftingCostPo: 100
+    craftingCostPo: 100,
+    imageUrl: '/artes/items/armadura_placas.jpg'
   },
   {
     id: 'arm_placas_completa',
@@ -352,7 +363,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 0.25
+    craftingCostPo: 0.25,
+    imageUrl: '/artes/items/espada_longa.jpg'
   },
   {
     id: 'wpn_bordao',
@@ -371,7 +383,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 1,
-    craftingCostPo: 0.1
+    craftingCostPo: 0.1,
+    imageUrl: '/artes/items/espada_longa.jpg'
   },
   {
     id: 'wpn_lanca',
@@ -390,7 +403,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 0.5
+    craftingCostPo: 0.5,
+    imageUrl: '/artes/items/espada_longa.jpg'
   },
   {
     id: 'wpn_maca',
@@ -409,7 +423,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 2.5
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/items/martelo_guerra.jpg'
   },
   {
     id: 'wpn_machadinha',
@@ -428,7 +443,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 2.5
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/items/machado_batalha.jpg'
   },
 
   // ==========================================
@@ -451,7 +467,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 3,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/arco_longo.jpg'
   },
   {
     id: 'wpn_besta_leve',
@@ -470,7 +487,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/espada_curta.jpg'
   },
   {
     id: 'wpn_funda',
@@ -489,7 +507,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
-    craftingCostPo: 0.05
+    craftingCostPo: 0.05,
+    imageUrl: '/artes/items/adaga.jpg'
   },
 
   // ==========================================
@@ -512,7 +531,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/espada_curta.jpg'
   },
   {
     id: 'wpn_espada_longa',
@@ -551,7 +571,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/espada_grande.jpg'
   },
   {
     id: 'wpn_cimitarra',
@@ -570,7 +591,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/espada_curta.jpg'
   },
   {
     id: 'wpn_rapieira',
@@ -589,7 +611,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/rapieira.jpg'
   },
   {
     id: 'wpn_machado_batalha',
@@ -608,7 +631,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/machado_batalha.jpg'
   },
   {
     id: 'wpn_machado_grande',
@@ -627,7 +651,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
-    craftingCostPo: 15
+    craftingCostPo: 15,
+    imageUrl: '/artes/items/machado_grande.jpg'
   },
   {
     id: 'wpn_martelo_guerra',
@@ -646,7 +671,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
-    craftingCostPo: 7.5
+    craftingCostPo: 7.5,
+    imageUrl: '/artes/items/martelo_guerra.jpg'
   },
   {
     id: 'wpn_malho',
@@ -665,7 +691,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/martelo_guerra.jpg'
   },
   {
     id: 'wpn_alabarda',
@@ -684,7 +711,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
-    craftingCostPo: 10
+    craftingCostPo: 10,
+    imageUrl: '/artes/items/machado_batalha.jpg'
   },
 
   // ==========================================
@@ -707,7 +735,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/arco_longo.jpg'
   },
   {
     id: 'wpn_besta_pesada',
@@ -726,7 +755,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/espada_curta.jpg'
   },
   {
     id: 'wpn_besta_mao',
@@ -745,7 +775,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 8,
-    craftingCostPo: 37.5
+    craftingCostPo: 37.5,
+    imageUrl: '/artes/items/adaga.jpg'
   },
 
   // ==========================================
@@ -780,7 +811,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 187 & XGtE p. 128',
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 5,
-    craftingCostPo: 100
+    craftingCostPo: 100,
+    imageUrl: '/artes/items/pocao_cura_maior.jpg'
   },
   {
     id: 'poc_cura_superior',
@@ -795,7 +827,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 187 & XGtE p. 128',
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 15,
-    craftingCostPo: 1000
+    craftingCostPo: 1000,
+    imageUrl: '/artes/items/pocao_cura_maior.jpg'
   },
   {
     id: 'poc_antidoto',
@@ -810,7 +843,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/pocao_cura.jpg'
   },
   {
     id: 'poc_fogo_alquimico',
@@ -825,7 +859,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/fogo_alquimico.jpg'
   },
   {
     id: 'poc_acido',
@@ -840,7 +875,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/fogo_alquimico.jpg'
   },
   {
     id: 'poc_agua_benta',
@@ -855,7 +891,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/pocao_cura.jpg'
   },
   {
     id: 'poc_veneno_basico',
@@ -870,7 +907,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Kit de Envenenador',
     craftingDays: 2,
-    craftingCostPo: 50
+    craftingCostPo: 50,
+    imageUrl: '/artes/items/fogo_alquimico.jpg'
   },
 
   // ==========================================
@@ -889,7 +927,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
-    craftingCostPo: 1
+    craftingCostPo: 1,
+    imageUrl: '/artes/items/bolsa_carga.jpg'
   },
   {
     id: 'eq_corda_seda',
@@ -904,7 +943,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Ferramentas de Tecelão',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/bolsa_carga.jpg'
   },
   {
     id: 'eq_lanterna_coberta',
@@ -919,7 +959,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 2.5
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/items/fogo_alquimico.jpg'
   },
   {
     id: 'eq_kit_primeiros_socorros',
@@ -934,7 +975,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
-    craftingCostPo: 2.5
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/items/pocao_cura.jpg'
   },
   {
     id: 'eq_pe_de_cabra',
@@ -949,7 +991,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 1
+    craftingCostPo: 1,
+    imageUrl: '/artes/items/martelo_guerra.jpg'
   },
   {
     id: 'eq_grimorio',
@@ -964,7 +1007,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150',
     craftingTool: 'Suprimentos de Caligrafia',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/manto_protecao.jpg'
   },
   {
     id: 'tool_ferramentas_ferreiro',
@@ -979,7 +1023,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 154',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
-    craftingCostPo: 10
+    craftingCostPo: 10,
+    imageUrl: '/artes/items/martelo_guerra.jpg'
   },
   {
     id: 'tool_suprimentos_alquimista',
@@ -994,7 +1039,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 154 & XGtE p. 77',
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 5,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/fogo_alquimico.jpg'
   },
   {
     id: 'tool_kit_herbalismo',
@@ -1009,7 +1055,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 154 & XGtE p. 128',
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
-    craftingCostPo: 2.5
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/items/pocao_cura.jpg'
   },
   {
     id: 'tool_ferramentas_ladrao',
@@ -1024,7 +1071,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 154',
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 3,
-    craftingCostPo: 12.5
+    craftingCostPo: 12.5,
+    imageUrl: '/artes/items/adaga.jpg'
   },
 
   // ==========================================
@@ -1059,7 +1107,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 155',
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 10,
-    craftingCostPo: 175
+    craftingCostPo: 175,
+    imageUrl: '/artes/items/botas_elficas.jpg'
   },
   {
     id: 'mag_bolsa_carga',
@@ -1074,7 +1123,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 153',
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 10,
-    craftingCostPo: 250
+    craftingCostPo: 250,
+    imageUrl: '/artes/items/bolsa_carga.jpg'
   },
   {
     id: 'mag_anel_protecao',
@@ -1089,7 +1139,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 191',
     craftingTool: 'Ferramentas de Joalheiro',
     craftingDays: 50,
-    craftingCostPo: 1000
+    craftingCostPo: 1000,
+    imageUrl: '/artes/items/anel_protecao.jpg'
   },
   {
     id: 'mag_espada_flamejante',
@@ -1107,6 +1158,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 170',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 50,
-    craftingCostPo: 1750
+    craftingCostPo: 1750,
+    imageUrl: '/artes/items/espada_flamejante.jpg'
   }
 ];
