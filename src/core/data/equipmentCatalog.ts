@@ -992,7 +992,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 1,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/loja/pe_de_cabra.jpg'
   },
   {
     id: 'eq_grimorio',
@@ -1140,7 +1140,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 10,
     craftingCostPo: 175,
-    imageUrl: '/artes/items/botas_elficas.jpg'
+    imageUrl: '/artes/loja/botas_elficas.jpg'
   },
   {
     id: 'mag_bolsa_carga',
@@ -1156,7 +1156,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 10,
     craftingCostPo: 250,
-    imageUrl: '/artes/items/bolsa_carga.jpg'
+    imageUrl: '/artes/loja/bolsa_de_carga.jpg'
   },
   {
     id: 'mag_anel_protecao',
