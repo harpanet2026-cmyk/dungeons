@@ -10,6 +10,7 @@ import {
   ForgeRollResult
 } from '../../core/rules/craftingRules';
 import { coinsToPo, canAfford, deductCoins } from '../../core/rules/economy';
+import { ItemThumbnail } from '../shop/ItemThumbnail';
 import {
   Anvil,
   Flame,
@@ -291,18 +292,29 @@ export const ForgeView: React.FC<ForgeViewProps> = ({
                   }`}
                 >
                   <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-serif text-sm font-bold text-stone-200">
-                        {recipe.name}
-                      </h4>
-                      <span className="rounded bg-stone-900 px-1.5 py-0.5 font-mono text-xs font-bold text-orange-400">
-                        CD {recipe.difficultyDc}
-                      </span>
-                    </div>
+                    <div className="flex gap-3">
+                      <ItemThumbnail
+                        imageUrl={recipe.targetItem.imageUrl}
+                        name={recipe.name}
+                        category={recipe.targetItem.category}
+                        size="md"
+                      />
 
-                    <p className="mt-2 text-xs text-stone-400">
-                      {recipe.description}
-                    </p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-1">
+                          <h4 className="font-serif text-sm font-bold text-stone-200 truncate">
+                            {recipe.name}
+                          </h4>
+                          <span className="rounded bg-stone-900 px-1.5 py-0.5 font-mono text-[10px] font-bold text-orange-400 flex-shrink-0">
+                            CD {recipe.difficultyDc}
+                          </span>
+                        </div>
+
+                        <p className="mt-1 line-clamp-2 text-[11px] text-stone-400">
+                          {recipe.description}
+                        </p>
+                      </div>
+                    </div>
 
                     {/* Requisitos de Materiais e Tempo */}
                     <div className="mt-3 space-y-1.5 border-t border-stone-800/80 pt-2 text-xs">
@@ -480,15 +492,28 @@ export const ForgeView: React.FC<ForgeViewProps> = ({
 
             {selectedInventoryItem && selectedUpgrade ? (
               <div className="space-y-4 text-xs">
-                {/* Prévia Antes vs Depois */}
+                {/* Prévia Antes vs Depois com Miniatura 3:4 */}
                 <div className="rounded-lg border border-stone-800 bg-stone-900/50 p-3 space-y-2">
                   <div className="text-[10px] uppercase tracking-wider text-stone-500">Transformação do Item:</div>
-                  <div className="flex items-center gap-2 font-medium">
-                    <span className="text-stone-400 line-through">{selectedInventoryItem.name}</span>
-                    <ArrowRight className="h-4 w-4 text-orange-400" />
-                    <span className="text-amber-300 font-bold">
-                      {selectedUpgrade.applyUpgrade(selectedInventoryItem).name}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <ItemThumbnail
+                      imageUrl={selectedInventoryItem.imageUrl}
+                      name={selectedInventoryItem.name}
+                      category={selectedInventoryItem.type || 'arma'}
+                      size="md"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 font-medium text-xs">
+                        <span className="text-stone-400 line-through truncate">{selectedInventoryItem.name}</span>
+                        <ArrowRight className="h-3.5 w-3.5 text-orange-400 flex-shrink-0" />
+                      </div>
+                      <div className="text-amber-300 font-bold text-xs truncate">
+                        {selectedUpgrade.applyUpgrade(selectedInventoryItem).name}
+                      </div>
+                      <div className="text-[10px] text-orange-400 font-mono mt-0.5">
+                        +{selectedUpgrade.costPo} PO
+                      </div>
+                    </div>
                   </div>
                   <div className="text-[11px] text-stone-400 border-t border-stone-800 pt-1.5">
                     {selectedUpgrade.applyUpgrade(selectedInventoryItem).description}

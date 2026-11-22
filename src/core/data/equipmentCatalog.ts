@@ -33,6 +33,9 @@ export interface CatalogItem {
   craftingTool?: string;
   craftingDays?: number;
   craftingCostPo?: number; // Metade do preço normalmente
+
+  // Imagem ilustrativa (Proporção 3:4)
+  imageUrl?: string;
 }
 
 export const EQUIPMENT_CATALOG: CatalogItem[] = [
@@ -281,7 +284,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: true,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 150,
-    craftingCostPo: 750
+    craftingCostPo: 750,
+    imageUrl: '/artes/items/armadura_placas.jpg'
   },
 
   // ==========================================
@@ -304,7 +308,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     stealthDisadvantage: false,
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 5
+    craftingCostPo: 5,
+    imageUrl: '/artes/items/escudo.jpg'
   },
 
   // ==========================================
@@ -327,7 +332,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
-    craftingCostPo: 1
+    craftingCostPo: 1,
+    imageUrl: '/artes/items/adaga.jpg'
   },
   {
     id: 'wpn_azagaia',
@@ -525,7 +531,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 149',
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
-    craftingCostPo: 7.5
+    craftingCostPo: 7.5,
+    imageUrl: '/artes/items/espada_longa.jpg'
   },
   {
     id: 'wpn_espada_grande',
@@ -757,7 +764,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Livro do Jogador (PHB) p. 150 & XGtE p. 128',
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
-    craftingCostPo: 25
+    craftingCostPo: 25,
+    imageUrl: '/artes/items/pocao_cura.jpg'
   },
   {
     id: 'poc_cura_maior',
@@ -1035,7 +1043,8 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     source: 'Guia do Mestre (DMG) p. 180',
     craftingTool: 'Ferramentas de Tecelão',
     craftingDays: 10,
-    craftingCostPo: 200
+    craftingCostPo: 200,
+    imageUrl: '/artes/items/manto_protecao.jpg'
   },
   {
     id: 'mag_botas_elficas',

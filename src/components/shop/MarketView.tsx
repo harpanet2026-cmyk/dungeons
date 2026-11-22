@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Character, Coins as CoinsType, Item } from '../../core/types/dnd';
 import { CatalogItem, EQUIPMENT_CATALOG, SettlementType, ShopType } from '../../core/data/equipmentCatalog';
 import { coinsToPo, canAfford, deductCoins, addCoins, calculateSellPrice, filterCatalogBySettlement, PartyChest } from '../../core/rules/economy';
+import { ItemThumbnail } from './ItemThumbnail';
 import {
   Coins,
   Store,
@@ -398,6 +399,27 @@ export const MarketView: React.FC<MarketViewProps> = ({
                 </span>
               </div>
 
+              {/* Destaque com Miniatura 3:4 */}
+              <div className="flex items-center gap-3 rounded-lg border border-stone-800 bg-stone-900/40 p-2">
+                <ItemThumbnail
+                  imageUrl={inspectedItem.imageUrl}
+                  name={inspectedItem.name}
+                  category={inspectedItem.category}
+                  size="md"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="font-serif text-xs font-bold text-amber-200 truncate">
+                    {inspectedItem.name}
+                  </div>
+                  <div className="font-mono text-xs font-bold text-amber-400">
+                    {inspectedItem.costPo} PO <span className="text-[10px] text-stone-400 font-normal">({inspectedItem.weight} kg)</span>
+                  </div>
+                  <div className="text-[9px] text-stone-400 uppercase tracking-wider">
+                    {inspectedItem.rarity} • {inspectedItem.category}
+                  </div>
+                </div>
+              </div>
+
               {/* Se for armadura */}
               {inspectedItem.category === 'armadura' || inspectedItem.category === 'escudo' ? (
                 <div className="space-y-2 text-xs">
@@ -495,56 +517,64 @@ export const MarketView: React.FC<MarketViewProps> = ({
                         key={item.id}
                         onMouseEnter={() => setInspectedItem(item)}
                         onClick={() => setInspectedItem(item)}
-                        className={`group relative flex flex-col justify-between rounded-xl border p-4 transition cursor-pointer ${
+                        className={`group relative flex flex-col justify-between rounded-xl border p-3.5 transition cursor-pointer ${
                           isSelected
                             ? 'border-amber-500 bg-[#17151e] shadow-lg shadow-amber-950/30'
                             : 'border-stone-800/80 bg-stone-950/70 hover:border-stone-700 hover:bg-stone-900/40'
                         }`}
                       >
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <h4 className="font-serif text-sm font-bold text-stone-200 group-hover:text-amber-300">
+                        <div className="flex gap-3">
+                          {/* Miniatura Proporção 3:4 com fallback automático */}
+                          <ItemThumbnail
+                            imageUrl={item.imageUrl}
+                            name={item.name}
+                            category={item.category}
+                            size="md"
+                          />
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-1">
+                              <h4 className="font-serif text-sm font-bold text-stone-200 group-hover:text-amber-300 truncate">
                                 {item.name}
                               </h4>
-                              <div className="flex flex-wrap items-center gap-1.5 pt-1 text-[10px]">
-                                <span className="rounded bg-stone-800/80 px-1.5 py-0.5 text-stone-400">
-                                  {item.category.toUpperCase()}
+                              {/* Preço em PO */}
+                              <div className="text-right flex-shrink-0">
+                                <div className="font-mono text-xs font-bold text-amber-400">
+                                  {item.costPo} PO
+                                </div>
+                                <div className="text-[8px] text-stone-500 uppercase">
+                                  {item.rarity}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center gap-1.5 pt-0.5 text-[9px]">
+                              <span className="rounded bg-stone-800/80 px-1 py-0.5 text-stone-400 uppercase">
+                                {item.category}
+                              </span>
+                              {item.damage && (
+                                <span className="rounded border border-red-900/40 bg-red-950/30 px-1 py-0.5 text-red-300">
+                                  ⚔️ {item.damage}
                                 </span>
-                                {item.damage && (
-                                  <span className="rounded border border-red-900/40 bg-red-950/30 px-1.5 py-0.5 text-red-300">
-                                    ⚔️ {item.damage} {item.damageType}
-                                  </span>
-                                )}
-                                {item.baseAc && (
-                                  <span className="rounded border border-blue-900/40 bg-blue-950/30 px-1.5 py-0.5 text-blue-300">
-                                    🛡️ CA {item.baseAc}
-                                  </span>
-                                )}
-                                <span className="text-stone-500">{item.weight} kg</span>
-                              </div>
+                              )}
+                              {item.baseAc && (
+                                <span className="rounded border border-blue-900/40 bg-blue-950/30 px-1 py-0.5 text-blue-300">
+                                  🛡️ CA {item.baseAc}
+                                </span>
+                              )}
+                              <span className="text-stone-500">{item.weight} kg</span>
                             </div>
 
-                            {/* Preço em PO */}
-                            <div className="text-right">
-                              <div className="font-mono text-sm font-bold text-amber-400">
-                                {item.costPo} PO
-                              </div>
-                              <div className="text-[9px] text-stone-500">
-                                {item.rarity.toUpperCase()}
-                              </div>
-                            </div>
+                            <p className="mt-1 line-clamp-2 text-[11px] text-stone-400">
+                              {item.description}
+                            </p>
                           </div>
-
-                          <p className="mt-2 line-clamp-2 text-xs text-stone-400">
-                            {item.description}
-                          </p>
                         </div>
 
                         {/* Botão de Compra */}
                         <div className="mt-3 flex items-center justify-between border-t border-stone-800/60 pt-2">
-                          <span className="text-[10px] text-stone-500">
-                            Fonte: {item.source}
+                          <span className="text-[9px] text-stone-500 truncate max-w-[140px]">
+                            {item.source}
                           </span>
 
                           <button
@@ -598,36 +628,43 @@ export const MarketView: React.FC<MarketViewProps> = ({
                     return (
                       <div
                         key={item.id}
-                        className="flex flex-col justify-between rounded-xl border border-stone-800 bg-stone-950/80 p-4 transition hover:border-stone-700"
+                        className="flex flex-col justify-between rounded-xl border border-stone-800 bg-stone-950/80 p-3.5 transition hover:border-stone-700"
                       >
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <h4 className="font-serif text-sm font-bold text-stone-200">
+                        <div className="flex gap-3">
+                          <ItemThumbnail
+                            imageUrl={item.imageUrl}
+                            name={item.name}
+                            category={item.type || 'geral'}
+                            size="md"
+                          />
+
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-1">
+                              <h4 className="font-serif text-sm font-bold text-stone-200 truncate">
                                 {item.name}
                               </h4>
-                              <div className="flex items-center gap-2 pt-1 text-[10px] text-stone-400">
-                                <span>Qtd: {item.quantity || 1}</span>
-                                <span>•</span>
-                                <span>{item.weight || 1} kg</span>
-                                {item.damage && <span>• ⚔️ {item.damage}</span>}
-                                {item.armorBonus && <span>• 🛡️ +{item.armorBonus} CA</span>}
+                              <div className="text-right flex-shrink-0">
+                                <div className="font-mono text-sm font-bold text-emerald-400">
+                                  +{sellPrice} PO
+                                </div>
+                                <div className="text-[8px] text-stone-500">Valor de Venda</div>
                               </div>
                             </div>
 
-                            <div className="text-right">
-                              <div className="font-mono text-sm font-bold text-emerald-400">
-                                +{sellPrice} PO
-                              </div>
-                              <div className="text-[9px] text-stone-500">Valor de Venda</div>
+                            <div className="flex items-center gap-2 pt-0.5 text-[10px] text-stone-400">
+                              <span>Qtd: {item.quantity || 1}</span>
+                              <span>•</span>
+                              <span>{item.weight || 1} kg</span>
+                              {item.damage && <span>• ⚔️ {item.damage}</span>}
+                              {item.armorBonus && <span>• 🛡️ +{item.armorBonus} CA</span>}
                             </div>
+
+                            {item.description && (
+                              <p className="mt-1 line-clamp-2 text-[11px] text-stone-400">
+                                {item.description}
+                              </p>
+                            )}
                           </div>
-
-                          {item.description && (
-                            <p className="mt-2 line-clamp-2 text-xs text-stone-400">
-                              {item.description}
-                            </p>
-                          )}
                         </div>
 
                         <div className="mt-3 flex items-center justify-end border-t border-stone-800/60 pt-2">

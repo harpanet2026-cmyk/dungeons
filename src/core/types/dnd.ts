@@ -78,6 +78,7 @@ export interface Item {
   stealthDisadvantage?: boolean;
   damage?: string;
   damageType?: string;
+  imageUrl?: string;
 }
 
 export interface Spell {
