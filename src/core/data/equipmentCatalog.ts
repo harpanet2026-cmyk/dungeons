@@ -125,7 +125,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/armadura_couro.jpg'
+    imageUrl: '/artes/items/gibao_peles.svg'
   },
   {
     id: 'arm_camisao_malha',
@@ -167,7 +167,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/cota_malha.jpg'
+    imageUrl: '/artes/items/brunea.svg'
   },
   {
     id: 'arm_peitoral_aco',
@@ -233,7 +233,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
     craftingCostPo: 15,
-    imageUrl: '/artes/items/cota_malha.jpg'
+    imageUrl: '/artes/items/cota_aneis.svg'
   },
   {
     id: 'arm_cota_malha_pesada',
@@ -275,7 +275,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 20,
     craftingCostPo: 100,
-    imageUrl: '/artes/items/armadura_placas.jpg'
+    imageUrl: '/artes/items/cota_talas.svg'
   },
   {
     id: 'arm_placas_completa',
@@ -364,7 +364,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 0.25,
-    imageUrl: '/artes/items/espada_longa.jpg'
+    imageUrl: '/artes/items/lanca.svg'
   },
   {
     id: 'wpn_bordao',
@@ -384,7 +384,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 1,
     craftingCostPo: 0.1,
-    imageUrl: '/artes/items/espada_longa.jpg'
+    imageUrl: '/artes/items/lanca.svg'
   },
   {
     id: 'wpn_lanca',
@@ -404,7 +404,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 0.5,
-    imageUrl: '/artes/items/espada_longa.jpg'
+    imageUrl: '/artes/items/lanca.svg'
   },
   {
     id: 'wpn_maca',
@@ -424,7 +424,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/items/maca.svg'
   },
   {
     id: 'wpn_machadinha',
@@ -468,7 +468,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/arco_longo.jpg'
+    imageUrl: '/artes/items/arco_longo.svg'
   },
   {
     id: 'wpn_besta_leve',
@@ -488,7 +488,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/espada_curta.jpg'
+    imageUrl: '/artes/items/besta.svg'
   },
   {
     id: 'wpn_funda',
@@ -652,7 +652,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
     craftingCostPo: 15,
-    imageUrl: '/artes/items/machado_grande.jpg'
+    imageUrl: '/artes/items/machado_grande.svg'
   },
   {
     id: 'wpn_martelo_guerra',
@@ -672,7 +672,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
     craftingCostPo: 7.5,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/items/martelo_guerra.svg'
   },
   {
     id: 'wpn_malho',
@@ -692,7 +692,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/items/martelo_guerra.svg'
   },
   {
     id: 'wpn_alabarda',
@@ -736,7 +736,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/arco_longo.jpg'
+    imageUrl: '/artes/items/arco_longo.svg'
   },
   {
     id: 'wpn_besta_pesada',
@@ -756,7 +756,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/espada_curta.jpg'
+    imageUrl: '/artes/items/besta.svg'
   },
   {
     id: 'wpn_besta_mao',
@@ -776,7 +776,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 8,
     craftingCostPo: 37.5,
-    imageUrl: '/artes/items/adaga.jpg'
+    imageUrl: '/artes/items/besta.svg'
   },
 
   // ==========================================
@@ -860,7 +860,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/items/fogo_alquimico.svg'
   },
   {
     id: 'poc_acido',
@@ -876,7 +876,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/items/fogo_alquimico.svg'
   },
   {
     id: 'poc_agua_benta',
@@ -908,7 +908,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Envenenador',
     craftingDays: 2,
     craftingCostPo: 50,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/items/fogo_alquimico.svg'
   },
 
   // ==========================================
@@ -960,7 +960,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/items/fogo_alquimico.svg'
   },
   {
     id: 'eq_kit_primeiros_socorros',
@@ -992,7 +992,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 1,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/items/martelo_guerra.svg'
   },
   {
     id: 'eq_grimorio',
@@ -1024,7 +1024,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
     craftingCostPo: 10,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/items/martelo_guerra.svg'
   },
   {
     id: 'tool_suprimentos_alquimista',
@@ -1040,7 +1040,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/items/fogo_alquimico.svg'
   },
   {
     id: 'tool_kit_herbalismo',

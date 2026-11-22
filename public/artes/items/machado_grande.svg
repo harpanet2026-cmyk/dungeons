@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+      
+  <defs>
+    <!-- Gradiente de Fundo Dark Fantasy com vinheta -->
+    <radialGradient id="bgVignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1c1a24" />
+      <stop offset="60%" stop-color="#0e0d14" />
+      <stop offset="100%" stop-color="#050508" />
+    </radialGradient>
+
+    <!-- Gradientes de Metal de Aço Polido -->
+    <linearGradient id="steelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f0f4f8" />
+      <stop offset="25%" stop-color="#94a3b8" />
+      <stop offset="50%" stop-color="#475569" />
+      <stop offset="75%" stop-color="#cbd5e1" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <linearGradient id="darkSteel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748b" />
+      <stop offset="50%" stop-color="#334155" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <!-- Gradiente de Madeira Escura / Couro -->
+    <linearGradient id="woodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#451a03" />
+      <stop offset="40%" stop-color="#78350f" />
+      <stop offset="70%" stop-color="#271105" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <linearGradient id="leatherGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5c2c16" />
+      <stop offset="60%" stop-color="#381a0d" />
+      <stop offset="100%" stop-color="#1f0d06" />
+    </linearGradient>
+
+    <!-- Gradiente de Bronze / Ouro Envelhecido -->
+    <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="40%" stop-color="#d97706" />
+      <stop offset="80%" stop-color="#78350f" />
+      <stop offset="100%" stop-color="#451a03" />
+    </linearGradient>
+
+    <!-- Filtro de Sombra Suave -->
+    <filter id="dropShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="3" dy="6" stdDeviation="5" flood-color="#000000" flood-opacity="0.8" />
+    </filter>
+
+    <!-- Filtro de Brilho / Glow de Forja -->
+    <filter id="forgeGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+      <rect width="300" height="400" fill="url(#bgVignette)" />
+      <circle cx="150" cy="130" r="105" fill="#dc2626" opacity="0.08" filter="url(#forgeGlow)" />
+
+      <g filter="url(#dropShadow)" transform="rotate(-15 150 200)">
+        <!-- Cabo longo e maciço com empunhadura dupla de batalha -->
+        <rect x="144" y="60" width="14" height="300" fill="url(#woodGrad)" rx="3" stroke="#1c1917" stroke-width="2" />
+        
+        <!-- Faixas de couro escuro reforçado no meio e na base -->
+        <rect x="143" y="200" width="16" height="40" fill="url(#leatherGrad)" rx="1" />
+        <rect x="143" y="280" width="16" height="60" fill="url(#leatherGrad)" rx="1" />
+        <!-- Pomo de ferro pontiagudo na base -->
+        <polygon points="151,375 142,360 160,360" fill="url(#steelGrad)" stroke="#0f172a" stroke-width="2" />
+
+        <!-- Encaixe central de ferro na cabeça do machado -->
+        <rect x="138" y="75" width="26" height="65" fill="url(#brassGrad)" rx="4" stroke="#451a03" stroke-width="2" />
+
+        <!-- LÂMINA ESQUERDA GIGANTE CRESCENTE -->
+        <path d="M 140 85 C 80 50, 45 80, 35 110 C 45 150, 80 165, 140 130 Z" fill="url(#steelGrad)" stroke="#0f172a" stroke-width="2.5" />
+        <!-- Fio afiado da lâmina esquerda com entalhes de batalha -->
+        <path d="M 35 110 C 45 85, 75 60, 135 88" fill="none" stroke="#f8fafc" stroke-width="2" opacity="0.8" />
+        <!-- Runas na lâmina -->
+        <path d="M 80 100 L 90 115 L 100 100 M 90 105 L 90 120" stroke="#f59e0b" stroke-width="1.5" opacity="0.8" />
+
+        <!-- LÂMINA DIREITA GIGANTE CRESCENTE (Gume Duplo / Double-Bitted) -->
+        <path d="M 162 85 C 222 50, 257 80, 267 110 C 257 150, 222 165, 162 130 Z" fill="url(#steelGrad)" stroke="#0f172a" stroke-width="2.5" />
+        <!-- Fio afiado da lâmina direita -->
+        <path d="M 267 110 C 257 85, 227 60, 167 88" fill="none" stroke="#f8fafc" stroke-width="2" opacity="0.8" />
+        <!-- Runas na lâmina direita -->
+        <path d="M 220 100 L 210 115 L 200 100 M 210 105 L 210 120" stroke="#f59e0b" stroke-width="1.5" opacity="0.8" />
+
+        <!-- Espigão de aço superior -->
+        <polygon points="151,45 145,75 157,75" fill="url(#steelGrad)" stroke="#0f172a" stroke-width="2" />
+        <line x1="151" y1="46" x2="151" y2="75" stroke="#f8fafc" stroke-width="1.5" />
+      </g>
+    </svg>
