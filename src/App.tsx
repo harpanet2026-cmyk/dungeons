@@ -734,7 +734,15 @@ export const App: React.FC = () => {
 
         {/* 1. ABA: MESA DE JOGO (CARDS) */}
         {activeTab === 'sheet' && (
-          <div className="space-y-6">
+          <div
+            className="space-y-6 rounded-2xl border border-amber-900/30 p-4 sm:p-6 shadow-2xl overflow-hidden"
+            style={{
+              backgroundImage: `linear-gradient(to bottom, rgba(8, 9, 13, 0.70) 0%, rgba(8, 9, 13, 0.85) 50%, rgba(8, 9, 13, 0.98) 100%), url('/artes/loja/mesa.jpg')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+              backgroundAttachment: 'local'
+            }}
+          >
             <div className="flex flex-wrap justify-between items-center gap-4 border-b border-[#231b14] pb-4">
               <div>
                 <h2 className="font-cinzel text-xl sm:text-2xl font-bold gold-gradient-text tracking-wide">

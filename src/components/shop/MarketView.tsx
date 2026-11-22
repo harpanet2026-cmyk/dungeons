@@ -159,7 +159,15 @@ export const MarketView: React.FC<MarketViewProps> = ({
   const equippedWeapon = activeCharacter?.weapons?.[0];
 
   return (
-    <div className="space-y-6 text-stone-200">
+    <div
+      className="relative space-y-6 text-stone-200 rounded-2xl border border-amber-900/50 p-4 sm:p-6 shadow-2xl overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(8, 9, 13, 0.60) 0%, rgba(8, 9, 13, 0.80) 45%, rgba(8, 9, 13, 0.96) 100%), url('/artes/loja/loja.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundAttachment: 'local'
+      }}
+    >
       {/* Cabeçalho do Mercado */}
       <div className="relative overflow-hidden rounded-xl border border-amber-900/40 bg-gradient-to-r from-stone-950 via-[#15131b] to-stone-950 p-6 shadow-2xl">
         <div className="absolute right-0 top-0 h-full w-96 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-600/10 via-transparent to-transparent pointer-events-none" />

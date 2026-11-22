@@ -60,7 +60,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Costureiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/armadura_couro.jpg'
+    imageUrl: '/artes/loja/armadura_de_couro.jpg'
   },
   {
     id: 'arm_couro',
@@ -80,7 +80,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/armadura_couro.jpg'
+    imageUrl: '/artes/loja/armadura_de_couro.jpg'
   },
   {
     id: 'arm_couro_batido',
@@ -100,7 +100,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 5,
     craftingCostPo: 22.5,
-    imageUrl: '/artes/items/armadura_couro.jpg'
+    imageUrl: '/artes/loja/armadura_de_couro.jpg'
   },
 
   // ==========================================
@@ -125,7 +125,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/gibao_peles.jpg'
+    imageUrl: '/artes/loja/gibao_de_peles.jpg'
   },
   {
     id: 'arm_camisao_malha',
@@ -146,7 +146,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/cota_malha.jpg'
+    imageUrl: '/artes/loja/cota_de_malha.jpg'
   },
   {
     id: 'arm_brunea',
@@ -188,7 +188,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 40,
     craftingCostPo: 200,
-    imageUrl: '/artes/items/peitoral_aco.jpg'
+    imageUrl: '/artes/loja/peitoral_de_aco.jpg'
   },
   {
     id: 'arm_meia_armadura',
@@ -209,7 +209,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 75,
     craftingCostPo: 375,
-    imageUrl: '/artes/items/peitoral_aco.jpg'
+    imageUrl: '/artes/loja/peitoral_de_aco.jpg'
   },
 
   // ==========================================
@@ -254,7 +254,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 8,
     craftingCostPo: 37.5,
-    imageUrl: '/artes/items/cota_malha.jpg'
+    imageUrl: '/artes/loja/cota_de_malha.jpg'
   },
   {
     id: 'arm_cota_talas_pesada',
@@ -320,7 +320,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/escudo.jpg'
+    imageUrl: '/artes/loja/escudo_redondo.jpg'
   },
 
   // ==========================================
@@ -796,7 +796,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/pocao_cura.jpg'
+    imageUrl: '/artes/loja/pocao_de_cura.jpg'
   },
   {
     id: 'poc_cura_maior',
@@ -812,7 +812,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 5,
     craftingCostPo: 100,
-    imageUrl: '/artes/items/pocao_cura_maior.jpg'
+    imageUrl: '/artes/loja/pocao_de_cura.jpg'
   },
   {
     id: 'poc_cura_superior',
@@ -828,7 +828,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 15,
     craftingCostPo: 1000,
-    imageUrl: '/artes/items/pocao_cura_maior.jpg'
+    imageUrl: '/artes/loja/pocao_de_cura.jpg'
   },
   {
     id: 'poc_antidoto',
@@ -844,7 +844,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/pocao_cura.jpg'
+    imageUrl: '/artes/loja/antidoto.jpg'
   },
   {
     id: 'poc_fogo_alquimico',
@@ -860,7 +860,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/fogo_alquimico.jpg'
   },
   {
     id: 'poc_acido',
@@ -876,7 +876,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/fogo_alquimico.jpg'
   },
   {
     id: 'poc_agua_benta',
@@ -892,7 +892,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/pocao_cura.jpg'
+    imageUrl: '/artes/loja/simbolo_sagrado.jpg'
   },
   {
     id: 'poc_veneno_basico',
@@ -908,7 +908,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Envenenador',
     craftingDays: 2,
     craftingCostPo: 50,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/fogo_alquimico.jpg'
   },
 
   // ==========================================
@@ -928,7 +928,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 1,
-    imageUrl: '/artes/items/bolsa_carga.jpg'
+    imageUrl: '/artes/loja/mochila.jpg'
   },
   {
     id: 'eq_corda_seda',
@@ -944,7 +944,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Tecelão',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/bolsa_carga.jpg'
+    imageUrl: '/artes/loja/corda.jpg'
   },
   {
     id: 'eq_lanterna_coberta',
@@ -960,7 +960,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/lanterna.jpg'
   },
   {
     id: 'eq_kit_primeiros_socorros',
@@ -976,7 +976,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/pocao_cura.jpg'
+    imageUrl: '/artes/loja/pocao_de_cura.jpg'
   },
   {
     id: 'eq_pe_de_cabra',
@@ -1008,7 +1008,39 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Caligrafia',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/manto_protecao.jpg'
+    imageUrl: '/artes/loja/grimorio.jpg'
+  },
+  {
+    id: 'eq_foco_arcano',
+    name: 'Foco Arcano (Varinha / Orbe / Cetro)',
+    category: 'geral',
+    shopType: 'arcano',
+    costPo: 10,
+    weight: 0.5,
+    rarity: 'comum',
+    minSettlement: 'vilarejo',
+    description: 'Item especial — um orbe de cristal, varinha esculpida ou cajado — projetado para canalizar o fluxo de magias arcanas.',
+    source: 'Livro do Jogador (PHB) p. 150',
+    craftingTool: 'Ferramentas de Joalheiro',
+    craftingDays: 1,
+    craftingCostPo: 5,
+    imageUrl: '/artes/loja/foco_arcano_varinha_orbe.jpg'
+  },
+  {
+    id: 'eq_simbolo_sagrado',
+    name: 'Símbolo Sagrado (Amuleto / Relicário)',
+    category: 'geral',
+    shopType: 'emporio',
+    costPo: 5,
+    weight: 0.5,
+    rarity: 'comum',
+    minSettlement: 'vilarejo',
+    description: 'Representação sagrada da divindade ou fé de um clérigo ou paladino, necessária para canalizar magias divinas.',
+    source: 'Livro do Jogador (PHB) p. 150',
+    craftingTool: 'Ferramentas de Ferreiro',
+    craftingDays: 1,
+    craftingCostPo: 2.5,
+    imageUrl: '/artes/loja/simbolo_sagrado.jpg'
   },
   {
     id: 'tool_ferramentas_ferreiro',
@@ -1024,7 +1056,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
     craftingCostPo: 10,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/loja/kit_ferramentas.jpg'
   },
   {
     id: 'tool_suprimentos_alquimista',
@@ -1040,7 +1072,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/kit_ferramentas.jpg'
   },
   {
     id: 'tool_kit_herbalismo',
@@ -1056,7 +1088,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/pocao_cura.jpg'
+    imageUrl: '/artes/loja/kit_ferramentas.jpg'
   },
   {
     id: 'tool_ferramentas_ladrao',
@@ -1072,7 +1104,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/adaga.jpg'
+    imageUrl: '/artes/loja/kit_ferramentas.jpg'
   },
 
   // ==========================================

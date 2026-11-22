@@ -168,7 +168,15 @@ export const ForgeView: React.FC<ForgeViewProps> = ({
   };
 
   return (
-    <div className="space-y-6 text-stone-200">
+    <div
+      className="relative space-y-6 text-stone-200 rounded-2xl border border-orange-950/50 p-4 sm:p-6 shadow-2xl overflow-hidden"
+      style={{
+        backgroundImage: `linear-gradient(to bottom, rgba(14, 11, 16, 0.70) 0%, rgba(14, 11, 16, 0.85) 45%, rgba(8, 9, 13, 0.96) 100%), url('/artes/loja/loja.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center top',
+        backgroundAttachment: 'local'
+      }}
+    >
       {/* Cabeçalho da Forja */}
       <div className="relative overflow-hidden rounded-xl border border-orange-950/60 bg-gradient-to-r from-stone-950 via-[#1b120f] to-stone-950 p-6 shadow-2xl">
         <div className="absolute right-0 top-0 h-full w-96 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-600/15 via-red-900/10 to-transparent pointer-events-none" />
