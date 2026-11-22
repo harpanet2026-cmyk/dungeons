@@ -36,5 +36,6 @@ cloudflared.exe
 
 # PDFs and raw extracted art
 *.pdf
+referencias/
 public/monsters_art/
 scratch/

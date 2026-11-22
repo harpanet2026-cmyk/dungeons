@@ -2,10 +2,12 @@ import { Character, Condition, SkillName, AbilityName, Enemy, DiceRollMode } fro
 import { getAbilityModifier, getProficiencyBonus, getSavingThrowModifier, getSkillModifier, SKILL_ABILITY_MAP } from '../rules/calculations';
 import { SAMPLE_SPELLS, COMMON_ARMORS, COMMON_WEAPONS } from '../rules/srdData';
 import { createEnemyInstance } from '../rules/monsterData';
+import { PartyChest, DEFAULT_PARTY_CHEST } from '../rules/economy';
 
 const STORAGE_KEY = 'dungeons_gemini_characters_v1';
 const STORAGE_ENEMIES_KEY = 'dungeons_gemini_enemies_v1';
 const STORAGE_DICE_MODE_KEY = 'dungeons_gemini_dice_mode_v1';
+const STORAGE_PARTY_CHEST_KEY = 'dungeons_gemini_party_chest_v1';
 
 export const INITIAL_SAMPLE_CHARACTERS: Character[] = [
   {
@@ -528,5 +530,25 @@ export class SessionManager {
     const log = `${sourceTag} ${params.attackerName} ataca ${params.targetName}: D20 (${d20}) + ${params.atkBonus} = ${totalAtk} vs CA ${params.targetAc} -> ${outcome}`;
 
     return { isHit, isCrit, d20, totalAtk, damage, log };
+  }
+
+  static getPartyChest(): PartyChest {
+    try {
+      const data = localStorage.getItem(STORAGE_PARTY_CHEST_KEY);
+      if (data) {
+        return JSON.parse(data);
+      }
+    } catch (e) {
+      console.warn('Erro ao carregar baú do grupo:', e);
+    }
+    return DEFAULT_PARTY_CHEST;
+  }
+
+  static savePartyChest(chest: PartyChest): void {
+    try {
+      localStorage.setItem(STORAGE_PARTY_CHEST_KEY, JSON.stringify(chest));
+    } catch (e) {
+      console.warn('Erro ao salvar baú do grupo:', e);
+    }
   }
 }

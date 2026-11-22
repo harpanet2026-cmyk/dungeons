@@ -17,21 +17,25 @@ import { QuickDiceTray } from './components/dice/QuickDiceTray';
 import { GeminiLiveChat } from './components/gemini/GeminiLiveChat';
 import { CampaignJournal } from './components/campaign/CampaignJournal';
 import { SpellCompendiumModal } from './components/compendium/SpellCompendiumModal';
+import { MarketView } from './components/shop/MarketView';
+import { ForgeView } from './components/forge/ForgeView';
+import { PartyChest } from './core/rules/economy';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
 import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
 import { generateRandomHero } from './core/rules/characterGenerator';
-import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords, BookOpen, Compass } from 'lucide-react';
+import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords, BookOpen, Compass, Store, Hammer } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>(() => SessionManager.getCharacters());
   const [enemies, setEnemies] = useState<Enemy[]>(() => SessionManager.getEnemies());
+  const [partyChest, setPartyChest] = useState<PartyChest>(() => SessionManager.getPartyChest());
   const [diceMode, setDiceMode] = useState<DiceRollMode>(() => SessionManager.getDiceMode());
   const [pendingManualRoll, setPendingManualRoll] = useState<PendingRoll | null>(null);
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => AuthManager.getCurrentUser());
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
   const [isSpellCompendiumOpen, setIsSpellCompendiumOpen] = useState<boolean>(false);
 
-  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create'>('sheet');
+  const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create' | 'market' | 'forge'>('sheet');
   const [selectedCharacterId, setSelectedCharacterId] = useState<string>(() => characters[0]?.id || '');
   const [eventLog, setEventLog] = useState<string | null>(null);
   const [lastDiceRoll, setLastDiceRoll] = useState<{
@@ -55,6 +59,10 @@ export const App: React.FC = () => {
   }, [enemies]);
 
   useEffect(() => {
+    SessionManager.savePartyChest(partyChest);
+  }, [partyChest]);
+
+  useEffect(() => {
     SessionManager.setDiceMode(diceMode);
   }, [diceMode]);
 
@@ -63,9 +71,13 @@ export const App: React.FC = () => {
     setTimeout(() => setEventLog(null), 4500);
   };
 
-  const scrollToContent = (tab: 'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create') => {
+  const scrollToContent = (tab: 'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create' | 'market' | 'forge') => {
     setActiveTab(tab);
     contentRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleUpdateCharacter = (updatedChar: Character) => {
+    setCharacters(prev => prev.map(c => c.id === updatedChar.id ? updatedChar : c));
   };
 
   const handleDistributeCoins = (coinsPerHero: Coins) => {
@@ -399,6 +411,22 @@ export const App: React.FC = () => {
               Diário & Quests
             </button>
             <button
+              onClick={() => scrollToContent('market')}
+              className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'market' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
+              title="Mercado & Lojas de D&D 5e"
+            >
+              <Store className="w-3.5 h-3.5 text-amber-400" />
+              Mercado
+            </button>
+            <button
+              onClick={() => scrollToContent('forge')}
+              className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'forge' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
+              title="Forja Rúnica & Crafting de Xanathar"
+            >
+              <Hammer className="w-3.5 h-3.5 text-orange-400" />
+              Forja
+            </button>
+            <button
               onClick={() => setIsSpellCompendiumOpen(true)}
               className="transition-colors py-1 text-stone-400 hover:text-purple-300 flex items-center gap-1"
               title="Abrir Grimório Oficial do SRD 5e"
@@ -555,6 +583,22 @@ export const App: React.FC = () => {
               <Sparkles className="w-4 h-4 text-[#f5ba42]" />
               CENTRAL GEMINI PRO
             </button>
+
+            <button
+              onClick={() => scrollToContent('market')}
+              className="glass-btn rounded-full px-8 py-3 text-xs tracking-[0.2em] font-bold shadow-xl flex items-center gap-2"
+            >
+              <Store className="w-4 h-4 text-amber-400" />
+              MERCADO
+            </button>
+
+            <button
+              onClick={() => scrollToContent('forge')}
+              className="glass-btn rounded-full px-8 py-3 text-xs tracking-[0.2em] font-bold shadow-xl flex items-center gap-2"
+            >
+              <Hammer className="w-4 h-4 text-orange-400" />
+              FORJA
+            </button>
           </div>
         </div>
 
@@ -661,6 +705,18 @@ export const App: React.FC = () => {
             className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'journal' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
           >
             📜 Diário
+          </button>
+          <button
+            onClick={() => setActiveTab('market')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'market' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
+          >
+            🏪 Mercado
+          </button>
+          <button
+            onClick={() => setActiveTab('forge')}
+            className={`px-3 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider ${activeTab === 'forge' ? 'bronze-btn' : 'bg-[#141824] text-stone-400'}`}
+          >
+            ⚒️ Forja
           </button>
           <button
             onClick={() => setIsSpellCompendiumOpen(true)}
@@ -856,6 +912,31 @@ export const App: React.FC = () => {
           <CharacterCreator
             onAddCharacter={handleAddCharacter}
             onCancel={() => setActiveTab('sheet')}
+          />
+        )}
+
+        {/* 8. ABA: MERCADO & LOJAS D&D 5E */}
+        {activeTab === 'market' && (
+          <MarketView
+            characters={characters}
+            selectedCharacterId={selectedCharacterId}
+            onSelectCharacterId={setSelectedCharacterId}
+            partyChest={partyChest}
+            onUpdatePartyChest={setPartyChest}
+            onUpdateCharacter={handleUpdateCharacter}
+            onLogEvent={showNotification}
+          />
+        )}
+
+        {/* 9. ABA: FORJA & CRAFTING (XANATHAR) */}
+        {activeTab === 'forge' && (
+          <ForgeView
+            characters={characters}
+            selectedCharacterId={selectedCharacterId}
+            onSelectCharacterId={setSelectedCharacterId}
+            onUpdateCharacter={handleUpdateCharacter}
+            onLogEvent={showNotification}
+            diceMode={diceMode}
           />
         )}
       </div>
