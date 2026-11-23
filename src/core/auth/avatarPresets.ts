@@ -345,6 +345,41 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/loja/kit_de_herbalismo.jpg'
   },
   {
+    id: 'avatar_brunea_art',
+    name: 'Brúnea de Escamas',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/loja/brunea.jpg'
+  },
+  {
+    id: 'avatar_cota_aneis_art',
+    name: 'Cota de Anéis',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/loja/cota_aneis.jpg'
+  },
+  {
+    id: 'avatar_cota_talas_art',
+    name: 'Cota de Talas',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/loja/cota_talas.jpg'
+  },
+  {
+    id: 'avatar_kit_primeiros_socorros_art',
+    name: 'Kit de Primeiros Socorros',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/kit_primeiros_socorros.jpg'
+  },
+  {
+    id: 'avatar_acido_corrosivo_art',
+    name: 'Ácido Corrosivo',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/acido_corrosivo.jpg'
+  },
+  {
     id: 'avatar_dm_tome',
     name: 'Mestre da Masmorra',
     category: 'mestre',

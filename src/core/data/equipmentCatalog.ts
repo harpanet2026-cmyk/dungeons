@@ -876,7 +876,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/loja/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/acido_corrosivo.jpg'
   },
   {
     id: 'poc_agua_benta',
@@ -976,7 +976,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/loja/pocao_de_cura.jpg'
+    imageUrl: '/artes/loja/kit_primeiros_socorros.jpg'
   },
   {
     id: 'eq_pe_de_cabra',

@@ -130,6 +130,11 @@ const ART_OPTIONS = [
   { id: 'art_veneno_basico', name: 'Veneno Básico das Sombras', path: '/artes/loja/veneno_basico.jpg' },
   { id: 'art_suprimentos_alquimista', name: 'Suprimentos de Alquimista', path: '/artes/loja/suprimentos_de_alquimista.jpg' },
   { id: 'art_kit_herbalismo', name: 'Kit de Herbalismo', path: '/artes/loja/kit_de_herbalismo.jpg' },
+  { id: 'art_brunea', name: 'Brúnea (Armadura de Escamas)', path: '/artes/loja/brunea.jpg' },
+  { id: 'art_cota_aneis', name: 'Cota de Anéis de Ferro', path: '/artes/loja/cota_aneis.jpg' },
+  { id: 'art_cota_talas', name: 'Cota de Talas de Aço', path: '/artes/loja/cota_talas.jpg' },
+  { id: 'art_kit_primeiros_socorros', name: 'Kit de Primeiros Socorros', path: '/artes/loja/kit_primeiros_socorros.jpg' },
+  { id: 'art_acido_corrosivo', name: 'Frasco de Ácido Corrosivo', path: '/artes/loja/acido_corrosivo.jpg' },
 ];
 
 const getArtIndexForCharacter = (char: Character): number => {
