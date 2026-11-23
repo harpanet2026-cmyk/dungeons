@@ -945,7 +945,7 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
                       const forMod = getAbilityModifier(character.baseAbilities.for);
                       const desMod = getAbilityModifier(character.baseAbilities.des);
                       const atkBonus = profBonus + (wpn.damageType?.includes('Perfurante') ? Math.max(forMod, desMod) : forMod);
-                      const wpnImg = wpn.imageUrl || getWeaponImage(wpn.name || wpn.id);
+                      const wpnImg = (wpn as any).imageUrl || getWeaponImage(wpn.name || wpn.id);
 
                       return (
                         <div
@@ -1416,7 +1416,6 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
                     <span className="text-[9px] font-bold text-[#7a571f] uppercase tracking-wider">
                       Carga: ~{character.inventory.reduce((acc, i) => acc + (i.weight * i.quantity), 0).toFixed(1)} kg / Limite: {character.baseAbilities.for * 7.5} kg
                     </span>
-                  </div>
                   </div>
 
                   {/* DUAS COLUNAS DE LINHAS DE PERGAMINHO DO INVENTÁRIO (IDÊNTICO À ERELYNN) */}
