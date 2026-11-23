@@ -268,18 +268,46 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/cimitarra.jpeg'
   },
   {
-    id: 'avatar_arco_art',
-    name: 'Arco de Caça',
+    id: 'avatar_arco_curto_art',
+    name: 'Arco Curto',
     category: 'ladino',
     iconName: 'Compass',
-    image: '/artes/arco.jpeg'
+    image: '/artes/arco_curto.jpeg'
   },
   {
-    id: 'avatar_besta_art',
-    name: 'Besta de Precisão',
+    id: 'avatar_arco_longo_art',
+    name: 'Arco Longo',
+    category: 'guerreiro',
+    iconName: 'Compass',
+    image: '/artes/arco_longo.jpg'
+  },
+  {
+    id: 'avatar_besta_pesada_art',
+    name: 'Besta Pesada',
+    category: 'guerreiro',
+    iconName: 'Compass',
+    image: '/artes/besta_pesada.jpeg'
+  },
+  {
+    id: 'avatar_besta_mao_art',
+    name: 'Besta de Mão',
     category: 'ladino',
     iconName: 'Compass',
-    image: '/artes/besta.jpeg'
+    image: '/artes/besta_de_mao.jpeg'
+  },
+  {
+    id: 'avatar_funda_art',
+    name: 'Funda',
+    category: 'ladino',
+    iconName: 'Compass',
+    image: '/artes/funda.jpeg'
+  },
+  {
+    id: 'avatar_kit_ferreiro_art',
+    name: 'Kit de Ferreiro',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/loja/kit_ferreiro.jpeg'
   },
   {
     id: 'avatar_dm_tome',

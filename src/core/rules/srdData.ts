@@ -325,9 +325,11 @@ export const COMMON_WEAPONS: Item[] = [
   { id: 'wpn_martelo_combate', name: 'Martelo de Guerra', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'concussão', description: 'Versátil (1d10)', imageUrl: '/artes/martelo_de_guerra.jpeg' },
   { id: 'wpn_maca', name: 'Maça de Aço', quantity: 1, weight: 2, type: 'arma', damage: '1d6', damageType: 'concussão', description: 'Simples', imageUrl: '/artes/maca.jpeg' },
   { id: 'wpn_lanca', name: 'Lança', quantity: 1, weight: 1.5, type: 'arma', damage: '1d6/1d8', damageType: 'perfurante', description: 'Versátil, Arremesso (6/18m)', imageUrl: '/artes/lanca.jpeg' },
-  { id: 'wpn_arco_curto', name: 'Arco Curto', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Munição (24/96m), Duas mãos', imageUrl: '/artes/arco.jpeg' },
-  { id: 'wpn_arco_longo', name: 'Arco Longo', quantity: 1, weight: 1.5, type: 'arma', damage: '1d8', damageType: 'perfurante', description: 'Munição (45/180m), Pesada, Duas mãos', imageUrl: '/artes/arco.jpeg' },
-  { id: 'wpn_besta_pesada', name: 'Besta Pesada', quantity: 1, weight: 4.5, type: 'arma', damage: '1d10', damageType: 'perfurante', description: 'Munição (30/120m), Recarga, Duas mãos', imageUrl: '/artes/besta.jpeg' },
+  { id: 'wpn_arco_curto', name: 'Arco Curto', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Munição (24/96m), Duas mãos', imageUrl: '/artes/arco_curto.jpeg' },
+  { id: 'wpn_arco_longo', name: 'Arco Longo', quantity: 1, weight: 1.5, type: 'arma', damage: '1d8', damageType: 'perfurante', description: 'Munição (45/180m), Pesada, Duas mãos', imageUrl: '/artes/arco_longo.jpg' },
+  { id: 'wpn_besta_pesada', name: 'Besta Pesada', quantity: 1, weight: 4.5, type: 'arma', damage: '1d10', damageType: 'perfurante', description: 'Munição (30/120m), Recarga, Duas mãos', imageUrl: '/artes/besta_pesada.jpeg' },
+  { id: 'wpn_besta_mao', name: 'Besta de Mão', quantity: 1, weight: 1.5, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Leve, Munição (9/36m), Recarga', imageUrl: '/artes/besta_de_mao.jpeg' },
+  { id: 'wpn_funda', name: 'Funda', quantity: 1, weight: 0.1, type: 'arma', damage: '1d4', damageType: 'concussão', description: 'Munição (9/36m)', imageUrl: '/artes/funda.jpeg' },
   { id: 'wpn_bordao', name: 'Bordão', quantity: 1, weight: 2, type: 'arma', damage: '1d6/1d8', damageType: 'concussão', description: 'Versátil', imageUrl: '/artes/lanca.jpeg' },
 ];
 
@@ -344,8 +346,13 @@ export const getWeaponImage = (nameOrId?: string): string => {
   if (n.includes('martelo') || n.includes('warhammer')) return '/artes/martelo_de_guerra.jpeg';
   if (n.includes('maça') || n.includes('maca') || n.includes('mace')) return '/artes/maca.jpeg';
   if (n.includes('lança') || n.includes('lanca') || n.includes('spear')) return '/artes/lanca.jpeg';
-  if (n.includes('besta') || n.includes('crossbow')) return '/artes/besta.jpeg';
-  if (n.includes('arco') || n.includes('bow')) return '/artes/arco.jpeg';
+  if (n.includes('besta de mão') || n.includes('besta de mao') || n.includes('hand crossbow')) return '/artes/besta_de_mao.jpeg';
+  if (n.includes('besta pesada') || n.includes('heavy crossbow')) return '/artes/besta_pesada.jpeg';
+  if (n.includes('besta') || n.includes('crossbow')) return '/artes/besta_pesada.jpeg';
+  if (n.includes('arco longo') || n.includes('longbow')) return '/artes/arco_longo.jpg';
+  if (n.includes('arco curto') || n.includes('shortbow')) return '/artes/arco_curto.jpeg';
+  if (n.includes('arco') || n.includes('bow')) return '/artes/arco_curto.jpeg';
+  if (n.includes('funda') || n.includes('sling')) return '/artes/funda.jpeg';
   if (n.includes('bordão') || n.includes('bordao') || n.includes('staff')) return '/artes/lanca.jpeg';
   return '/artes/espada_longa.jpeg';
 };

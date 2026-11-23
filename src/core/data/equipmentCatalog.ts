@@ -468,7 +468,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/arco_longo.jpg'
+    imageUrl: '/artes/arco_curto.jpeg'
   },
   {
     id: 'wpn_besta_leve',
@@ -488,7 +488,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/besta.jpg'
+    imageUrl: '/artes/besta_pesada.jpeg'
   },
   {
     id: 'wpn_funda',
@@ -508,7 +508,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 0.05,
-    imageUrl: '/artes/items/adaga.jpg'
+    imageUrl: '/artes/funda.jpeg'
   },
 
   // ==========================================
@@ -736,7 +736,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Carpinteiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/arco_longo.jpg'
+    imageUrl: '/artes/arco_longo.jpg'
   },
   {
     id: 'wpn_besta_pesada',
@@ -756,7 +756,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/items/besta.jpg'
+    imageUrl: '/artes/besta_pesada.jpeg'
   },
   {
     id: 'wpn_besta_mao',
@@ -776,7 +776,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 8,
     craftingCostPo: 37.5,
-    imageUrl: '/artes/items/besta.jpg'
+    imageUrl: '/artes/besta_de_mao.jpeg'
   },
 
   // ==========================================
@@ -1056,7 +1056,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
     craftingCostPo: 10,
-    imageUrl: '/artes/loja/kit_ferramentas.jpg'
+    imageUrl: '/artes/loja/kit_ferreiro.jpeg'
   },
   {
     id: 'tool_suprimentos_alquimista',

@@ -119,8 +119,12 @@ const ART_OPTIONS = [
   { id: 'art_maca', name: 'Maça de Aço Forjado', path: '/artes/maca.jpeg' },
   { id: 'art_lanca', name: 'Lança de Ponta Rúnica', path: '/artes/lanca.jpeg' },
   { id: 'art_cimitarra', name: 'Cimitarra Graciosa', path: '/artes/cimitarra.jpeg' },
-  { id: 'art_arco', name: 'Arco de Precisão', path: '/artes/arco.jpeg' },
-  { id: 'art_besta', name: 'Besta Pesada Mecânica', path: '/artes/besta.jpeg' },
+  { id: 'art_arco_curto', name: 'Arco Curto Veloz', path: '/artes/arco_curto.jpeg' },
+  { id: 'art_arco_longo', name: 'Arco Longo de Guerra', path: '/artes/arco_longo.jpg' },
+  { id: 'art_besta_pesada', name: 'Besta Pesada Mecânica', path: '/artes/besta_pesada.jpeg' },
+  { id: 'art_besta_mao', name: 'Besta de Mão Furtiva', path: '/artes/besta_de_mao.jpeg' },
+  { id: 'art_funda', name: 'Funda de Couro Rústica', path: '/artes/funda.jpeg' },
+  { id: 'art_kit_ferreiro', name: 'Kit de Ferreiro Completo', path: '/artes/loja/kit_ferreiro.jpeg' },
 ];
 
 const getArtIndexForCharacter = (char: Character): number => {
