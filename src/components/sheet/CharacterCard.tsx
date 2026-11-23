@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Character, Condition, SkillName } from '../../core/types/dnd';
 import { calculateArmorClass, getPassiveSense, getAbilityModifier, formatModifier, calculateSpellcastingMetrics, getSkillModifier, SKILL_ABILITY_MAP } from '../../core/rules/calculations';
-import { getClassPortrait } from '../../core/rules/srdData';
+import { getClassPortrait, getWeaponImage } from '../../core/rules/srdData';
 import { Shield, Heart, Zap, Sparkles, ChevronDown, ChevronUp, Dices, AlertTriangle, Eye, Flame, Skull, Swords, Trash2, Award } from 'lucide-react';
 
 interface CharacterCardProps {
@@ -445,13 +445,23 @@ export const CharacterCard: React.FC<CharacterCardProps> = ({
                 <h4 className="text-[11px] font-bold uppercase tracking-wider text-stone-300 mb-1.5">
                   Armas & Ataques:
                 </h4>
-                <div className="space-y-1">
-                  {character.weapons.map((w, idx) => (
-                    <div key={idx} className="bg-[#141824] px-3 py-1.5 rounded-lg border border-[#262f44] flex justify-between items-center text-xs">
-                      <span className="text-stone-200 font-semibold">{w.name}</span>
-                      <span className="text-[#f5ba42] font-mono font-bold">{w.damage} {w.damageType || ''}</span>
-                    </div>
-                  ))}
+                <div className="space-y-1.5">
+                  {character.weapons.map((w, idx) => {
+                    const wpnImg = w.imageUrl || getWeaponImage(w.name || w.id);
+                    return (
+                      <div key={idx} className="bg-[#141824] px-2.5 py-1.5 rounded-lg border border-[#262f44] flex items-center justify-between text-xs gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <img
+                            src={wpnImg}
+                            alt={w.name}
+                            className="w-7 h-7 rounded object-cover border border-amber-900/50 shrink-0 bg-black/50"
+                          />
+                          <span className="text-stone-200 font-semibold truncate">{w.name}</span>
+                        </div>
+                        <span className="text-[#f5ba42] font-mono font-bold shrink-0">{w.damage} {w.damageType || ''}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

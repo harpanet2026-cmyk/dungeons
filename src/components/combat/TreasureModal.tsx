@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Character, Coins } from '../../core/types/dnd';
 import { TreasureGenerator, GeneratedTreasure, LootItem } from '../../core/rules/treasureGenerator';
+import { getWeaponImage } from '../../core/rules/srdData';
 import { Coins as CoinsIcon, Sparkles, Gem, Award, Gift, Check, X, Shield, Users } from 'lucide-react';
 
 interface TreasureModalProps {
@@ -197,17 +198,35 @@ export const TreasureModal: React.FC<TreasureModalProps> = ({
                         className="bg-[#121520] border border-[#23293a] hover:border-[#a17036] rounded-xl p-3 shadow text-xs space-y-1 transition-all"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className="font-cinzel font-bold text-stone-100 flex items-center gap-1.5">
-                            {item.type === 'gema' ? (
-                              <Gem className="w-3.5 h-3.5 text-sky-400" />
-                            ) : item.type === 'arte' ? (
-                              <Award className="w-3.5 h-3.5 text-amber-400" />
-                            ) : (
-                              <Gift className="w-3.5 h-3.5 text-purple-400" />
-                            )}
-                            {item.name}
-                          </span>
-                          <span className="text-[10px] font-bold text-[#f5ba42] bg-[#1a1610] px-2 py-0.5 rounded border border-[#a17036]/50">
+                          <div className="flex items-center gap-2 min-w-0">
+                            {(() => {
+                              const isWpn = item.name.toLowerCase().includes('espada') || item.name.toLowerCase().includes('adaga') || item.name.toLowerCase().includes('machado') || item.name.toLowerCase().includes('arco') || item.name.toLowerCase().includes('martelo');
+                              if (isWpn) {
+                                return (
+                                  <img
+                                    src={getWeaponImage(item.name)}
+                                    alt={item.name}
+                                    className="w-7 h-7 rounded object-cover border border-[#a17036]/50 shrink-0 bg-black/60 shadow"
+                                  />
+                                );
+                              }
+                              return (
+                                <span className="shrink-0">
+                                  {item.type === 'gema' ? (
+                                    <Gem className="w-3.5 h-3.5 text-sky-400" />
+                                  ) : item.type === 'arte' ? (
+                                    <Award className="w-3.5 h-3.5 text-amber-400" />
+                                  ) : (
+                                    <Gift className="w-3.5 h-3.5 text-purple-400" />
+                                  )}
+                                </span>
+                              );
+                            })()}
+                            <span className="font-cinzel font-bold text-stone-100 truncate">
+                              {item.name}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-bold text-[#f5ba42] bg-[#1a1610] px-2 py-0.5 rounded border border-[#a17036]/50 shrink-0">
                             {item.valuePo} PO
                           </span>
                         </div>

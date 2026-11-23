@@ -314,20 +314,31 @@ export const StepEquipment: React.FC<StepEquipmentProps> = ({
                     {[
                       { item: COMMON_WEAPONS[0], cost: 15 }, // Espada Longa (15 PO)
                       { item: COMMON_WEAPONS[1], cost: 10 }, // Espada Curta (10 PO)
-                      { item: COMMON_WEAPONS[2], cost: 2 },  // Adaga (2 PO)
-                      { item: COMMON_WEAPONS[3], cost: 10 }, // Machado de Batalha (10 PO)
-                      { item: COMMON_WEAPONS[4], cost: 25 }, // Arco Curto (25 PO)
-                      { item: COMMON_WEAPONS[5], cost: 50 }  // Arco Longo (50 PO)
-                    ].map(({ item, cost }) => (
-                      <div key={item.id} className="flex items-center justify-between p-1.5 rounded-lg bg-[#0d101a] border border-[#232b3d]">
-                        <div>
-                          <span className="font-semibold block">{item.name}</span>
-                          <span className="text-[10px] text-stone-400">{item.damage} • {cost} PO</span>
+                      { item: COMMON_WEAPONS[2], cost: 50 }, // Montante (50 PO)
+                      { item: COMMON_WEAPONS[3], cost: 25 }, // Cimitarra (25 PO)
+                      { item: COMMON_WEAPONS[4], cost: 2 },  // Adaga (2 PO)
+                      { item: COMMON_WEAPONS[5], cost: 10 }, // Machado de Batalha (10 PO)
+                      { item: COMMON_WEAPONS[6], cost: 15 }, // Martelo de Guerra (15 PO)
+                      { item: COMMON_WEAPONS[7], cost: 5 },  // Maça (5 PO)
+                      { item: COMMON_WEAPONS[8], cost: 1 },  // Lança (1 PO)
+                      { item: COMMON_WEAPONS[9], cost: 25 }, // Arco Curto (25 PO)
+                      { item: COMMON_WEAPONS[10], cost: 50 }, // Arco Longo (50 PO)
+                      { item: COMMON_WEAPONS[11], cost: 50 }  // Besta Pesada (50 PO)
+                    ].filter(x => Boolean(x.item)).map(({ item, cost }) => (
+                      <div key={item.id} className="flex items-center justify-between p-1.5 rounded-lg bg-[#0d101a] border border-[#232b3d] gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          {item.imageUrl && (
+                            <img src={item.imageUrl} alt={item.name} className="w-8 h-8 rounded object-cover border border-[#232b3d] shrink-0 bg-black/60 shadow-sm" />
+                          )}
+                          <div className="min-w-0">
+                            <span className="font-semibold block truncate text-xs">{item.name}</span>
+                            <span className="text-[10px] text-stone-400">{item.damage} • {cost} PO</span>
+                          </div>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleBuyItem(item, cost)}
-                          className="px-2.5 py-1 rounded bg-[#231b14] hover:bg-[#34271c] border border-[#a17036] text-[#ffd470] font-bold text-[10px]"
+                          className="px-2.5 py-1 rounded bg-[#231b14] hover:bg-[#34271c] border border-[#a17036] text-[#ffd470] font-bold text-[10px] shrink-0"
                         >
                           Comprar
                         </button>
@@ -385,17 +396,29 @@ export const StepEquipment: React.FC<StepEquipmentProps> = ({
               <label className="block text-stone-300 font-semibold mb-1 uppercase tracking-wider text-[10px]">
                 Arma Primária Equipada:
               </label>
-              <select
-                value={equippedWeaponIds[0] || ''}
-                onChange={(e) => onToggleEquippedWeapon(e.target.value)}
-                className="w-full bg-[#0d101a] border border-[#2b354f] focus:border-[#f5ba42] rounded-xl px-2.5 py-2 text-stone-100 text-xs outline-none"
-              >
-                {COMMON_WEAPONS.map(wpn => (
-                  <option key={wpn.id} value={wpn.id}>
-                    {wpn.name} ({wpn.damage})
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-2">
+                {(() => {
+                  const selWpn = COMMON_WEAPONS.find(w => w.id === equippedWeaponIds[0]);
+                  return selWpn?.imageUrl ? (
+                    <img
+                      src={selWpn.imageUrl}
+                      alt={selWpn.name}
+                      className="w-9 h-9 rounded-lg object-cover border border-[#f5ba42]/60 shrink-0 bg-black/60 shadow-md"
+                    />
+                  ) : null;
+                })()}
+                <select
+                  value={equippedWeaponIds[0] || ''}
+                  onChange={(e) => onToggleEquippedWeapon(e.target.value)}
+                  className="w-full bg-[#0d101a] border border-[#2b354f] focus:border-[#f5ba42] rounded-xl px-2.5 py-2 text-stone-100 text-xs outline-none"
+                >
+                  {COMMON_WEAPONS.map(wpn => (
+                    <option key={wpn.id} value={wpn.id}>
+                      {wpn.name} ({wpn.damage})
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
         </div>

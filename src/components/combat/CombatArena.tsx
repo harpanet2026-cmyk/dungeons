@@ -9,7 +9,7 @@ import {
   formatModifier,
   getProficiencyBonus
 } from '../../core/rules/calculations';
-import { getClassPortrait } from '../../core/rules/srdData';
+import { getClassPortrait, getWeaponImage } from '../../core/rules/srdData';
 import {
   Swords,
   Shield,
@@ -70,6 +70,7 @@ interface HeroAttackAction {
   damageType: string;
   range?: string;
   description?: string;
+  imageUrl?: string;
 }
 
 export const CombatArena: React.FC<CombatArenaProps> = ({
@@ -141,7 +142,8 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
         bonus: calc.attackBonus,
         damage: calc.damageFormula,
         damageType: w.damageType || 'dano',
-        description: w.description
+        description: w.description,
+        imageUrl: w.imageUrl || getWeaponImage(w.name || w.id)
       });
     });
 
@@ -743,18 +745,30 @@ export const CombatArena: React.FC<CombatArenaProps> = ({
                                   : 'bg-[#141824] border-[#262f44] text-stone-200 hover:border-sky-500'
                               }`}
                             >
-                              <div>
-                                <span className="font-bold block flex items-center gap-1.5">
-                                  {atk.type === 'magia' ? (
-                                    <Wand2 className="w-3 h-3 text-purple-400 inline" />
-                                  ) : (
-                                    <Swords className="w-3 h-3 text-amber-400 inline" />
-                                  )}
-                                  {atk.name}
-                                </span>
-                                <span className="text-[10px] text-stone-400">
-                                  {formatModifier(atk.bonus)} p/ acertar • {atk.damage} {atk.damageType}
-                                </span>
+                              <div className="flex items-center gap-2 min-w-0">
+                                {atk.imageUrl ? (
+                                  <img
+                                    src={atk.imageUrl}
+                                    alt={atk.name}
+                                    className="w-8 h-8 rounded object-cover border border-[#262f44] shrink-0 bg-black/60 shadow-sm"
+                                  />
+                                ) : (
+                                  <span className="p-1.5 rounded bg-black/40 border border-[#262f44] shrink-0">
+                                    {atk.type === 'magia' ? (
+                                      <Wand2 className="w-4 h-4 text-purple-400" />
+                                    ) : (
+                                      <Swords className="w-4 h-4 text-amber-400" />
+                                    )}
+                                  </span>
+                                )}
+                                <div className="min-w-0">
+                                  <span className="font-bold block text-xs truncate">
+                                    {atk.name}
+                                  </span>
+                                  <span className="text-[10px] text-stone-400 block truncate">
+                                    {formatModifier(atk.bonus)} p/ acertar • {atk.damage} {atk.damageType}
+                                  </span>
+                                </div>
                               </div>
                               <span className="text-[10px] font-bold bg-[#1e2b44] text-sky-300 hover:bg-sky-600 hover:text-white px-2.5 py-1 rounded-lg border border-sky-500/50 flex items-center gap-1 transition-colors">
                                 {isAttackingThis ? 'Cancelar' : 'Atacar Monstro ➔'}

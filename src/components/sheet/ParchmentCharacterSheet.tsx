@@ -9,6 +9,7 @@ import {
   getSkillModifier,
   SKILL_ABILITY_MAP
 } from '../../core/rules/calculations';
+import { getWeaponImage } from '../../core/rules/srdData';
 import {
   Shield,
   Heart,
@@ -75,8 +76,50 @@ const ART_OPTIONS = [
   { id: 'art_monge_f', name: 'Monja das Artes Marciais (Feminino)', path: '/artes/monge_f.jpeg' },
   { id: 'art_bruxo_f', name: 'Bruxa do Pacto (Feminino)', path: '/artes/bruxo_f.jpeg' },
   { id: 'art_feiticeiro_f', name: 'Feiticeira Dracônica (Feminino)', path: '/artes/feiticeiro_f.jpeg' },
-  { id: 'art_thorin', name: 'Thorin (Anão Guerreiro - Livro Jogador)', path: '/heroes/thorin_warrior.jpg' },
+  // Clássicos dos Manuais Oficiais
+  { id: 'art_thorin', name: 'Thorin (Anão Guerreiro - Guia do Jogador)', path: '/heroes/thorin_warrior.jpg' },
   { id: 'art_lyra', name: 'Lyra Cantolunar (Elfa Maga)', path: '/heroes/lyra_mage.jpg' },
+  { id: 'art_champion', name: 'Guerreiro Campeão (Guia de Volo)', path: '/heroes/champion.jpg' },
+  { id: 'art_beholder', name: 'Beholder Observador (Guia de Volo)', path: '/monsters/beholder.jpg' },
+  { id: 'art_mind_flayer', name: 'Devorador de Mentes (Guia de Volo)', path: '/monsters/mind_flayer.jpg' },
+  { id: 'art_dragon', name: 'Guarda Dragonete (Guia de Volo)', path: '/monsters/dragon.jpg' },
+  // Monstros e Chefes Épicos
+  { id: 'art_balrog', name: 'Balrog Demônio Maior', path: '/artes/Balrog.jpeg' },
+  { id: 'art_dragao_vermelho_anciao', name: 'Dragão Vermelho Ancião Colossal', path: '/artes/dragao_vermelho_anciao.jpeg' },
+  { id: 'art_dragao_vermelho', name: 'Dragão Vermelho Jovem', path: '/artes/dragao_vermelho.jpeg' },
+  { id: 'art_lich_hq', name: 'Lich Arquimago', path: '/artes/lich_arquimago.jpeg' },
+  { id: 'art_beholder_hq', name: 'Beholder Observador', path: '/artes/beholder.jpeg' },
+  { id: 'art_hidra', name: 'Hidra de Muitas Cabeças', path: '/artes/hidra.jpeg' },
+  { id: 'art_medusa', name: 'Medusa Petrificante', path: '/artes/medusa.jpeg' },
+  { id: 'art_manticora', name: 'Manticora Alada', path: '/artes/manticora.jpeg' },
+  { id: 'art_urso_coruja', name: 'Urso-Coruja (Owlbear)', path: '/artes/urso_coruja.jpeg' },
+  { id: 'art_mimico', name: 'Mímico Disfarçado', path: '/artes/mimico.jpeg' },
+  { id: 'art_cubo_gelatinoso', name: 'Cubo Gelatinoso', path: '/artes/cubo_gelatinoso.jpeg' },
+  { id: 'art_carnical', name: 'Carniçal (Ghoul)', path: '/artes/carnical.jpeg' },
+  { id: 'art_bandido', name: 'Bandido Salteador', path: '/artes/bandido_salteador.jpeg' },
+  { id: 'art_lobo_selvagem', name: 'Lobo Selvagem', path: '/artes/lobo_selvagem.jpeg' },
+  { id: 'art_troll', name: 'Troll da Caverna', path: '/artes/Troll.jpeg' },
+  { id: 'art_vampiro', name: 'Lorde Vampiro', path: '/artes/vampiro.jpeg' },
+  { id: 'art_espectro', name: 'Espectro Sombrio', path: '/artes/espectro.jpeg' },
+  { id: 'art_aranha', name: 'Aranha Gigante', path: '/artes/aranha.jpeg' },
+  { id: 'art_hobgoblin', name: 'Hobgoblin Capitão', path: '/artes/hobiglobin.jpeg' },
+  { id: 'art_orc', name: 'Guerreiro Orc', path: '/artes/orc.jpeg' },
+  { id: 'art_goblin', name: 'Goblin Batedor', path: '/artes/goblin.jpeg' },
+  { id: 'art_kobold', name: 'Kobold Emboscador', path: '/artes/kobold.jpeg' },
+  { id: 'art_esqueleto', name: 'Esqueleto Legionário', path: '/artes/esqueleto.jpeg' },
+  { id: 'art_zumbi', name: 'Zumbi Errante', path: '/artes/zumbi.jpeg' },
+  // Arsenal e Armas
+  { id: 'art_espada_longa', name: 'Espada Longa de Aço', path: '/artes/espada_longa.jpeg' },
+  { id: 'art_espada_curta', name: 'Espada Curta Afiada', path: '/artes/espada_curta.jpeg' },
+  { id: 'art_montante', name: 'Montante / Espadão de Guerra', path: '/artes/montante.jpeg' },
+  { id: 'art_adaga', name: 'Adaga de Lâmina Fina', path: '/artes/adaga.jpeg' },
+  { id: 'art_machado', name: 'Machado de Batalha', path: '/artes/machado.jpeg' },
+  { id: 'art_martelo_combate', name: 'Martelo de Guerra', path: '/artes/martelo_de_combate.jpeg' },
+  { id: 'art_maca', name: 'Maça de Aço Forjado', path: '/artes/maca.jpeg' },
+  { id: 'art_lanca', name: 'Lança de Ponta Rúnica', path: '/artes/lanca.jpeg' },
+  { id: 'art_cimitarra', name: 'Cimitarra Graciosa', path: '/artes/cimitarra.jpeg' },
+  { id: 'art_arco', name: 'Arco de Precisão', path: '/artes/arco.jpeg' },
+  { id: 'art_besta', name: 'Besta Pesada Mecânica', path: '/artes/besta.jpeg' },
 ];
 
 const getArtIndexForCharacter = (char: Character): number => {
@@ -902,24 +945,32 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
                       const forMod = getAbilityModifier(character.baseAbilities.for);
                       const desMod = getAbilityModifier(character.baseAbilities.des);
                       const atkBonus = profBonus + (wpn.damageType?.includes('Perfurante') ? Math.max(forMod, desMod) : forMod);
+                      const wpnImg = wpn.imageUrl || getWeaponImage(wpn.name || wpn.id);
 
                       return (
                         <div
                           key={idx}
                           onClick={() => onRollCheck(character, 'atletismo', rollMode)}
-                          className="bg-[#faecd5] border border-[#be9e63] p-1.5 rounded-lg hover:border-[#8b0000] cursor-pointer transition-colors shadow-sm group"
+                          className="bg-[#faecd5] border border-[#be9e63] p-1.5 rounded-lg hover:border-[#8b0000] cursor-pointer transition-colors shadow-sm group flex items-center gap-2"
                         >
-                          <div className="flex justify-between items-center text-xs">
-                            <span className="font-bold text-stone-900 group-hover:text-[#8b0000] truncate">
-                              {wpn.name}
-                            </span>
-                            <span className="font-cinzel font-black text-[#8b0000]">
-                              {formatModifier(atkBonus)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between items-center text-[10px] text-stone-600 mt-0.5">
-                            <span>Dano: <strong>{wpn.damage}</strong></span>
-                            <span className="text-[9px] text-[#7a571f]">{(wpn as any).range || '1.5m'}</span>
+                          <img
+                            src={wpnImg}
+                            alt={wpn.name}
+                            className="w-8 h-8 rounded object-cover border border-[#8c6721]/50 shadow-sm shrink-0 bg-stone-900"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="font-bold text-stone-900 group-hover:text-[#8b0000] truncate">
+                                {wpn.name}
+                              </span>
+                              <span className="font-cinzel font-black text-[#8b0000]">
+                                {formatModifier(atkBonus)}
+                              </span>
+                            </div>
+                            <div className="flex justify-between items-center text-[10px] text-stone-600 mt-0.5">
+                              <span>Dano: <strong>{wpn.damage}</strong></span>
+                              <span className="text-[9px] text-[#7a571f]">{(wpn as any).range || '1.5m'}</span>
+                            </div>
                           </div>
                         </div>
                       );
@@ -1365,6 +1416,7 @@ export const ParchmentCharacterSheet: React.FC<ParchmentCharacterSheetProps> = (
                     <span className="text-[9px] font-bold text-[#7a571f] uppercase tracking-wider">
                       Carga: ~{character.inventory.reduce((acc, i) => acc + (i.weight * i.quantity), 0).toFixed(1)} kg / Limite: {character.baseAbilities.for * 7.5} kg
                     </span>
+                  </div>
                   </div>
 
                   {/* DUAS COLUNAS DE LINHAS DE PERGAMINHO DO INVENTÁRIO (IDÊNTICO À ERELYNN) */}

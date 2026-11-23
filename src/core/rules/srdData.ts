@@ -315,14 +315,38 @@ export const COMMON_ARMORS: Item[] = [
 ];
 
 export const COMMON_WEAPONS: Item[] = [
-  { id: 'wpn_espada_longa', name: 'Espada Longa', quantity: 1, weight: 1.5, type: 'arma', damage: '1d8/1d10', damageType: 'cortante', description: 'Versátil' },
-  { id: 'wpn_espada_curta', name: 'Espada Curta', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Acuidade, Leve' },
-  { id: 'wpn_adaga', name: 'Adaga', quantity: 1, weight: 0.5, type: 'arma', damage: '1d4', damageType: 'perfurante', description: 'Acuidade, Leve, Arremesso (6/18m)' },
-  { id: 'wpn_machado_batalha', name: 'Machado de Batalha', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'cortante', description: 'Versátil' },
-  { id: 'wpn_arco_curto', name: 'Arco Curto', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Munição (24/96m), Duas mãos' },
-  { id: 'wpn_arco_longo', name: 'Arco Longo', quantity: 1, weight: 1.5, type: 'arma', damage: '1d8', damageType: 'perfurante', description: 'Munição (45/180m), Pesada, Duas mãos' },
-  { id: 'wpn_bordao', name: 'Bordão', quantity: 1, weight: 2, type: 'arma', damage: '1d6/1d8', damageType: 'concussão', description: 'Versátil' },
+  { id: 'wpn_espada_longa', name: 'Espada Longa', quantity: 1, weight: 1.5, type: 'arma', damage: '1d8/1d10', damageType: 'cortante', description: 'Versátil', imageUrl: '/artes/espada_longa.jpeg' },
+  { id: 'wpn_espada_curta', name: 'Espada Curta', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Acuidade, Leve', imageUrl: '/artes/espada_curta.jpeg' },
+  { id: 'wpn_montante', name: 'Montante (Espadão)', quantity: 1, weight: 3, type: 'arma', damage: '2d6', damageType: 'cortante', description: 'Pesada, Duas Mãos', imageUrl: '/artes/montante.jpeg' },
+  { id: 'wpn_cimitarra', name: 'Cimitarra', quantity: 1, weight: 1.5, type: 'arma', damage: '1d6', damageType: 'cortante', description: 'Acuidade, Leve', imageUrl: '/artes/cimitarra.jpeg' },
+  { id: 'wpn_adaga', name: 'Adaga', quantity: 1, weight: 0.5, type: 'arma', damage: '1d4', damageType: 'perfurante', description: 'Acuidade, Leve, Arremesso (6/18m)', imageUrl: '/artes/adaga.jpeg' },
+  { id: 'wpn_machado_batalha', name: 'Machado de Batalha', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'cortante', description: 'Versátil', imageUrl: '/artes/machado.jpeg' },
+  { id: 'wpn_martelo_combate', name: 'Martelo de Guerra', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'concussão', description: 'Versátil (1d10)', imageUrl: '/artes/martelo_de_combate.jpeg' },
+  { id: 'wpn_maca', name: 'Maça de Aço', quantity: 1, weight: 2, type: 'arma', damage: '1d6', damageType: 'concussão', description: 'Simples', imageUrl: '/artes/maca.jpeg' },
+  { id: 'wpn_lanca', name: 'Lança', quantity: 1, weight: 1.5, type: 'arma', damage: '1d6/1d8', damageType: 'perfurante', description: 'Versátil, Arremesso (6/18m)', imageUrl: '/artes/lanca.jpeg' },
+  { id: 'wpn_arco_curto', name: 'Arco Curto', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Munição (24/96m), Duas mãos', imageUrl: '/artes/arco.jpeg' },
+  { id: 'wpn_arco_longo', name: 'Arco Longo', quantity: 1, weight: 1.5, type: 'arma', damage: '1d8', damageType: 'perfurante', description: 'Munição (45/180m), Pesada, Duas mãos', imageUrl: '/artes/arco.jpeg' },
+  { id: 'wpn_besta_pesada', name: 'Besta Pesada', quantity: 1, weight: 4.5, type: 'arma', damage: '1d10', damageType: 'perfurante', description: 'Munição (30/120m), Recarga, Duas mãos', imageUrl: '/artes/besta.jpeg' },
+  { id: 'wpn_bordao', name: 'Bordão', quantity: 1, weight: 2, type: 'arma', damage: '1d6/1d8', damageType: 'concussão', description: 'Versátil', imageUrl: '/artes/lanca.jpeg' },
 ];
+
+export const getWeaponImage = (nameOrId?: string): string => {
+  if (!nameOrId) return '/artes/espada_longa.jpeg';
+  const n = nameOrId.toLowerCase();
+  if (n.includes('montante') || n.includes('espadão') || n.includes('espadao') || n.includes('greatsword')) return '/artes/montante.jpeg';
+  if (n.includes('curta') || n.includes('shortsword')) return '/artes/espada_curta.jpeg';
+  if (n.includes('espada') || n.includes('longsword')) return '/artes/espada_longa.jpeg';
+  if (n.includes('adaga') || n.includes('dagger')) return '/artes/adaga.jpeg';
+  if (n.includes('cimitarra') || n.includes('scimitar')) return '/artes/cimitarra.jpeg';
+  if (n.includes('machado') || n.includes('axe') || n.includes('machadinha')) return '/artes/machado.jpeg';
+  if (n.includes('martelo') || n.includes('warhammer')) return '/artes/martelo_de_combate.jpeg';
+  if (n.includes('maça') || n.includes('maca') || n.includes('mace')) return '/artes/maca.jpeg';
+  if (n.includes('lança') || n.includes('lanca') || n.includes('spear')) return '/artes/lanca.jpeg';
+  if (n.includes('besta') || n.includes('crossbow')) return '/artes/besta.jpeg';
+  if (n.includes('arco') || n.includes('bow')) return '/artes/arco.jpeg';
+  if (n.includes('bordão') || n.includes('bordao') || n.includes('staff')) return '/artes/lanca.jpeg';
+  return '/artes/espada_longa.jpeg';
+};
 
 export const SAMPLE_SPELLS: Spell[] = [
   {

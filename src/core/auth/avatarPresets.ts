@@ -198,6 +198,83 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/lobo_selvagem.jpeg'
   },
   {
+    id: 'avatar_espada_longa_art',
+    name: 'Espada Longa',
+    category: 'guerreiro',
+    iconName: 'Swords',
+    image: '/artes/espada_longa.jpeg'
+  },
+  {
+    id: 'avatar_espada_curta_art',
+    name: 'Espada Curta',
+    category: 'ladino',
+    iconName: 'Swords',
+    image: '/artes/espada_curta.jpeg'
+  },
+  {
+    id: 'avatar_montante_art',
+    name: 'Montante',
+    category: 'guerreiro',
+    iconName: 'Swords',
+    image: '/artes/montante.jpeg'
+  },
+  {
+    id: 'avatar_adaga_art',
+    name: 'Adaga',
+    category: 'ladino',
+    iconName: 'Skull',
+    image: '/artes/adaga.jpeg'
+  },
+  {
+    id: 'avatar_machado_art',
+    name: 'Machado de Batalha',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/machado.jpeg'
+  },
+  {
+    id: 'avatar_martelo_art',
+    name: 'Martelo de Guerra',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/martelo_de_combate.jpeg'
+  },
+  {
+    id: 'avatar_maca_art',
+    name: 'Maça Forjada',
+    category: 'conjurador',
+    iconName: 'Shield',
+    image: '/artes/maca.jpeg'
+  },
+  {
+    id: 'avatar_lanca_art',
+    name: 'Lança Rúnica',
+    category: 'guerreiro',
+    iconName: 'Compass',
+    image: '/artes/lanca.jpeg'
+  },
+  {
+    id: 'avatar_cimitarra_art',
+    name: 'Cimitarra',
+    category: 'ladino',
+    iconName: 'Swords',
+    image: '/artes/cimitarra.jpeg'
+  },
+  {
+    id: 'avatar_arco_art',
+    name: 'Arco de Caça',
+    category: 'ladino',
+    iconName: 'Compass',
+    image: '/artes/arco.jpeg'
+  },
+  {
+    id: 'avatar_besta_art',
+    name: 'Besta de Precisão',
+    category: 'ladino',
+    iconName: 'Compass',
+    image: '/artes/besta.jpeg'
+  },
+  {
     id: 'avatar_dm_tome',
     name: 'Mestre da Masmorra',
     category: 'mestre',

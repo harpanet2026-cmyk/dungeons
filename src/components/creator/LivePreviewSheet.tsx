@@ -2,7 +2,7 @@ import React from 'react';
 import { Character, AbilityScores, SkillName, AbilityName, Item, Spell } from '../../core/types/dnd';
 import { getAbilityModifier, formatModifier, calculateArmorClass, getPassiveSense, calculateWeaponAttack, SKILL_ABILITY_MAP, getProficiencyBonus } from '../../core/rules/calculations';
 import { Shield, Heart, Zap, Sparkles, Eye, Sword, Dices, BookOpen, Compass, CheckCircle2 } from 'lucide-react';
-import { getClassPortrait } from '../../core/rules/srdData';
+import { getClassPortrait, getWeaponImage } from '../../core/rules/srdData';
 
 interface LivePreviewSheetProps {
   name: string;
@@ -251,10 +251,18 @@ export const LivePreviewSheet: React.FC<LivePreviewSheetProps> = ({
           <div className="space-y-1">
             {weapons.slice(0, 2).map((wpn, idx) => {
               const atk = calculateWeaponAttack(mockChar, wpn, fightingStyle);
+              const wpnImg = wpn.imageUrl || getWeaponImage(wpn.name || wpn.id);
               return (
-                <div key={idx} className="bg-[#141824] border border-[#2b334a] px-2.5 py-1.5 rounded-xl flex items-center justify-between text-[11px]">
-                  <span className="font-semibold text-stone-200 truncate">{wpn.name}</span>
-                  <div className="text-right flex items-center gap-2">
+                <div key={idx} className="bg-[#141824] border border-[#2b334a] px-2.5 py-1.5 rounded-xl flex items-center justify-between text-[11px] gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <img
+                      src={wpnImg}
+                      alt={wpn.name}
+                      className="w-6 h-6 rounded object-cover border border-[#3b4563] shrink-0 bg-black/60 shadow-sm"
+                    />
+                    <span className="font-semibold text-stone-200 truncate">{wpn.name}</span>
+                  </div>
+                  <div className="text-right flex items-center gap-2 shrink-0">
                     <span className="text-amber-400 font-cinzel font-bold">{formatModifier(atk.attackBonus)}</span>
                     <span className="text-stone-400 text-[10px]">{atk.damageFormula}</span>
                   </div>
