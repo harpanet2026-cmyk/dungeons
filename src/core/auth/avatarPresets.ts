@@ -317,6 +317,13 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/loja/pocao_cura_maior.jpg'
   },
   {
+    id: 'avatar_pocao_cura_superior_art',
+    name: 'Poção de Cura Superior',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/pocao_cura_superior.jpg'
+  },
+  {
     id: 'avatar_agua_benta_art',
     name: 'Água Benta Consagrada',
     category: 'conjurador',

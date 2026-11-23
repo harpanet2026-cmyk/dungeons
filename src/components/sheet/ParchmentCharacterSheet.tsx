@@ -126,6 +126,7 @@ const ART_OPTIONS = [
   { id: 'art_funda', name: 'Funda de Couro Rústica', path: '/artes/funda.jpeg' },
   { id: 'art_kit_ferreiro', name: 'Kit de Ferreiro Completo', path: '/artes/loja/kit_ferreiro.jpeg' },
   { id: 'art_pocao_cura_maior', name: 'Poção de Cura Maior (Alquimia)', path: '/artes/loja/pocao_cura_maior.jpg' },
+  { id: 'art_pocao_cura_superior', name: 'Poção de Cura Superior (Alquimia Rara)', path: '/artes/loja/pocao_cura_superior.jpg' },
   { id: 'art_agua_benta', name: 'Frasco de Água Benta Consagrada', path: '/artes/loja/agua_benta.jpg' },
   { id: 'art_veneno_basico', name: 'Veneno Básico das Sombras', path: '/artes/loja/veneno_basico.jpg' },
   { id: 'art_suprimentos_alquimista', name: 'Suprimentos de Alquimista', path: '/artes/loja/suprimentos_de_alquimista.jpg' },

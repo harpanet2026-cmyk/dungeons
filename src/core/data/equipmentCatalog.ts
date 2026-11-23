@@ -828,7 +828,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 15,
     craftingCostPo: 1000,
-    imageUrl: '/artes/loja/pocao_de_cura.jpg'
+    imageUrl: '/artes/loja/pocao_cura_superior.jpg'
   },
   {
     id: 'poc_antidoto',
