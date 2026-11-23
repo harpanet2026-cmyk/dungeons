@@ -387,6 +387,13 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/loja/acido_corrosivo.jpg'
   },
   {
+    id: 'avatar_anel_protecao_art',
+    name: 'Anel de Proteção',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/items/anel_protecao.jpg'
+  },
+  {
     id: 'avatar_dm_tome',
     name: 'Mestre da Masmorra',
     category: 'mestre',

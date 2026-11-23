@@ -136,6 +136,7 @@ const ART_OPTIONS = [
   { id: 'art_cota_talas', name: 'Cota de Talas de Aço', path: '/artes/loja/cota_talas.jpg' },
   { id: 'art_kit_primeiros_socorros', name: 'Kit de Primeiros Socorros', path: '/artes/loja/kit_primeiros_socorros.jpg' },
   { id: 'art_acido_corrosivo', name: 'Frasco de Ácido Corrosivo', path: '/artes/loja/acido_corrosivo.jpg' },
+  { id: 'art_anel_protecao', name: 'Anel de Proteção Mágico', path: '/artes/items/anel_protecao.jpg' },
 ];
 
 const getArtIndexForCharacter = (char: Character): number => {
