@@ -812,7 +812,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 5,
     craftingCostPo: 100,
-    imageUrl: '/artes/loja/pocao_de_cura.jpg'
+    imageUrl: '/artes/loja/pocao_cura_maior.jpg'
   },
   {
     id: 'poc_cura_superior',
@@ -892,7 +892,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/loja/simbolo_sagrado.jpg'
+    imageUrl: '/artes/loja/agua_benta.jpg'
   },
   {
     id: 'poc_veneno_basico',
@@ -908,7 +908,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Envenenador',
     craftingDays: 2,
     craftingCostPo: 50,
-    imageUrl: '/artes/loja/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/veneno_basico.jpg'
   },
 
   // ==========================================
@@ -1072,7 +1072,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/loja/kit_ferramentas.jpg'
+    imageUrl: '/artes/loja/suprimentos_de_alquimista.jpg'
   },
   {
     id: 'tool_kit_herbalismo',
@@ -1088,7 +1088,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/loja/kit_ferramentas.jpg'
+    imageUrl: '/artes/loja/kit_de_herbalismo.jpg'
   },
   {
     id: 'tool_ferramentas_ladrao',

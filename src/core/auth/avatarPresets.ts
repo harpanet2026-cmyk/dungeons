@@ -310,6 +310,41 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/loja/kit_ferreiro.jpeg'
   },
   {
+    id: 'avatar_pocao_cura_maior_art',
+    name: 'Poção de Cura Maior',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/pocao_cura_maior.jpg'
+  },
+  {
+    id: 'avatar_agua_benta_art',
+    name: 'Água Benta Consagrada',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/agua_benta.jpg'
+  },
+  {
+    id: 'avatar_veneno_basico_art',
+    name: 'Veneno Básico',
+    category: 'ladino',
+    iconName: 'Skull',
+    image: '/artes/loja/veneno_basico.jpg'
+  },
+  {
+    id: 'avatar_suprimentos_alquimista_art',
+    name: 'Suprimentos de Alquimista',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/suprimentos_de_alquimista.jpg'
+  },
+  {
+    id: 'avatar_kit_herbalismo_art',
+    name: 'Kit de Herbalismo',
+    category: 'conjurador',
+    iconName: 'Sparkles',
+    image: '/artes/loja/kit_de_herbalismo.jpg'
+  },
+  {
     id: 'avatar_dm_tome',
     name: 'Mestre da Masmorra',
     category: 'mestre',
