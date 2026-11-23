@@ -404,7 +404,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 0.5,
-    imageUrl: '/artes/items/lanca.jpg'
+    imageUrl: '/artes/lanca.jpeg'
   },
   {
     id: 'wpn_maca',
@@ -424,7 +424,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/items/maca.jpg'
+    imageUrl: '/artes/maca.jpeg'
   },
   {
     id: 'wpn_machadinha',
@@ -532,7 +532,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/espada_curta.jpg'
+    imageUrl: '/artes/espada_curta.jpeg'
   },
   {
     id: 'wpn_espada_longa',
@@ -592,7 +592,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/items/espada_curta.jpg'
+    imageUrl: '/artes/cimitarra.jpeg'
   },
   {
     id: 'wpn_rapieira',
@@ -652,7 +652,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 3,
     craftingCostPo: 15,
-    imageUrl: '/artes/items/machado_grande.jpg'
+    imageUrl: '/artes/machado_grande.jpeg'
   },
   {
     id: 'wpn_martelo_guerra',
@@ -672,7 +672,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
     craftingCostPo: 7.5,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/martelo_de_guerra.jpeg'
   },
   {
     id: 'wpn_malho',
@@ -692,7 +692,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/items/martelo_guerra.jpg'
+    imageUrl: '/artes/martelo_de_guerra.jpeg'
   },
   {
     id: 'wpn_alabarda',

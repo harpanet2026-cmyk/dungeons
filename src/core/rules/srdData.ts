@@ -321,7 +321,8 @@ export const COMMON_WEAPONS: Item[] = [
   { id: 'wpn_cimitarra', name: 'Cimitarra', quantity: 1, weight: 1.5, type: 'arma', damage: '1d6', damageType: 'cortante', description: 'Acuidade, Leve', imageUrl: '/artes/cimitarra.jpeg' },
   { id: 'wpn_adaga', name: 'Adaga', quantity: 1, weight: 0.5, type: 'arma', damage: '1d4', damageType: 'perfurante', description: 'Acuidade, Leve, Arremesso (6/18m)', imageUrl: '/artes/adaga.jpeg' },
   { id: 'wpn_machado_batalha', name: 'Machado de Batalha', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'cortante', description: 'Versátil', imageUrl: '/artes/machado.jpeg' },
-  { id: 'wpn_martelo_combate', name: 'Martelo de Guerra', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'concussão', description: 'Versátil (1d10)', imageUrl: '/artes/martelo_de_combate.jpeg' },
+  { id: 'wpn_machado_grande', name: 'Machado Grande', quantity: 1, weight: 3.5, type: 'arma', damage: '1d12', damageType: 'cortante', description: 'Pesada, Duas mãos', imageUrl: '/artes/machado_grande.jpeg' },
+  { id: 'wpn_martelo_combate', name: 'Martelo de Guerra', quantity: 1, weight: 2, type: 'arma', damage: '1d8/1d10', damageType: 'concussão', description: 'Versátil (1d10)', imageUrl: '/artes/martelo_de_guerra.jpeg' },
   { id: 'wpn_maca', name: 'Maça de Aço', quantity: 1, weight: 2, type: 'arma', damage: '1d6', damageType: 'concussão', description: 'Simples', imageUrl: '/artes/maca.jpeg' },
   { id: 'wpn_lanca', name: 'Lança', quantity: 1, weight: 1.5, type: 'arma', damage: '1d6/1d8', damageType: 'perfurante', description: 'Versátil, Arremesso (6/18m)', imageUrl: '/artes/lanca.jpeg' },
   { id: 'wpn_arco_curto', name: 'Arco Curto', quantity: 1, weight: 1, type: 'arma', damage: '1d6', damageType: 'perfurante', description: 'Munição (24/96m), Duas mãos', imageUrl: '/artes/arco.jpeg' },
@@ -338,8 +339,9 @@ export const getWeaponImage = (nameOrId?: string): string => {
   if (n.includes('espada') || n.includes('longsword')) return '/artes/espada_longa.jpeg';
   if (n.includes('adaga') || n.includes('dagger')) return '/artes/adaga.jpeg';
   if (n.includes('cimitarra') || n.includes('scimitar')) return '/artes/cimitarra.jpeg';
+  if (n.includes('machado grande') || n.includes('greataxe')) return '/artes/machado_grande.jpeg';
   if (n.includes('machado') || n.includes('axe') || n.includes('machadinha')) return '/artes/machado.jpeg';
-  if (n.includes('martelo') || n.includes('warhammer')) return '/artes/martelo_de_combate.jpeg';
+  if (n.includes('martelo') || n.includes('warhammer')) return '/artes/martelo_de_guerra.jpeg';
   if (n.includes('maça') || n.includes('maca') || n.includes('mace')) return '/artes/maca.jpeg';
   if (n.includes('lança') || n.includes('lanca') || n.includes('spear')) return '/artes/lanca.jpeg';
   if (n.includes('besta') || n.includes('crossbow')) return '/artes/besta.jpeg';

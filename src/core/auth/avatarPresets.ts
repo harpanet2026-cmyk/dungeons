@@ -233,11 +233,18 @@ export const AVATAR_PRESETS: AvatarPreset[] = [
     image: '/artes/machado.jpeg'
   },
   {
+    id: 'avatar_machado_grande_art',
+    name: 'Machado Grande',
+    category: 'guerreiro',
+    iconName: 'Shield',
+    image: '/artes/machado_grande.jpeg'
+  },
+  {
     id: 'avatar_martelo_art',
     name: 'Martelo de Guerra',
     category: 'guerreiro',
     iconName: 'Shield',
-    image: '/artes/martelo_de_combate.jpeg'
+    image: '/artes/martelo_de_guerra.jpeg'
   },
   {
     id: 'avatar_maca_art',
