@@ -426,6 +426,70 @@ export class SessionManager {
   }
 
   /**
+   * Executa um DESCANSO CURTO (PHB p. 186):
+   * - Aplica os PVs recuperados via Dados de Vida gastos (respeitando maxHp)
+   * - Incrementa hitDiceUsed
+   * - Remove condição 'Inconsciente' se PV > 0
+   * - Restaura todos os espaços de magia para Bruxos (Magia de Pacto)
+   * - Salva no storage e retorna log detalhado
+   */
+  public static performShortRest(
+    characters: Character[],
+    updates: { [charId: string]: { hpHealed: number; diceSpent: number; summary: string } }
+  ): { updatedCharacters: Character[]; log: string } {
+    const logDetails: string[] = [];
+
+    const list = characters.map(c => {
+      const u = updates[c.id];
+      const isWarlock = (c.class || '').toLowerCase().includes('bruxo') || (c.class || '').toLowerCase().includes('warlock');
+
+      let newHp = c.currentHp;
+      let newDiceUsed = c.hitDiceUsed;
+      let newSlots = { ...c.spellSlots };
+      let newConditions = [...c.conditions];
+
+      if (u && (u.hpHealed > 0 || u.diceSpent > 0)) {
+        newHp = Math.min(c.maxHp, c.currentHp + u.hpHealed);
+        newDiceUsed = Math.min(c.hitDiceTotal, c.hitDiceUsed + u.diceSpent);
+        if (newHp > 0) {
+          newConditions = newConditions.filter(cond => cond !== 'Inconsciente');
+        }
+        logDetails.push(`${c.name}: gastou ${u.diceSpent} Dado(s) de Vida e recuperou ${u.hpHealed} PV (${newHp}/${c.maxHp} PV).`);
+      }
+
+      // Bruxos recuperam espaços de magia de pacto no descanso curto
+      if (isWarlock) {
+        let restoredAny = false;
+        for (const lvl in newSlots) {
+          if (newSlots[lvl].used > 0) {
+            newSlots[lvl] = { ...newSlots[lvl], used: 0 };
+            restoredAny = true;
+          }
+        }
+        if (restoredAny) {
+          logDetails.push(`${c.name} (Bruxo): recuperou todos os espaços de Magia de Pacto!`);
+        }
+      }
+
+      return {
+        ...c,
+        currentHp: newHp,
+        hitDiceUsed: newDiceUsed,
+        spellSlots: newSlots,
+        conditions: newConditions
+      };
+    });
+
+    this.saveToStorage(list);
+
+    const log = logDetails.length > 0
+      ? `☕ DESCANSO CURTO concluído (1 hora de repouso):\n${logDetails.join('\n')}`
+      : `☕ O grupo completou um DESCANSO CURTO (1 hora). Nenhum Dado de Vida foi gasto.`;
+
+    return { updatedCharacters: list, log };
+  }
+
+  /**
    * Executa a rolagem de um teste (suporta modo automático ou valor físico manual)
    */
   public static rollCheck(

@@ -23,7 +23,8 @@ import { PartyChest } from './core/rules/economy';
 import { calculatePartyEncounterThresholds } from './core/analysis/encounterAnalysis';
 import { getSkillModifier, getSavingThrowModifier, getAbilityModifier, SKILL_ABILITY_MAP } from './core/rules/calculations';
 import { generateRandomHero } from './core/rules/characterGenerator';
-import { Shield, Sparkles, BarChart3, UserPlus, Moon, Download, Upload, Dices, Play, Swords, BookOpen, Compass, Store, Hammer } from 'lucide-react';
+import { ShortRestModal } from './components/rest/ShortRestModal';
+import { Shield, Sparkles, BarChart3, UserPlus, Moon, Coffee, Download, Upload, Dices, Play, Swords, BookOpen, Compass, Store, Hammer } from 'lucide-react';
 
 export const App: React.FC = () => {
   const [characters, setCharacters] = useState<Character[]>(() => SessionManager.getCharacters());
@@ -33,6 +34,7 @@ export const App: React.FC = () => {
   const [pendingManualRoll, setPendingManualRoll] = useState<PendingRoll | null>(null);
   const [currentUser, setCurrentUser] = useState<UserProfile>(() => AuthManager.getCurrentUser());
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
+  const [showShortRestModal, setShowShortRestModal] = useState<boolean>(false);
   const [isSpellCompendiumOpen, setIsSpellCompendiumOpen] = useState<boolean>(false);
 
   const [activeTab, setActiveTab] = useState<'sheet' | 'parchment' | 'combat' | 'analysis' | 'gemini' | 'journal' | 'create' | 'market' | 'forge'>('sheet');
@@ -209,6 +211,12 @@ export const App: React.FC = () => {
       setCharacters(updatedCharacters);
       showNotification(log);
     }
+  };
+
+  const handleConfirmShortRest = (updates: { [charId: string]: { hpHealed: number; diceSpent: number; summary: string } }) => {
+    const { updatedCharacters, log } = SessionManager.performShortRest(characters, updates);
+    setCharacters(updatedCharacters);
+    showNotification(log);
   };
 
   const handleRollCheck = (char: Character, name: string, mode: 'normal' | 'vantagem' | 'desvantagem') => {
@@ -475,15 +483,28 @@ export const App: React.FC = () => {
               </button>
             </div>
 
-            <button
-              onClick={handleLongRest}
-              className="bronze-btn rounded-md px-3.5 py-1.5 text-[10px] sm:text-xs tracking-[0.16em] flex items-center gap-1.5"
-              title="Descanso Longo para todo o grupo"
-            >
-              <Moon className="w-3.5 h-3.5 text-[#f5ba42]" />
-              <span className="hidden sm:inline">DESCANSO LONGO</span>
-              <span className="sm:hidden">DESCANSO</span>
-            </button>
+            {/* Botoes Compactos: Descanso Curto e Descanso Longo */}
+            <div className="flex items-center gap-1 bg-[#15110d]/90 p-0.5 rounded-lg border border-[#a17036]/60 shadow-inner">
+              <button
+                onClick={() => setShowShortRestModal(true)}
+                className="px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-cinzel font-bold tracking-wider flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-[#2e1d0f] to-[#422a15] text-amber-200 border border-[#be9e63]/70 hover:border-[#f5ba42] hover:text-white transition-all shadow-sm active:scale-95"
+                title="Descanso Curto (1 hora): gaste Dados de Vida para recuperar PV e recarregue magias de pacto (Bruxos)"
+              >
+                <Coffee className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
+                <span className="hidden lg:inline">DESCANSO CURTO</span>
+                <span className="lg:hidden">CURTO</span>
+              </button>
+
+              <button
+                onClick={handleLongRest}
+                className="px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-cinzel font-bold tracking-wider flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-[#201530] to-[#2e1c45] text-purple-200 border border-purple-500/60 hover:border-purple-300 hover:text-white transition-all shadow-sm active:scale-95"
+                title="Descanso Longo (8 horas): restaura 100% dos PVs, todos os espaços de magia e metade dos Dados de Vida"
+              >
+                <Moon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-300" />
+                <span className="hidden lg:inline">DESCANSO LONGO</span>
+                <span className="lg:hidden">LONGO</span>
+              </button>
+            </div>
 
             <button
               onClick={handleExportJson}
@@ -508,6 +529,15 @@ export const App: React.FC = () => {
       <ManualDiceModal
         pendingRoll={pendingManualRoll}
         onClose={() => setPendingManualRoll(null)}
+      />
+
+      {/* Modal de Descanso Curto (D&D 5e - PHB p. 186) */}
+      <ShortRestModal
+        characters={characters}
+        isOpen={showShortRestModal}
+        onClose={() => setShowShortRestModal(false)}
+        onConfirmRest={handleConfirmShortRest}
+        diceMode={diceMode}
       />
 
       {/* Modal de Gestão de Usuários, Login & Perfis */}
