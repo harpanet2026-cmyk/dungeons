@@ -365,65 +365,65 @@ export const App: React.FC = () => {
     <div className="min-h-screen bg-[#08090d] text-stone-200 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
       {/* Top Bar inspirada no template REALMS */}
       <header className="border-b border-[#231b14]/90 bg-[#08090d]/80 backdrop-blur-md sticky top-0 z-40 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+        <div className="max-w-[1440px] mx-auto px-2 sm:px-4 py-2 flex items-center justify-between gap-2">
           {/* Logo REALMS */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div className="flex items-center gap-2 shrink-0 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
             <div className="flex flex-col">
-              <span className="font-cinzel text-xl sm:text-2xl font-black tracking-[0.25em] gold-gradient-text leading-none">
+              <span className="font-cinzel text-lg sm:text-xl font-black tracking-[0.2em] gold-gradient-text leading-none">
                 REALMS
               </span>
-              <span className="text-[8px] sm:text-[9px] gold-subtitle uppercase tracking-[0.25em] mt-1 flex items-center gap-1 font-semibold">
-                <span>◇</span> DUNGEONS & GEMINI <span>◇</span>
+              <span className="text-[7.5px] sm:text-[8px] gold-subtitle uppercase tracking-[0.2em] mt-0.5 flex items-center gap-1 font-semibold">
+                <span>◇</span> D&D 5E <span>◇</span>
               </span>
             </div>
           </div>
 
           {/* Navigation Links estilo template */}
-          <nav className="hidden md:flex items-center gap-5 text-[11px] font-semibold uppercase tracking-[0.18em]">
+          <nav className="hidden md:flex items-center gap-2 lg:gap-3 xl:gap-4 text-[10px] lg:text-[11px] font-semibold uppercase tracking-[0.1em] shrink-0">
             <button
               onClick={() => scrollToContent('sheet')}
               className={`transition-colors py-1 ${activeTab === 'sheet' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              Mesa de Jogo
+              Mesa
             </button>
             <button
               onClick={() => scrollToContent('parchment')}
               className={`transition-colors py-1 ${activeTab === 'parchment' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              📜 Ficha Pergaminho
+              Ficha
             </button>
             <button
               onClick={() => scrollToContent('combat')}
               className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'combat' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              <Swords className="w-3.5 h-3.5 text-rose-500" />
+              <Swords className="w-3 h-3 text-rose-500" />
               Arena ({enemies.length})
             </button>
             <button
               onClick={() => scrollToContent('analysis')}
               className={`transition-colors py-1 ${activeTab === 'analysis' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              Análise DMG
+              Análise
             </button>
             <button
               onClick={() => scrollToContent('gemini')}
               className={`transition-colors py-1 ${activeTab === 'gemini' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              Central Gemini
+              Gemini
             </button>
             <button
               onClick={() => scrollToContent('journal')}
               className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'journal' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
             >
-              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-              Diário & Quests
+              <BookOpen className="w-3 h-3 text-amber-400" />
+              Diário
             </button>
             <button
               onClick={() => scrollToContent('market')}
               className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'market' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
               title="Mercado & Lojas de D&D 5e"
             >
-              <Store className="w-3.5 h-3.5 text-amber-400" />
+              <Store className="w-3 h-3 text-amber-400" />
               Mercado
             </button>
             <button
@@ -431,7 +431,7 @@ export const App: React.FC = () => {
               className={`transition-colors py-1 flex items-center gap-1 ${activeTab === 'forge' ? 'text-[#f5ba42] border-b-2 border-[#f5ba42]' : 'text-stone-400 hover:text-stone-100'}`}
               title="Forja Rúnica & Crafting de Xanathar"
             >
-              <Hammer className="w-3.5 h-3.5 text-orange-400" />
+              <Hammer className="w-3 h-3 text-orange-400" />
               Forja
             </button>
             <button
@@ -439,7 +439,7 @@ export const App: React.FC = () => {
               className="transition-colors py-1 text-stone-400 hover:text-purple-300 flex items-center gap-1"
               title="Abrir Grimório Oficial do SRD 5e"
             >
-              <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+              <Sparkles className="w-3 h-3 text-purple-400" />
               Grimório
             </button>
             <button
@@ -450,8 +450,8 @@ export const App: React.FC = () => {
             </button>
           </nav>
 
-          {/* Right Action: Perfil de Usuário, Som Ambiente, Toggle de Dados & Descanso Longo */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Action: Perfil de Usuário, Som Ambiente, Toggle de Dados & Descansos */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Widget de Perfil & Troca de Usuários */}
             <UserBadge
               currentUser={currentUser}
@@ -468,57 +468,56 @@ export const App: React.FC = () => {
             <DungeonAmbiencePlayer />
 
             {/* Quick Toggle de Dados */}
-            <div className="hidden lg:flex items-center gap-1.5 bg-[#141824] px-2.5 py-1 rounded-full border border-[#262f44]">
-              <span className="text-[10px] text-stone-300 font-bold uppercase tracking-wider">🎲 Dados:</span>
+            <div className="hidden xl:flex items-center gap-1 bg-[#141824] px-2 py-0.5 rounded-full border border-[#262f44]">
               <button
                 onClick={() => setDiceMode(diceMode === 'automatico' ? 'manual' : 'automatico')}
-                className={`text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full transition-all ${
+                className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full transition-all ${
                   diceMode === 'manual'
                     ? 'bronze-btn text-[#f5ba42] shadow font-extrabold'
                     : 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                 }`}
                 title="Clique para alternar entre rolagem manual física e automática do software"
               >
-                {diceMode === 'manual' ? '🎲 Manual (Eu Rolo)' : '⚡ Automático'}
+                {diceMode === 'manual' ? '🎲 Manual' : '⚡ Auto'}
               </button>
             </div>
 
-            {/* Botoes Compactos: Descanso Curto e Descanso Longo */}
-            <div className="flex items-center gap-1 bg-[#15110d]/90 p-0.5 rounded-lg border border-[#a17036]/60 shadow-inner">
+            {/* Botoes Ultracompactos: Descanso Curto e Descanso Longo */}
+            <div className="flex items-center bg-[#15110d] p-0.5 rounded-md border border-[#a17036]/60 shadow-inner">
               <button
                 onClick={() => setShowShortRestModal(true)}
-                className="px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-cinzel font-bold tracking-wider flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-[#2e1d0f] to-[#422a15] text-amber-200 border border-[#be9e63]/70 hover:border-[#f5ba42] hover:text-white transition-all shadow-sm active:scale-95"
+                className="px-2 py-1 rounded text-[9.5px] font-cinzel font-bold flex items-center gap-1 text-amber-200 hover:bg-[#382618] hover:text-white transition-all active:scale-95"
                 title="Descanso Curto (1 hora): gaste Dados de Vida para recuperar PV e recarregue magias de pacto (Bruxos)"
               >
-                <Coffee className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
-                <span className="hidden lg:inline">DESCANSO CURTO</span>
-                <span className="lg:hidden">CURTO</span>
+                <Coffee className="w-3 h-3 text-amber-400" />
+                <span>Curto</span>
               </button>
+
+              <div className="w-[1px] h-3.5 bg-[#a17036]/50 my-auto" />
 
               <button
                 onClick={handleLongRest}
-                className="px-2 sm:px-2.5 py-1 rounded text-[10px] sm:text-[11px] font-cinzel font-bold tracking-wider flex items-center gap-1 sm:gap-1.5 bg-gradient-to-r from-[#201530] to-[#2e1c45] text-purple-200 border border-purple-500/60 hover:border-purple-300 hover:text-white transition-all shadow-sm active:scale-95"
+                className="px-2 py-1 rounded text-[9.5px] font-cinzel font-bold flex items-center gap-1 text-purple-200 hover:bg-[#2e1c45] hover:text-white transition-all active:scale-95"
                 title="Descanso Longo (8 horas): restaura 100% dos PVs, todos os espaços de magia e metade dos Dados de Vida"
               >
-                <Moon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-300" />
-                <span className="hidden lg:inline">DESCANSO LONGO</span>
-                <span className="lg:hidden">LONGO</span>
+                <Moon className="w-3 h-3 text-purple-300" />
+                <span>Longo</span>
               </button>
             </div>
 
             <button
               onClick={handleExportJson}
               title="Exportar Campanha (Heróis e Inimigos) em JSON"
-              className="p-1.5 bg-[#141824] hover:bg-[#1c2233] border border-[#2b334a] text-stone-300 rounded-md text-xs transition-colors"
+              className="p-1 bg-[#141824] hover:bg-[#1c2233] border border-[#2b334a] text-stone-300 rounded text-xs transition-colors"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-3.5 h-3.5" />
             </button>
 
             <label
               title="Importar Campanha de arquivo JSON"
-              className="p-1.5 bg-[#141824] hover:bg-[#1c2233] border border-[#2b334a] text-stone-300 rounded-md text-xs cursor-pointer transition-colors"
+              className="p-1 bg-[#141824] hover:bg-[#1c2233] border border-[#2b334a] text-stone-300 rounded text-xs cursor-pointer transition-colors"
             >
-              <Upload className="w-4 h-4" />
+              <Upload className="w-3.5 h-3.5" />
               <input type="file" accept=".json" onChange={handleImportJson} className="hidden" />
             </label>
           </div>
