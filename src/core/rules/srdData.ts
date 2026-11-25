@@ -344,7 +344,9 @@ export const getWeaponImage = (nameOrId?: string): string => {
   if (n.includes('machado grande') || n.includes('greataxe')) return '/artes/machado_grande.jpeg';
   if (n.includes('machado') || n.includes('axe') || n.includes('machadinha')) return '/artes/machado.jpeg';
   if (n.includes('martelo') || n.includes('warhammer')) return '/artes/martelo_de_guerra.jpeg';
+  if (n.includes('mangual') || n.includes('flail')) return '/artes/loja/mangual.jpeg';
   if (n.includes('maça') || n.includes('maca') || n.includes('mace')) return '/artes/maca.jpeg';
+  if (n.includes('alabarda') || n.includes('halberd')) return '/artes/loja/alabarda.jpeg';
   if (n.includes('lança') || n.includes('lanca') || n.includes('spear')) return '/artes/lanca.jpeg';
   if (n.includes('besta de mão') || n.includes('besta de mao') || n.includes('hand crossbow')) return '/artes/besta_de_mao.jpeg';
   if (n.includes('besta pesada') || n.includes('heavy crossbow')) return '/artes/besta_pesada.jpeg';

@@ -60,7 +60,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Costureiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/loja/armadura_de_couro.jpg'
+    imageUrl: '/artes/loja/armadura_de_couro.jpeg'
   },
   {
     id: 'arm_couro',
@@ -80,7 +80,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/loja/armadura_de_couro.jpg'
+    imageUrl: '/artes/loja/armadura_de_couro.jpeg'
   },
   {
     id: 'arm_couro_batido',
@@ -100,7 +100,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 5,
     craftingCostPo: 22.5,
-    imageUrl: '/artes/loja/armadura_de_couro.jpg'
+    imageUrl: '/artes/loja/armadura_de_couro.jpeg'
   },
 
   // ==========================================
@@ -125,7 +125,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/loja/gibao_de_peles.jpg'
+    imageUrl: '/artes/loja/gibao_de_peles.jpeg'
   },
   {
     id: 'arm_camisao_malha',
@@ -146,7 +146,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/loja/cota_de_malha.jpg'
+    imageUrl: '/artes/loja/cota_de_malha.jpeg'
   },
   {
     id: 'arm_brunea',
@@ -188,7 +188,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 40,
     craftingCostPo: 200,
-    imageUrl: '/artes/loja/peitoral_de_aco.jpg'
+    imageUrl: '/artes/loja/peitoral_de_aco.jpeg'
   },
   {
     id: 'arm_meia_armadura',
@@ -209,7 +209,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 75,
     craftingCostPo: 375,
-    imageUrl: '/artes/loja/peitoral_de_aco.jpg'
+    imageUrl: '/artes/loja/peitoral_de_aco.jpeg'
   },
 
   // ==========================================
@@ -254,7 +254,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 8,
     craftingCostPo: 37.5,
-    imageUrl: '/artes/loja/cota_de_malha.jpg'
+    imageUrl: '/artes/loja/cota_de_malha.jpeg'
   },
   {
     id: 'arm_cota_talas_pesada',
@@ -320,7 +320,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/loja/escudo_redondo.jpg'
+    imageUrl: '/artes/loja/escudo_redondo.jpeg'
   },
 
   // ==========================================
@@ -692,7 +692,27 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/martelo_de_guerra.jpeg'
+    imageUrl: '/artes/loja/martelo_de_guerra.jpeg'
+  },
+  {
+    id: 'wpn_mangual',
+    name: 'Mangual',
+    category: 'arma',
+    shopType: 'ferreiro',
+    costPo: 10,
+    weight: 1,
+    rarity: 'comum',
+    minSettlement: 'vilarejo',
+    damage: '1d8',
+    damageType: 'concussão',
+    weaponType: 'marcial_corpo',
+    properties: [],
+    description: 'Cabeça de ferro cravejada presa por corrente resistente a um cabo de madeira reforçado.',
+    source: 'Livro do Jogador (PHB) p. 149',
+    craftingTool: 'Ferramentas de Ferreiro',
+    craftingDays: 1,
+    craftingCostPo: 5,
+    imageUrl: '/artes/loja/mangual.jpeg'
   },
   {
     id: 'wpn_alabarda',
@@ -712,7 +732,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 2,
     craftingCostPo: 10,
-    imageUrl: '/artes/items/machado_batalha.jpg'
+    imageUrl: '/artes/loja/alabarda.jpeg'
   },
 
   // ==========================================
@@ -796,7 +816,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/loja/pocao_de_cura.jpg'
+    imageUrl: '/artes/loja/pocao_de_cura.jpeg'
   },
   {
     id: 'poc_cura_maior',
@@ -844,7 +864,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Kit de Herbalismo',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/loja/antidoto.jpg'
+    imageUrl: '/artes/loja/antidoto.jpeg'
   },
   {
     id: 'poc_fogo_alquimico',
@@ -860,7 +880,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Alquimista',
     craftingDays: 1,
     craftingCostPo: 25,
-    imageUrl: '/artes/loja/fogo_alquimico.jpg'
+    imageUrl: '/artes/loja/fogo_alquimico.jpeg'
   },
   {
     id: 'poc_acido',
@@ -928,7 +948,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 1,
     craftingCostPo: 1,
-    imageUrl: '/artes/loja/mochila.jpg'
+    imageUrl: '/artes/loja/mochila.jpeg'
   },
   {
     id: 'eq_corda_seda',
@@ -944,7 +964,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Tecelão',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/loja/corda.jpg'
+    imageUrl: '/artes/loja/corda.jpeg'
   },
   {
     id: 'eq_lanterna_coberta',
@@ -960,7 +980,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/loja/lanterna.jpg'
+    imageUrl: '/artes/loja/lanterna.jpeg'
   },
   {
     id: 'eq_kit_primeiros_socorros',
@@ -992,7 +1012,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 1,
-    imageUrl: '/artes/loja/pe_de_cabra.jpg'
+    imageUrl: '/artes/loja/pe_de_cabra.jpeg'
   },
   {
     id: 'eq_grimorio',
@@ -1008,7 +1028,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Suprimentos de Caligrafia',
     craftingDays: 5,
     craftingCostPo: 25,
-    imageUrl: '/artes/loja/grimorio.jpg'
+    imageUrl: '/artes/loja/grimorio.jpeg'
   },
   {
     id: 'eq_foco_arcano',
@@ -1024,7 +1044,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Joalheiro',
     craftingDays: 1,
     craftingCostPo: 5,
-    imageUrl: '/artes/loja/foco_arcano_varinha_orbe.jpg'
+    imageUrl: '/artes/loja/foco_arcano_orbe_vara.jpeg'
   },
   {
     id: 'eq_simbolo_sagrado',
@@ -1040,7 +1060,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Ferreiro',
     craftingDays: 1,
     craftingCostPo: 2.5,
-    imageUrl: '/artes/loja/simbolo_sagrado.jpg'
+    imageUrl: '/artes/loja/simbolo_sagrado.jpeg'
   },
   {
     id: 'tool_ferramentas_ferreiro',
@@ -1104,7 +1124,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Funileiro',
     craftingDays: 3,
     craftingCostPo: 12.5,
-    imageUrl: '/artes/loja/kit_ferramentas.jpg'
+    imageUrl: '/artes/loja/kit_de_ladrao.jpeg'
   },
 
   // ==========================================
@@ -1140,7 +1160,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 10,
     craftingCostPo: 175,
-    imageUrl: '/artes/loja/botas_elficas.jpg'
+    imageUrl: '/artes/loja/botas_elficas.jpeg'
   },
   {
     id: 'mag_bolsa_carga',
@@ -1156,7 +1176,7 @@ export const EQUIPMENT_CATALOG: CatalogItem[] = [
     craftingTool: 'Ferramentas de Coureiro',
     craftingDays: 10,
     craftingCostPo: 250,
-    imageUrl: '/artes/loja/bolsa_de_carga.jpg'
+    imageUrl: '/artes/loja/bolsa_de_carga.jpeg'
   },
   {
     id: 'mag_anel_protecao',
